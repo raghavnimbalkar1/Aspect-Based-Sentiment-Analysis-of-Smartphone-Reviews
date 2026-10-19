@@ -1,26 +1,39 @@
 import { useState } from 'react'
 import { ArrowUpRight, CircleHelp, Loader2, MessageSquareText, Sparkles } from 'lucide-react'
 import { names, number, request } from '../api'
-import type { Analysis } from '../api'
+import type { Analysis, ModelSpec } from '../api'
 import { Badge, Empty } from '../components/common'
 
-function AnalyseView() {
+type Result = { analysis: Analysis; elapsed_ms: number }
+
+function AnalyseView({ modelId, models }: { modelId: string; models: ModelSpec[] }) {
   const [text, setText] = useState('')
-  const [result, setResult] = useState<Analysis | null>(null)
+  const [results, setResults] = useState<Result[]>([])
+  const [compare, setCompare] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const model = models.find((item) => item.id === modelId)
   async function submit() {
     setBusy(true)
     setError('')
-    setResult(null)
+    setResults([])
     try {
-      setResult(
-        await request<Analysis>('/api/analyse', {
+      if (compare && modelId !== 'rules-v1') {
+        const result = await request<{ results: Result[] }>('/api/analyse/compare', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text }),
-        }),
-      )
+          body: JSON.stringify({ text, models: ['rules-v1', modelId] }),
+        })
+        setResults(result.results)
+      } else {
+        const started = performance.now()
+        const analysis = await request<Analysis>('/api/analyse', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, model: modelId }),
+        })
+        setResults([{ analysis, elapsed_ms: performance.now() - started }])
+      }
     } catch (error) {
       setError((error as Error).message)
     } finally {
@@ -28,7 +41,7 @@ function AnalyseView() {
     }
   }
   return (
-    <div className="analyse-grid">
+    <>
       <section className="panel input-panel">
         <div className="panel-title">
           <div>
@@ -44,17 +57,33 @@ function AnalyseView() {
           disabled={busy}
           onChange={(event) => {
             setText(event.target.value)
-            setResult(null)
+            setResults([])
           }}
           maxLength={30000}
         />
         <div className="input-footer">
-          <span>{number(text.length)} / 30,000 characters</span>
+          <span>
+            {number(text.length)} / 30,000 characters · {model?.name || modelId}
+          </span>
           <button className="button primary" disabled={!text.trim() || busy} onClick={submit}>
             {busy ? <Loader2 className="spin" size={16} /> : <Sparkles size={16} />}
             {busy ? 'Analysing…' : 'Analyse review'}
           </button>
         </div>
+        {modelId !== 'rules-v1' && (
+          <label className="compare-toggle">
+            <input
+              type="checkbox"
+              checked={compare}
+              disabled={busy}
+              onChange={(event) => {
+                setCompare(event.target.checked)
+                setResults([])
+              }}
+            />
+            Compare with Rules + VADER on the same review
+          </label>
+        )}
         <button
           className="text-button example-link"
           disabled={busy}
@@ -62,14 +91,15 @@ function AnalyseView() {
             setText(
               'The camera takes sharp photos, but the battery barely lasts until lunch. The screen is bright and the phone gets hot while gaming.',
             )
-            setResult(null)
+            setResults([])
           }}
         >
           Try a demonstration example
           <ArrowUpRight size={14} />
         </button>
         <p className="small-note">
-          This example is illustrative and is not part of the held-out evaluation set.
+          Illustrative example, outside the evaluation set. The neural model may take a few seconds
+          on first use.
         </p>
         {error && (
           <div className="inline-error" role="alert">
@@ -77,58 +107,67 @@ function AnalyseView() {
           </div>
         )}
       </section>
-      <section className="panel results-panel">
-        <div className="panel-title">
-          <div>
-            <h2>Aspect breakdown</h2>
-            <p>Each prediction links back to its supporting sentence.</p>
-          </div>
-        </div>
-        {!result ? (
-          <Empty title="The details will appear here" icon={<MessageSquareText size={26} />}>
-            Add a review and select Analyse review.
-          </Empty>
+      <div className={`model-results ${results.length > 1 ? 'side-by-side' : ''}`}>
+        {!results.length ? (
+          <section className="panel">
+            <Empty title="The details will appear here" icon={<MessageSquareText size={26} />}>
+              Add a review and select Analyse review.
+            </Empty>
+          </section>
         ) : (
-          <>
-            <div className="analysis-result">
-              {result.aspects.map((aspect) => (
-                <div className="single-aspect" key={aspect.category}>
-                  <div>
-                    <h3>{names[aspect.category]}</h3>
-                    <Badge state={aspect.sentiment} />
-                  </div>
-                  {aspect.evidence.map((evidence, index) => (
-                    <blockquote key={index}>{evidence.text}</blockquote>
-                  ))}
+          results.map(({ analysis, elapsed_ms }) => (
+            <section key={analysis.model_id} className="panel results-panel">
+              <div className="panel-title">
+                <div>
+                  <h2>
+                    {models.find((item) => item.id === analysis.model_id)?.name ||
+                      analysis.model_id}
+                  </h2>
+                  <p>
+                    {Math.round(elapsed_ms)} ms ·{' '}
+                    {results.length > 1 ? 'inference time' : 'request time, including first load'}
+                  </p>
                 </div>
-              ))}
-              {!result.aspects.length && (
-                <Empty
-                  title={
-                    result.supported
-                      ? 'No explicit aspect detected'
-                      : 'This language is not supported'
-                  }
-                >
-                  {result.supported
-                    ? 'The baseline needs explicit feature cues. General praise or implicit references may not produce a result.'
-                    : 'Use an English review for this version.'}
-                </Empty>
-              )}
-            </div>
-            <div className="result-warnings">
-              {result.warnings.map((warning) => (
-                <p key={warning}>
-                  <CircleHelp size={13} />
-                  {warning}
-                </p>
-              ))}
-            </div>
-          </>
+              </div>
+              <div className="analysis-result">
+                {analysis.aspects.map((aspect) => (
+                  <div className="single-aspect" key={aspect.category}>
+                    <div>
+                      <h3>{names[aspect.category]}</h3>
+                      <Badge state={aspect.sentiment} />
+                    </div>
+                    {aspect.evidence.map((evidence, index) => (
+                      <blockquote key={index}>{evidence.text}</blockquote>
+                    ))}
+                  </div>
+                ))}
+                {!analysis.aspects.length && (
+                  <Empty
+                    title={
+                      analysis.supported
+                        ? 'No explicit aspect detected'
+                        : 'This language is not supported'
+                    }
+                  >
+                    {analysis.supported
+                      ? 'General praise or implicit references may not produce a result.'
+                      : 'Use an English review for this version.'}
+                  </Empty>
+                )}
+              </div>
+              <div className="result-warnings">
+                {analysis.warnings.map((warning) => (
+                  <p key={warning}>
+                    <CircleHelp size={13} />
+                    {warning}
+                  </p>
+                ))}
+              </div>
+            </section>
+          ))
         )}
-      </section>
-    </div>
+      </div>
+    </>
   )
 }
-
 export default AnalyseView

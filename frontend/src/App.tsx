@@ -9,6 +9,7 @@ import {
   CircleHelp,
   Database,
   FileText,
+  ClipboardCheck,
   FlaskConical,
   GitCompareArrows,
   Layers3,
@@ -23,7 +24,7 @@ import {
   X,
 } from 'lucide-react'
 import { colors, dateRange, emptyFilters, names, number, query, request, states } from './api'
-import type { Dataset, FilterValues, Job, Overview, Product } from './api'
+import type { Dataset, FilterValues, Job, Overview, Product, ModelSpec } from './api'
 import { useRemote } from './hooks/useRemote'
 import { Empty, Legend, Metric } from './components/common'
 import ImportDialog from './components/ImportDialog'
@@ -31,21 +32,26 @@ import ReviewsView from './components/Reviews'
 import AnalyseView from './views/Analyse'
 import CompareView from './views/Compare'
 import EvaluationView from './views/Evaluation'
+import AnnotationView from './views/Annotation'
 
 const SentimentChart = lazy(() => import('./components/SentimentChart'))
 
-type View = 'overview' | 'analyse' | 'reviews' | 'compare' | 'evaluation'
+type View = 'overview' | 'analyse' | 'reviews' | 'compare' | 'evaluation' | 'annotation'
 const nav = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
   { id: 'analyse', label: 'Analyse a review', icon: MessageSquareText },
   { id: 'reviews', label: 'Review explorer', icon: FileText },
   { id: 'compare', label: 'Compare phones', icon: GitCompareArrows },
+  { id: 'annotation', label: 'Annotation', icon: ClipboardCheck },
   { id: 'evaluation', label: 'Model evaluation', icon: FlaskConical },
 ] as const
 
 function App() {
   const [view, setView] = useState<View>('overview')
+  const [annotationDirty, setAnnotationDirty] = useState(false)
   const [revision, refresh] = useState(0)
+  const [modelId, setModelId] = useState('rules-v1')
+  const models = useRemote<ModelSpec[]>('/api/models', revision)
   const [datasetId, setDatasetId] = useState(() => localStorage.getItem('aspect.dataset') || '')
   const [pendingDatasetId, setPendingDatasetId] = useState('')
   const [filters, setFilters] = useState<FilterValues>(emptyFilters)
@@ -53,13 +59,19 @@ function App() {
   const [showImport, setShowImport] = useState(false)
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
-  const datasets = useRemote<Dataset[]>('/api/datasets', revision)
+  const datasets = useRemote<Dataset[]>(`/api/datasets?model=${modelId}`, revision)
   const selected = datasets.data?.find((dataset) => dataset.id === datasetId)
   const base = selected ? `/api/datasets/${selected.id}` : null
   const products = useRemote<Product[]>(base ? `${base}/products` : null)
-  const overview = useRemote<Overview>(base ? `${base}/overview?${query(filters)}` : null, revision)
-  const datasetOverview = useRemote<Overview>(base ? `${base}/overview` : null, revision)
-  const jobs = useRemote<Job[]>(base ? `${base}/jobs` : null, revision)
+  const overview = useRemote<Overview>(
+    base ? `${base}/overview?${query(filters, modelId)}` : null,
+    revision,
+  )
+  const datasetOverview = useRemote<Overview>(
+    base ? `${base}/overview?model=${modelId}` : null,
+    revision,
+  )
+  const jobs = useRemote<Job[]>(base ? `${base}/jobs?model=${modelId}` : null, revision)
   const activeJob = jobs.data?.find((job) => ['queued', 'running'].includes(job.status))
 
   useEffect(() => {
@@ -97,7 +109,7 @@ function App() {
       await request(`${base}/jobs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'rules-v1' }),
+        body: JSON.stringify({ model: modelId }),
       })
       refresh((value) => value + 1)
     } catch (error) {
@@ -121,6 +133,10 @@ function App() {
       'Compare phones',
       'Compare feature sentiment across phones, with the sample sizes in view.',
     ],
+    annotation: [
+      'Annotation workbench',
+      'Build the human labels used to train and evaluate the models.',
+    ],
     evaluation: [
       'Model evaluation',
       'Track the models, their evaluation, and the work still ahead.',
@@ -136,7 +152,7 @@ function App() {
           className="brand"
           onClick={(event) => {
             event.preventDefault()
-            setView('overview')
+            if (!annotationDirty) setView('overview')
           }}
         >
           <span className="brand-symbol">
@@ -149,6 +165,7 @@ function App() {
           {nav.map((item) => (
             <button
               key={item.id}
+              disabled={annotationDirty && item.id !== view}
               aria-label={item.label}
               title={item.label}
               onClick={() => {
@@ -203,6 +220,21 @@ function App() {
             WORKSPACE <span>/</span> SMARTPHONE REVIEWS
           </div>
           <div className="topbar-actions">
+            <label className="model-selector" hidden={view === 'annotation'}>
+              <span>MODEL</span>
+              <select
+                aria-label="Analysis model"
+                value={modelId}
+                onChange={(event) => setModelId(event.target.value)}
+              >
+                {models.data?.map((model) => (
+                  <option key={model.id} value={model.id} disabled={!model.available}>
+                    {model.name}
+                    {!model.available ? ' · setup required' : ''}
+                  </option>
+                ))}
+              </select>
+            </label>
             <span className="local-pill">
               <i />
               Local
@@ -228,7 +260,7 @@ function App() {
                 Import reviews
               </button>
               {base && ['overview', 'reviews'].includes(view) && (
-                <a className="button primary" href={`${base}/export?${query(filters)}`}>
+                <a className="button primary" href={`${base}/export?${query(filters, modelId)}`}>
                   <ArrowDownToLine size={15} />
                   Export results
                 </a>
@@ -243,7 +275,7 @@ function App() {
               </button>
             </div>
           )}
-          {selected && (
+          {selected && view !== 'annotation' && (
             <div className="dataset-bar">
               <div className="dataset-control">
                 <Database size={16} />
@@ -270,7 +302,9 @@ function App() {
                   )}
                 </span>
                 <span className="model-tag">
-                  Rules + VADER <span>BASELINE</span>
+                  {models.data?.find((model) => model.id === modelId)?.kind === 'rule_baseline'
+                    ? 'RULE BASELINE'
+                    : 'LOCAL MODEL'}
                 </span>
               </div>
             </div>
@@ -293,20 +327,28 @@ function App() {
               <button onClick={startAnalysis}>Retry unfinished reviews</button>
             </div>
           )}
-          {selected && selected.analysed < selected.accepted && !activeJob && (
-            <div className="alert info">
-              <Database size={17} />
-              <span>
-                {number(selected.accepted - selected.analysed)} reviews are ready for analysis.
-              </span>
-              <button onClick={startAnalysis} disabled={busy}>
-                {busy ? 'Starting…' : 'Run analysis'}
-                <ArrowRight size={15} />
-              </button>
-            </div>
-          )}
+          {selected &&
+            ['overview', 'reviews', 'compare'].includes(view) &&
+            selected.analysed < selected.accepted &&
+            !activeJob && (
+              <div className="alert info">
+                <Database size={17} />
+                <span>
+                  {number(selected.accepted - selected.analysed)} reviews are ready for analysis
+                  with the selected model.{' '}
+                  {modelId !== 'rules-v1' &&
+                    'A large neural batch can take several minutes on CPU.'}
+                </span>
+                <button onClick={startAnalysis} disabled={busy}>
+                  {busy ? 'Starting…' : 'Run analysis'}
+                  <ArrowRight size={15} />
+                </button>
+              </div>
+            )}
           {view === 'analyse' ? (
-            <AnalyseView />
+            <AnalyseView key={modelId} modelId={modelId} models={models.data || []} />
+          ) : view === 'annotation' ? (
+            <AnnotationView onDirtyChange={setAnnotationDirty} />
           ) : view === 'evaluation' ? (
             <EvaluationView />
           ) : !selected ? (
@@ -519,13 +561,19 @@ function App() {
                         <ArrowUpRight size={15} />
                       </button>
                     </div>
-                    <ReviewsView base={base!} filters={filters} revision={revision} compact />
+                    <ReviewsView
+                      base={base!}
+                      filters={filters}
+                      revision={revision}
+                      modelId={modelId}
+                      compact
+                    />
                   </section>
                   <div className="method-note">
                     <FlaskConical size={16} />
                     <span>
-                      Research preview · Results use an explicit-aspect rule baseline. Implicit
-                      references and complex opinions may be missed.
+                      Research preview · Results use the selected model. Inspect supporting
+                      sentences; implicit references and complex opinions may be missed.
                     </span>
                     <button onClick={() => setView('evaluation')}>
                       View methodology
@@ -545,11 +593,21 @@ function App() {
                     </div>
                     <span className="subtle-chip">{number(summary?.reviews ?? 0)} reviews</span>
                   </div>
-                  <ReviewsView base={base!} filters={filters} revision={revision} />
+                  <ReviewsView
+                    base={base!}
+                    filters={filters}
+                    revision={revision}
+                    modelId={modelId}
+                  />
                 </section>
               )}
               {view === 'compare' && (
-                <CompareView base={base!} products={products.data || []} revision={revision} />
+                <CompareView
+                  base={base!}
+                  products={products.data || []}
+                  revision={revision}
+                  modelId={modelId}
+                />
               )}
             </>
           )}

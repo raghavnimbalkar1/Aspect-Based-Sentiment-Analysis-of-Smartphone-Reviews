@@ -10,20 +10,22 @@ function ReviewsView({
   filters,
   revision,
   compact = false,
+  modelId,
 }: {
   base: string
   filters: FilterValues
   revision: number
   compact?: boolean
+  modelId: string
 }) {
   const [page, setPage] = useState(1)
   const [expanded, setExpanded] = useState<string | null>(null)
   useEffect(() => {
     setPage(1)
     setExpanded(null)
-  }, [base, query(filters)])
+  }, [base, query(filters, modelId)])
   const result = useRemote<ReviewPage>(
-    `${base}/reviews?${query(filters)}&page=${page}&page_size=${compact ? 3 : 12}`,
+    `${base}/reviews?${query(filters, modelId)}&page=${page}&page_size=${compact ? 3 : 12}`,
     revision,
   )
   if (result.error)
@@ -146,8 +148,8 @@ function ReviewCard({
             </div>
           ))}
           <p className="evidence-caption">
-            {review.analysis.model_id} · Supporting sentences from the original review. Lexicon
-            scores are not confidence probabilities.
+            {review.analysis.model_id} · Supporting sentences from the original review. Scores are
+            model-specific and are not calibrated confidence estimates.
           </p>
         </div>
       )}

@@ -74,9 +74,18 @@ export type Job = {
   failed: number
   error: string | null
 }
+export type ModelSpec = {
+  id: string
+  name: string
+  kind?: string
+  available: boolean
+  description: string
+  device?: string
+  setup?: string
+}
 export type Evaluation = {
   active_model: string
-  models: { id: string; name: string; status: string; description: string }[]
+  models: (ModelSpec & { status: string })[]
   reports: {
     experiment: string
     model_id: string
@@ -124,8 +133,11 @@ export async function request<T>(url: string, init?: RequestInit): Promise<T> {
   return response.json()
 }
 
-export function query(filters: FilterValues): string {
-  return new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== '')).toString()
+export function query(filters: FilterValues, model = 'rules-v1'): string {
+  return new URLSearchParams([
+    ...Object.entries(filters).filter(([, value]) => value !== ''),
+    ['model', model],
+  ]).toString()
 }
 
 export function number(value: number): string {

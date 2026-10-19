@@ -13,11 +13,11 @@ function EvaluationView() {
           <FlaskConical size={24} />
         </span>
         <div>
-          <h2>A transparent research baseline</h2>
+          <h2>Models and measured results</h2>
           <p>
-            The current application uses Rules + VADER. Supervised training starts after the
-            annotation pilot is checked. Performance metrics will appear here when those experiments
-            have been run.
+            Compare the rule baseline with the installed transformer. The transformer is a
+            transferred checkpoint; smartphone accuracy has not been measured. Training our own
+            classifier requires completed human training and validation labels.
           </p>
         </div>
         <span className="subtle-chip">PHASED DELIVERY</span>
@@ -34,15 +34,20 @@ function EvaluationView() {
               <span className="model-number">0{index + 1}</span>
               <span className={`status-chip ${model.status === 'available' ? 'ready' : ''}`}>
                 {model.status === 'available'
-                  ? 'Active baseline'
-                  : model.status === 'planned'
-                    ? 'Planned'
+                  ? 'Available locally'
+                  : model.status === 'not_installed'
+                    ? 'Setup required'
                     : 'Awaiting labels'}
               </span>
             </div>
             <h2>{model.name}</h2>
             <p>{model.description}</p>
             <code>{model.id}</code>
+            {model.setup && !model.available && (
+              <p className="small-note">
+                Setup: <code>{model.setup}</code>
+              </p>
+            )}
           </section>
         ))}
       </div>

@@ -9,10 +9,12 @@ function CompareView({
   base,
   products,
   revision,
+  modelId,
 }: {
   base: string
   products: Product[]
   revision: number
+  modelId: string
 }) {
   const [selected, setSelected] = useState<string[]>([])
   useEffect(() => {
@@ -20,7 +22,7 @@ function CompareView({
   }, [base, products])
   const url =
     selected.length >= 2
-      ? `${base}/compare?${selected.map((id) => `products=${encodeURIComponent(id)}`).join('&')}`
+      ? `${base}/compare?${selected.map((id) => `products=${encodeURIComponent(id)}`).join('&')}&model=${modelId}`
       : null
   const result = useRemote<(Overview & { product_id: string })[]>(url, revision)
   return (
