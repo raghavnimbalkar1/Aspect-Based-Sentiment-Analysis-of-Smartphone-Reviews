@@ -177,7 +177,7 @@ export default function ExperimentRunner({
           {!validation?.total
             ? 'A training pilot cannot estimate accuracy. Create a full study with validation sentences.'
             : validation.completed < validation.total
-              ? `Complete all ${validation.total} validation sentences before running. ${validation.completed} are complete.`
+              ? `Complete all ${validation.total} validation sentences before running. ${validation.completed} of ${validation.total} complete.`
               : kind === 'train_tfidf' && !train?.completed && !(useAssistance && savedAssistance)
                 ? 'Complete human training labels, or explicitly select a prepared assisted training set.'
                 : `${validation.completed} validation sentences ready. Small samples and missing classes can give unstable scores.`}

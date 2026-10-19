@@ -1,4 +1,4 @@
-"""Train B2 on approved labels; leave the test partition untouched by default."""
+"""Train B2 with declared label origins; keep evaluation human and test explicit."""
 
 from __future__ import annotations
 

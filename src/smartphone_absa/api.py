@@ -351,7 +351,8 @@ def create_app(
                     "name": "TF-IDF + logistic regression",
                     "status": "awaiting_annotations",
                     "available": False,
-                    "description": "Requires human training and validation labels.",
+                    "description": "Requires training labels and independent human validation. "
+                    "Assisted training is available with explicit selection.",
                 }
             )
         return {"reports": reports, "active_model": "rules-v1", "models": cards}

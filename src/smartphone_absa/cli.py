@@ -39,7 +39,7 @@ def main() -> None:
     task_import.add_argument("--name", default="Annotation pilot")
     task_import.add_argument("--database", type=Path, default=Path("data/workspace.sqlite3"))
     train = sub.add_parser(
-        "train-tfidf", help="Train/evaluate only on adjudicated human annotations"
+        "train-tfidf", help="Train with independent human validation and optional assisted training"
     )
     train.add_argument("annotations", type=Path)
     train.add_argument("--manifest", type=Path, required=True)
