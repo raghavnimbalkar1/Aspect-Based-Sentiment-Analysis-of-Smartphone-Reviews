@@ -1,0 +1,37 @@
+# Local data and generated artifacts
+data/raw/
+data/processed/
+data/annotations/
+data/splits/
+artifacts/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite*
+*.log
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Frontend
+node_modules/
+frontend/dist/
+playwright-report/
+test-results/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
