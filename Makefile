@@ -22,6 +22,7 @@ run:
 check:
 	uv run --frozen ruff check src tests scripts
 	uv run --frozen pytest
+	npm --prefix frontend run format:check
 	npm --prefix frontend run build
 
 dev-api:
