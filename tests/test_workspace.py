@@ -107,7 +107,16 @@ def test_partial_jobs_resume_without_duplicate_results(store):
         assert connection.execute("SELECT COUNT(*) FROM analyses").fetchone()[0] == 3
 
 
-@pytest.mark.parametrize("content", [b"text,text\na,b", b"text,product\none,two,three", b"text\n"])
+@pytest.mark.parametrize(
+    "content",
+    [
+        b"text,text\na,b",
+        b"text,product\none,two,three",
+        b"text\n",
+        b'"text,product\none,two\n',
+        b"text, \na,b\n",
+    ],
+)
 def test_malformed_csv_is_rejected(content):
     with pytest.raises(ValueError):
         parse_csv(content)

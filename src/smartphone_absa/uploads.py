@@ -21,8 +21,11 @@ def parse_csv(content: bytes) -> tuple[list[str], list[dict]]:
     if "\x00" in decoded:
         raise ValueError("CSV contains invalid null bytes")
     reader = csv.DictReader(io.StringIO(decoded, newline=""), strict=True)
-    columns = reader.fieldnames
-    if not columns or len(set(columns)) != len(columns) or any(not c for c in columns):
+    try:
+        columns = reader.fieldnames
+    except csv.Error as exc:
+        raise ValueError(f"Malformed CSV header: {exc}") from exc
+    if not columns or len(set(columns)) != len(columns) or any(not c.strip() for c in columns):
         raise ValueError("CSV needs a header with unique, nonempty column names")
     rows = []
     try:
