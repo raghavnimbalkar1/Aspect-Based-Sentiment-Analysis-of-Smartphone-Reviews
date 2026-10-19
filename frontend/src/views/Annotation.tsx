@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Check, ChevronLeft, ChevronRight, Download, Save } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, Download, Save, Plus } from 'lucide-react'
 import { names, request, states } from '../api'
-import type { Sentiment } from '../api'
+import type { Sentiment, TaskSet } from '../api'
 import { useRemote } from '../hooks/useRemote'
 import { Empty } from '../components/common'
+import CreateStudy from '../components/CreateStudy'
 
 type Label = { label: Sentiment | 'absent'; reference: 'explicit' | 'implicit' | 'none' }
 type Task = {
@@ -16,14 +17,6 @@ type Task = {
   note: string
   labels: Record<string, Label>
 }
-type TaskSet = {
-  id: string
-  name: string
-  total: number
-  completed: number
-  drafts: number
-  pilot_train_only: boolean
-}
 
 export default function AnnotationView({
   onDirtyChange,
@@ -33,6 +26,8 @@ export default function AnnotationView({
   const [revision, refresh] = useState(0)
   const sets = useRemote<TaskSet[]>('/api/annotations', revision)
   const [setId, setSetId] = useState('')
+  const [pendingSet, setPendingSet] = useState('')
+  const [showCreate, setShowCreate] = useState(false)
   const [position, setPosition] = useState(0)
   const [savedTasks, setSavedTasks] = useState<Record<string, Task>>({})
   const [dirty, setDirty] = useState(false)
@@ -47,8 +42,15 @@ export default function AnnotationView({
     ? savedTasks[`${setId}:${sourceTask.sentence_id}`] || sourceTask
     : undefined
   useEffect(() => {
+    if (pendingSet) {
+      if (sets.data?.some((item) => item.id === pendingSet)) {
+        setSetId(pendingSet)
+        setPendingSet('')
+      }
+      return
+    }
     if (sets.data?.length && !sets.data.some((item) => item.id === setId)) setSetId(sets.data[0].id)
-  }, [sets.data, setId])
+  }, [sets.data, setId, pendingSet])
   useEffect(() => {
     setPosition(0)
   }, [setId])
@@ -65,10 +67,32 @@ export default function AnnotationView({
           {sets.error || tasks.error}
         </div>
       )}
-      {!selected ? (
+      <div className="study-actions">
+        <span>Studies are separate from imported review datasets.</span>
+        <button
+          className="button secondary"
+          disabled={dirty || showCreate}
+          onClick={() => setShowCreate(true)}
+        >
+          <Plus size={16} />
+          New study
+        </button>
+      </div>
+      {showCreate && (
+        <CreateStudy
+          onClose={() => setShowCreate(false)}
+          onCreated={(study) => {
+            setPendingSet(study.id)
+            refresh((value) => value + 1)
+            setShowCreate(false)
+          }}
+        />
+      )}
+      {showCreate ? null : !selected ? (
         <section className="panel">
           <Empty title="No annotation tasks loaded">
-            Import a frozen task export with the annotation-import command in the project guide.
+            Create a study from an imported dataset, or open an existing frozen export with the
+            annotation-import command.
           </Empty>
         </section>
       ) : (
@@ -109,6 +133,18 @@ export default function AnnotationView({
               <Download size={16} />
               Export completed labels
             </a>
+          </div>
+          <div className="partition-progress">
+            {['train', 'validation', 'test'].map((split) => (
+              <div key={split}>
+                <span>{split}</span>
+                <strong>
+                  {selected.partitions[split]?.completed || 0} /{' '}
+                  {selected.partitions[split]?.total || 0}
+                </strong>
+                <small>sentences complete</small>
+              </div>
+            ))}
           </div>
           {task && (
             <SentenceEditor

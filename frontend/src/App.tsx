@@ -350,7 +350,7 @@ function App() {
           ) : view === 'annotation' ? (
             <AnnotationView onDirtyChange={setAnnotationDirty} />
           ) : view === 'evaluation' ? (
-            <EvaluationView />
+            <EvaluationView onModelsChanged={() => refresh((value) => value + 1)} />
           ) : !selected ? (
             <section className="panel">
               <Empty
