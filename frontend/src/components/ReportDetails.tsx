@@ -18,7 +18,11 @@ export default function ReportDetails({
     <section className="panel report-details" aria-label="Selected experiment details">
       <div className="panel-title">
         <div>
-          <h2>Validation detail</h2>
+          <h2>
+            {report.evaluation_reference?.validation?.independent === false
+              ? 'AI-assisted validation diagnostic'
+              : 'Validation detail'}
+          </h2>
           <p>
             {report.experiment} · {model === 'tfidf-v1' ? report.model_id : model}
           </p>
@@ -27,6 +31,14 @@ export default function ReportDetails({
           <X size={18} />
         </button>
       </div>
+      {report.evaluation_reference?.validation?.independent === false && (
+        <div className="alert info">
+          <span>
+            Reference labels include AI assistance. These scores measure agreement with that
+            reference and do not establish independent human-evaluated accuracy.
+          </span>
+        </div>
+      )}
       <div className="report-metrics">
         {[
           ['Tuple precision', metrics.tuple_micro.precision],
@@ -87,14 +99,14 @@ export default function ReportDetails({
       </div>
       <h3 className="report-section-heading">State confusion matrix</h3>
       <p className="report-description">
-        Rows are human labels; columns are predictions. Includes absent states across all ten
+        Rows are reference labels; columns are predictions. Includes absent states across all ten
         categories. Cell shading is relative to its row.
       </p>
       <div className="comparison-scroll">
         <table className="confusion-table">
           <thead>
             <tr>
-              <th>Human ↓ / predicted →</th>
+              <th>Reference ↓ / predicted →</th>
               {labels.map((label) => (
                 <th key={label}>{label}</th>
               ))}

@@ -6,7 +6,7 @@ Research scope approved on 19 October 2026. The one-week plan assumes one implem
 | --- | --- | --- | --- |
 | 1 | Data and baseline foundation | Source files verified; repeatable audit/import; versioned taxonomy; annotation export; review-grouped splits; baseline and metric checks | Complete |
 | 2 | Local analysis workspace | Persisted datasets/jobs; single and batch analysis; linked filters; aspect charts; comparisons and exports; clean local restart | Complete; verification recorded below |
-| 3 | Supervised experiments | Independently checked labels; same split for TF-IDF and transformer; reproducible metrics; downloaded checkpoint runs locally | Local inference and annotation tooling complete; human evaluation pending |
+| 3 | Supervised experiments | Independently checked labels; same split for TF-IDF and transformer; reproducible metrics; downloaded checkpoint runs locally | Trained TF-IDF and AI-assisted diagnostics complete; independent human test pending |
 | 4 | Submission release | Final held-out results, startup guide, browser verification, known limitations, offline rehearsal | Guides, local checks and latency rehearsal complete; final accuracy results pending |
 
 Every working increment must identify which model it uses. A rule baseline is useful for integration and inspection; its outputs are not human annotations or measured transformer results.
@@ -58,3 +58,13 @@ New experiment reports retain every evaluated prediction in a hash-checked JSONL
 `make doctor` checks the built dashboard, SQLite integrity, migration checksums and installed model hashes without editing the workspace. It reports demo readiness separately from research-result readiness. A repeatable CPU measurement used 16 source reviews and 48 warm calls per model: median/p95 1.1/2.4 ms for rules and 64.3/214.1 ms for transferred DeBERTa. These are inference-only timings, not accuracy or capacity claims. Full method, limitations and machine-readable evidence are in [PERFORMANCE.md](PERFORMANCE.md).
 
 Verification for this increment: 66 backend tests, Ruff, frontend formatting, TypeScript and production build pass. Tests cover training-only assistance, human-label precedence, explicit opt-in, rejection of assisted holdouts, prediction/metric consistency, artifact tampering, read-only diagnostics and deterministic latency sampling. Research-result readiness remains false until actual independent holdout evaluation. The [rehearsal/final-evaluation guide](SUBMISSION.md) lists the remaining research steps.
+
+## User-requested AI validation review — 19 October 2026
+
+The user asked the assistant to complete validation annotation. The remaining 34 sentences were read directly against the frozen guide, and decisions were frozen before model outputs were consulted. The existing human validation annotation and other human edits were preserved. Validation now has 35 completed sentences: 1 human and 34 AI-assisted. All 69 test sentence records were verified unchanged.
+
+Migration 004 records origins in workbench rows. Exports/history retain them, and editing an AI-assisted annotation cannot turn it into independent human gold. Assisted test annotation is rejected. Training/comparison against AI validation requires a separate explicit diagnostic option; reports and UI identify the reference as non-independent.
+
+TF-IDF was trained on 199 sentences: 1 human and 198 pseudo-labelled. The installed model is `tfidf-db3871146fbb`. A same-reference diagnostic comparison produced tuple micro-F1 0.267 for rules, 0.323 for transferred DeBERTa and 0.091 for TF-IDF. These low, provisional agreement scores are documented in [RESULTS.md](RESULTS.md); they are not independent smartphone accuracy. Test was not evaluated. No models or annotations were adjusted from these scores.
+
+Verification: 69 backend tests, Ruff, frontend formatting, TypeScript and build pass. New checks cover persistent origins, sticky assisted provenance, explicit diagnostic opt-in and rejection of assisted test labels even with both assistance options enabled. Independent test annotation/evaluation and improved model-quality evidence remain outstanding.

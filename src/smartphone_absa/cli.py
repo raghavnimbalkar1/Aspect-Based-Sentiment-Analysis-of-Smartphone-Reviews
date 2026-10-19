@@ -39,7 +39,7 @@ def main() -> None:
     task_import.add_argument("--name", default="Annotation pilot")
     task_import.add_argument("--database", type=Path, default=Path("data/workspace.sqlite3"))
     train = sub.add_parser(
-        "train-tfidf", help="Train with independent human validation and optional assisted training"
+        "train-tfidf", help="Train with recorded origins; assisted validation is diagnostic only"
     )
     train.add_argument("annotations", type=Path)
     train.add_argument("--manifest", type=Path, required=True)
@@ -47,17 +47,23 @@ def main() -> None:
     train.add_argument(
         "--assisted-training",
         type=Path,
-        help="Explicitly include generated training-only labels; evaluation stays human",
+        help="Explicitly include generated training-only labels",
     )
     train.add_argument(
         "--final-test", action="store_true", help="Explicitly evaluate the locked test set"
     )
-    evaluate = sub.add_parser("evaluate-models", help="Compare installed models on human labels")
+    evaluate = sub.add_parser("evaluate-models", help="Compare models on frozen reference labels")
     evaluate.add_argument("annotations", type=Path)
     evaluate.add_argument("--manifest", type=Path, required=True)
     evaluate.add_argument("--output", type=Path, required=True)
     evaluate.add_argument("--model", action="append", required=True)
     evaluate.add_argument("--final-test", action="store_true")
+    for command in (train, evaluate):
+        command.add_argument(
+            "--assisted-validation",
+            action="store_true",
+            help="Opt into AI-assisted validation diagnostics; test stays human",
+        )
     analyse = sub.add_parser("analyse", help="Analyse English text with the rule baseline")
     analyse.add_argument("text")
     analyse.add_argument("--model", default="rules-v1")
@@ -151,6 +157,7 @@ def main() -> None:
                 args.output,
                 args.final_test,
                 args.assisted_training,
+                args.assisted_validation,
             )
         elif args.command == "evaluate-models":
             result = evaluate_models(
@@ -160,6 +167,7 @@ def main() -> None:
                 args.model,
                 ModelRegistry(Path("artifacts")),
                 args.final_test,
+                args.assisted_validation,
             )
         elif args.command == "load":
             from smartphone_absa.jobs import run_job

@@ -44,7 +44,7 @@ On this M2 Air, the initial offline smoke check took about 16 seconds to import 
 
 ## Human evaluation and supervised training
 
-The pilot is training-only. Export completed labels from the annotation screen, keep the CSV and manifest together, and use a separate full task export to obtain validation/test labels. With no human validation labels, evaluation must fail rather than substitute predictions as gold.
+The pilot is training-only. Export completed labels with their manifest. The default evaluator requires human validation; assisted validation is accepted only with the explicit diagnostic option described below. Test always requires human labels. Predictions are never silently substituted as human gold.
 
 To compare installed models on the same frozen validation sentences:
 
@@ -66,10 +66,10 @@ Reports become visible on **Model evaluation**. Automated test fixtures exercise
 
 ## Run experiments from the dashboard
 
-The evaluation page can compare one to three installed models or train the fixed TF-IDF baseline. Select a full annotation study after all its validation sentences are complete. The pilot cannot estimate validation performance. Training requires human training labels or explicit selection of a prepared assisted training set. See [the training label protocol](ANNOTATION.md#assisted-training-for-the-solo-workflow). Validation and test never accept assisted labels.
+The evaluation page can compare one to three installed models or train the fixed TF-IDF baseline. Select a full study after all validation sentences are complete. Training requires human labels or explicit selection of a prepared assisted training set. AI-reviewed validation requires **Use AI-assisted validation (diagnostic only)** as a separate choice. CLI commands accept `--assisted-validation`. Every resulting report identifies the non-independent reference and counts its origins. Test never accepts assisted labels. See [the label protocol](ANNOTATION.md#ai-assisted-validation-review) and [current results](RESULTS.md).
 
 A submission stores a CSV/manifest snapshot under `artifacts/experiment-inputs/<run-id>` and records its hashes in SQLite. The single local worker verifies those files, executes the experiment and writes a new result directory. The report includes snapshot provenance. Active duplicate runs for the same study are rejected. Interrupted runs retain their inputs; start a new run rather than overwriting a result directory.
 
 Inspect a validation row to see tuple precision, recall and F1; presence F1; category-level gold/prediction support; and a five-state confusion matrix. Download the complete JSON report for its configuration and hashes. The interface never requests final test evaluation; the explicit CLI option remains the final-stage route.
 
-New runs also save `predictions.jsonl` with every evaluated category state: sentence/review identity, original text, partition, model, human label, prediction, reference type and error class. `prediction_artifact` records its hash, row count and per-model/split error counts. Wrong sentiment is a single reviewable error record while contributing both FP and FN to tuple metrics. On the report detail, filter missed aspects, extra aspects or wrong sentiments and download the complete file. Older reports without this artifact still render. Prediction files contain review text and belong in ignored local artifacts.
+New runs also save `predictions.jsonl` with every evaluated category state: sentence/review identity, original text, partition, model, reference label/origin, prediction, reference type and error class. `prediction_artifact` records its hash, row count and per-model/split error counts. Wrong sentiment is a single reviewable error record while contributing both FP and FN to tuple metrics. On the report detail, filter missed aspects, extra aspects or wrong sentiments and download the complete file. Older reports without this artifact still render. Prediction files contain review text and belong in ignored local artifacts.

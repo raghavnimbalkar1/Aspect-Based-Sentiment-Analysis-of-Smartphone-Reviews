@@ -90,7 +90,10 @@ export type TaskSet = {
   completed: number
   drafts: number
   pilot_train_only: boolean
-  partitions: Record<string, { total: number; completed: number }>
+  partitions: Record<
+    string,
+    { total: number; completed: number; completed_human: number; completed_assisted: number }
+  >
 }
 export type MetricScore = {
   precision: number
@@ -120,6 +123,10 @@ export type ExperimentReport = {
   manifest_sha256: string
   warnings?: string[]
   prediction_artifact?: { rows: number; sha256: string }
+  evaluation_reference?: Record<
+    string,
+    { kind: string; independent: boolean; human_only_sentences: number; assisted_sentences: number }
+  >
 }
 export type ExperimentRun = {
   id: string

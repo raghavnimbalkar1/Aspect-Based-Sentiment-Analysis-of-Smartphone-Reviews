@@ -33,6 +33,7 @@ class AnnotationEdit(BaseModel):
     revision: int = Field(ge=0)
     annotator: str = Field(min_length=1, max_length=100)
     status: Literal["draft", "adjudicated"] = "draft"
+    origin: Literal["human", "assisted"] = "human"
     labels: dict[str, LabelEdit]
     note: str = Field(default="", max_length=3000)
 
@@ -110,14 +111,21 @@ class AnnotationWorkbench:
             ).fetchall()
             partition_rows = db.execute(
                 "SELECT set_id,json_extract(task_json,'$.split') AS split,COUNT(*) AS total,"
-                "SUM(CASE WHEN status='adjudicated' THEN 1 ELSE 0 END) AS completed "
+                "SUM(CASE WHEN status='adjudicated' THEN 1 ELSE 0 END) AS completed,"
+                "SUM(CASE WHEN status='adjudicated' AND origin='human' THEN 1 ELSE 0 END) "
+                "AS completed_human,"
+                "SUM(CASE WHEN status='adjudicated' AND origin='assisted' THEN 1 ELSE 0 END) "
+                "AS completed_assisted "
                 "FROM annotation_tasks GROUP BY set_id,split"
             ).fetchall()
         result = []
         for row in rows:
             manifest = json.loads(row["manifest_json"])
             partitions = {
-                part["split"]: {"total": part["total"], "completed": part["completed"]}
+                part["split"]: {
+                    key: part[key]
+                    for key in ("total", "completed", "completed_human", "completed_assisted")
+                }
                 for part in partition_rows
                 if part["set_id"] == row["id"]
             }
@@ -186,10 +194,15 @@ class AnnotationWorkbench:
                 raise KeyError("Sentence task not found")
             if row["revision"] != edit.revision:
                 raise RevisionConflict("This sentence was edited elsewhere. Reload before saving.")
+            # A subsequent edit cannot erase exposure to AI labels by changing the annotator name.
+            origin = "assisted" if "assisted" in (row["origin"], edit.origin) else "human"
+            if origin == "assisted" and json.loads(row["task_json"])["split"] == "test":
+                raise ValueError("The locked test partition does not accept assisted annotations")
+            payload["origin"] = origin
             revision = edit.revision + 1
             db.execute(
                 "UPDATE annotation_tasks SET labels_json=?,annotator=?,note=?,status=?,"
-                "revision=?,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') "
+                "revision=?,origin=?,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') "
                 "WHERE set_id=? AND sentence_id=?",
                 (
                     json.dumps(payload["labels"]),
@@ -197,6 +210,7 @@ class AnnotationWorkbench:
                     edit.note,
                     edit.status,
                     revision,
+                    origin,
                     set_id,
                     sentence_id,
                 ),
@@ -269,7 +283,7 @@ class AnnotationWorkbench:
                         **task["labels"][category],
                         "annotator": task["annotator"],
                         "status": "adjudicated",
-                        "origin": "human",
+                        "origin": task["origin"],
                         "taxonomy_version": TAXONOMY_VERSION,
                         "note": task["note"],
                     }
@@ -278,6 +292,10 @@ class AnnotationWorkbench:
             "completed_sentences": len(tasks),
             "single_annotator_possible": True,
             "inter_annotator_agreement_measured": False,
+            "sentence_origins": {
+                origin: sum(task["origin"] == origin for task in tasks)
+                for origin in ("human", "assisted")
+            },
         }
         output = io.BytesIO()
         with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as bundle:

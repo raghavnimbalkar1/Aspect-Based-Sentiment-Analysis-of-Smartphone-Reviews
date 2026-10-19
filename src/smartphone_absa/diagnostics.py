@@ -102,7 +102,9 @@ def doctor(database: Path, frontend: Path, registry: ModelRegistry, verify_model
                     dict(row)
                     for row in db.execute(
                         "SELECT s.id,s.name,json_extract(t.task_json,'$.split') AS split,"
-                        "COUNT(*) AS total,SUM(t.status='adjudicated') AS completed "
+                    "COUNT(*) AS total,SUM(t.status='adjudicated') AS completed,"
+                    "SUM(t.status='adjudicated' AND t.origin='human') AS completed_human,"
+                    "SUM(t.status='adjudicated' AND t.origin='assisted') AS completed_assisted "
                         "FROM annotation_sets s JOIN annotation_tasks t ON t.set_id=s.id "
                         "GROUP BY s.id,split ORDER BY s.id,split"
                     )

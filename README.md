@@ -92,7 +92,7 @@ Choose **DeBERTa ABSA · transferred** in the model selector. The download conta
 3. **Predict aspect sentiment.** Run the chosen analyzer and combine its sentence-level results into one result per review/category.
 4. **Persist and inspect.** Save results in SQLite; use the same review selection for overview charts, the explorer and exports.
 5. **Create human labels.** Sample complete reviews, group duplicates before partitioning and freeze task identities in a manifest.
-6. **Evaluate reproducibly.** Compare models against completed human validation labels using an immutable input snapshot. Keep final test evaluation separate.
+6. **Evaluate reproducibly.** Use frozen human validation labels or explicitly selected AI-assisted diagnostics. Reference origins are recorded; final test evaluation stays separate and human-only.
 
 ```mermaid
 flowchart LR
@@ -103,7 +103,7 @@ flowchart LR
     Queue --> Models[Rules / DeBERTa / TF-IDF]
     Models --> DB
     Queue --> Studies[Frozen annotation studies]
-    Studies --> Human[Human labels]
+    Studies --> Human[Human / AI-assisted labels]
     Human --> Experiments[Training and validation]
     Experiments --> Reports[Versioned models and JSON reports]
     Reports --> API
@@ -148,16 +148,16 @@ Screenshots below are captured from the running local application. Corpus views 
 </details>
 
 <details>
-<summary><strong>Blind sentence annotation</strong></summary>
+<summary><strong>Sentence annotation and provenance</strong></summary>
 
-![Annotation study showing frozen partitions, blank category states and draft/completion controls](docs/screenshots/annotation.jpg)
+![Completed validation partition showing human and AI-assisted origins alongside the sentence labels](docs/screenshots/annotation.jpg)
 
 </details>
 
 <details>
 <summary><strong>Validation experiment workspace</strong></summary>
 
-![Model availability and validation controls correctly waiting for completed human labels](docs/screenshots/evaluation.jpg)
+![Local model comparison explicitly identified as an AI-assisted validation diagnostic](docs/screenshots/evaluation.jpg)
 
 </details>
 
@@ -167,7 +167,7 @@ Screenshots below are captured from the running local application. Corpus views 
 | --- | --- | --- |
 | **Rules + VADER** | Explicit feature cues, clause-local sentiment and documented domain heuristics. | Default baseline; all 4,346 corpus reviews processed. |
 | **Transferred DeBERTa ABSA** | Explicit smartphone candidates paired with a pretrained three-state sentiment classifier. Opposing predictions are aggregated as mixed. | Local CPU inference verified; smartphone fine-tuning and independent benchmark results remain pending. |
-| **TF-IDF + logistic classifiers** | Training-only word uni/bigrams and one five-state classifier per category. Single-class categories use a disclosed constant classifier. | Supports human or explicitly selected assisted training; independent human validation remains required. |
+| **TF-IDF + logistic classifiers** | Training-only word uni/bigrams and one five-state classifier per category. Single-class categories use a disclosed constant classifier. | Trained locally on 199 sentences: 1 human-labelled and 198 pseudo-labelled. Registered as `tfidf-db3871146fbb`; AI-assisted validation results are diagnostic. |
 
 The neural checkpoint is **[`yangheng/deberta-v3-base-absa-v1.1`](https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1)**, pinned to revision `10c9dff335a44073e1352360c3a7bc54dc58eb01`. Its published metadata declares MIT licensing. The downloader records file hashes, and inference uses local safetensors without executing repository-supplied Python code.
 
@@ -194,7 +194,7 @@ Checksums and aggregate preparation evidence are committed under [docs/data](doc
 
 1. Open **Annotation → New study** and choose an imported dataset. Use a training-only pilot to refine the annotation guide; use a full study for frozen train/validation/test partitions.
 2. Label all ten category states for each sentence, including absent. Ratings and model predictions are hidden. Save drafts or mark reviewed decisions complete; edits retain their revision history.
-3. Open **Model evaluation** after completing every validation sentence in the selected study. Choose installed-model comparison or TF-IDF training. Training accepts completed human training labels or an explicitly selected, separately prepared assisted training set.
+3. Open **Model evaluation** after completing every validation sentence. Choose model comparison or TF-IDF training. Training accepts human or separately prepared assisted labels. AI-assisted validation requires a separate explicit diagnostic-mode selection.
 4. Inspect tuple precision/recall/F1, presence F1, category support, the confusion matrix and individual errors. Download the JSON report and per-pair predictions to retain the evidence and source hashes.
 5. Select the final model using validation. Final test evaluation requires the explicit CLI option described in [MODELING.md](docs/MODELING.md#human-evaluation-and-supervised-training).
 
@@ -202,7 +202,7 @@ The primary metric is **exact category–sentiment tuple micro-F1**. Detecting t
 
 A dashboard run freezes completed labels at submission and verifies their hashes before execution. It never evaluates test. Duplicate groups stay in one partition. Single-annotator labels must be reported as such; edit history does not establish inter-annotator agreement.
 
-**Current research status:** a full study contains 199 training, 35 validation and 69 test sentences. A separate machine-generated training export covers the 199 training sentences; it does not fill the blind human tasks. Independent human annotation and measured smartphone accuracy remain pending. No project-trained TF-IDF model or smartphone fine-tuning result is claimed. Test fixtures are isolated and are not published as experiment results. See the [assisted training protocol](docs/ANNOTATION.md#assisted-training-for-the-solo-workflow).
+**Current research status:** validation is complete with **1 human and 34 AI-assisted sentences**. TF-IDF has been trained locally, and rules, TF-IDF and transferred DeBERTa have been compared in explicitly labelled diagnostic mode. The **69 test sentences remain unchanged and unevaluated**. Independent human test accuracy and smartphone transformer fine-tuning remain pending. See the [diagnostic results and limitations](docs/RESULTS.md) and [label protocol](docs/ANNOTATION.md#ai-assisted-validation-review).
 
 ## Technology and structure
 
@@ -273,5 +273,6 @@ CPU latency was measured on the M2 Air using 16 frozen source reviews and 48 war
 - [Demo rehearsal and final evaluation checklist](docs/SUBMISSION.md)
 - [CPU performance measurement](docs/PERFORMANCE.md)
 - [Review of alternative labelled datasets](docs/BENCHMARK_DATA_REVIEW.md)
+- [AI-assisted validation diagnostic and limitations](docs/RESULTS.md)
 
 Dataset and pretrained-model licensing are documented with their sources above. Third-party libraries retain their own licenses; their use does not assign a license to this repository's original code.

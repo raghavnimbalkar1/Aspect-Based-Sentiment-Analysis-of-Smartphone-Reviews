@@ -109,3 +109,30 @@ def test_api_is_blind_and_rejects_task_identity_edits(workbench):
             == "application/zip"
         )
         assert client.get("/api/annotations/missing/tasks").status_code == 404
+
+
+def test_assisted_origin_survives_edit_history_and_export(workbench, tmp_path):
+    bench, set_id = workbench
+    task = bench.tasks(set_id)[0]
+    assisted = completed().model_copy(update={"origin": "assisted", "annotator": "AI fixture"})
+    saved = bench.save(set_id, task["sentence_id"], assisted)
+    assert saved["origin"] == "assisted"
+    # Changing the displayed annotator cannot turn AI-exposed labels into independent human gold.
+    saved = bench.save(set_id, task["sentence_id"], completed(revision=1))
+    assert saved["origin"] == "assisted"
+    assert all(
+        row["edit"]["origin"] == "assisted" for row in bench.history(set_id, task["sentence_id"])
+    )
+    assert bench.sets()[0]["partitions"]["train"]["completed_assisted"] == 1
+    assert bench.sets()[0]["partitions"]["train"]["completed_human"] == 0
+    with zipfile.ZipFile(io.BytesIO(bench.export(set_id))) as archive:
+        archive.extractall(tmp_path / "export")
+    labels, manifest = (
+        tmp_path / "export/annotations.csv",
+        tmp_path / "export/annotations.manifest.json",
+    )
+    with pytest.raises(ValueError, match="Independent human"):
+        read_annotations(labels, manifest)
+    assert {
+        row["origin"] for row in read_annotations(labels, manifest, allow_assisted_train=True)
+    } == {"assisted"}

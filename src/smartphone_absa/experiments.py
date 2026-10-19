@@ -1,4 +1,4 @@
-"""Train B2 with declared label origins; keep evaluation human and test explicit."""
+"""Train B2 with declared origins; AI validation is opt-in and test stays human."""
 
 from __future__ import annotations
 
@@ -21,14 +21,40 @@ from smartphone_absa.predictions import prediction_records, save_predictions
 from smartphone_absa.taxonomy import CATEGORY_IDS, TAXONOMY_VERSION
 
 
+def evaluation_reference(rows: list[dict], splits: list[str]) -> dict:
+    result = {}
+    for split in splits:
+        subset = [row for row in rows if row["split"] == split]
+        sentences = {row["sentence_id"] for row in subset}
+        assisted = {row["sentence_id"] for row in subset if row["origin"] != "human"}
+        result[split] = {
+            "kind": "ai_assisted_diagnostic" if assisted else "independent_human",
+            "independent": not assisted,
+            "sentences": len(sentences),
+            "human_only_sentences": len(sentences - assisted),
+            "assisted_sentences": len(assisted),
+            "label_rows_by_origin": dict(Counter(row["origin"] for row in subset)),
+        }
+    return result
+
+
+AI_VALIDATION_WARNING = (
+    "AI-assisted validation diagnostic: scores measure agreement with AI-assisted reference "
+    "labels and do not establish independent human-evaluated accuracy."
+)
+
+
 def train_tfidf(
     annotations: Path,
     manifest: Path,
     output: Path,
     final_test: bool = False,
     assisted_training: Path | None = None,
+    allow_assisted_validation: bool = False,
 ) -> dict:
-    rows = read_annotations(annotations, manifest)
+    rows = read_annotations(
+        annotations, manifest, allow_assisted_validation=allow_assisted_validation
+    )
     assisted_sha256 = None
     if assisted_training:
         assisted = read_annotations(assisted_training, manifest, allow_assisted_train=True)
@@ -56,9 +82,12 @@ def train_tfidf(
     origins = dict(Counter(row["origin"] for row in train))
     if origins.get("assisted"):
         warnings.append(
-            "Training includes machine-generated pseudo labels. Validation/test use independent "
-            "human labels. Teacher errors and explicit-cue gaps can be inherited."
+            "Training includes machine-generated pseudo labels. "
+            "Teacher errors and explicit-cue gaps can be inherited."
         )
+    reference = evaluation_reference(rows, ["validation", "test"] if final_test else ["validation"])
+    if not reference["validation"]["independent"]:
+        warnings.append(AI_VALIDATION_WARNING)
     for category in CATEGORY_IDS:
         subset = [row for row in train if row["category"] == category]
         labels = [row["label"] for row in subset]
@@ -101,6 +130,7 @@ def train_tfidf(
         "training_pairs": len(train),
         "training_label_origins": origins,
         "assisted_training_sha256": assisted_sha256,
+        "evaluation_reference": reference,
         "config": {"ngrams": [1, 2], "C": 1.0, "seed": 42, "class_weight": "balanced"},
         "validation": score(validation),
         "test_evaluated": final_test,
@@ -127,6 +157,7 @@ def train_tfidf(
                 "annotations_sha256": report["annotations_sha256"],
                 "training_label_origins": origins,
                 "assisted_training_sha256": assisted_sha256,
+                "validation_reference_kind": reference["validation"]["kind"],
                 "description": "TF-IDF and per-category classifiers trained on local "
                 + (
                     "human and/or machine-assisted labels."
@@ -149,9 +180,12 @@ def evaluate_models(
     model_ids: list[str],
     registry: ModelRegistry,
     final_test: bool = False,
+    allow_assisted_validation: bool = False,
 ) -> dict:
-    """Measure installed models against the same independent, frozen sentence labels."""
-    rows = read_annotations(annotations, manifest)
+    """Compare installed models against frozen labels with their origins recorded."""
+    rows = read_annotations(
+        annotations, manifest, allow_assisted_validation=allow_assisted_validation
+    )
     partitions = ["validation", "test"] if final_test else ["validation"]
     if output.exists():
         raise ValueError("Experiment output already exists; use a new directory")
@@ -159,7 +193,7 @@ def evaluate_models(
         raise ValueError("Choose different installed model IDs")
     for split in partitions:
         if not any(row["split"] == split for row in rows):
-            raise ValueError(f"No independent human {split} labels; pilot is train-only")
+            raise ValueError(f"No {split} reference labels; pilot is train-only")
     report = {
         "model_id": "comparison",
         "taxonomy_version": TAXONOMY_VERSION,
@@ -171,7 +205,10 @@ def evaluate_models(
             {k: v for k, v in registry.describe(mid).items() if k != "path"} for mid in model_ids
         ],
         "timing": {},
+        "evaluation_reference": evaluation_reference(rows, partitions),
     }
+    if not report["evaluation_reference"]["validation"]["independent"]:
+        report["warnings"] = [AI_VALIDATION_WARNING]
     started = time.perf_counter()
     records = []
     analyzers = {mid: registry.get(mid) for mid in model_ids}
