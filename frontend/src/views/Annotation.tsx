@@ -11,6 +11,7 @@ type Task = {
   sentence_id: string
   text: string
   position: number
+  split: string
   revision: number
   status: string
   annotator: string
@@ -29,6 +30,8 @@ export default function AnnotationView({
   const [pendingSet, setPendingSet] = useState('')
   const [showCreate, setShowCreate] = useState(false)
   const [position, setPosition] = useState(0)
+  const [split, setSplit] = useState('all')
+  const [status, setStatus] = useState('all')
   const [savedTasks, setSavedTasks] = useState<Record<string, Task>>({})
   const [dirty, setDirty] = useState(false)
   function reportDirty(value: boolean) {
@@ -37,10 +40,16 @@ export default function AnnotationView({
   }
   const tasks = useRemote<Task[]>(setId ? `/api/annotations/${setId}/tasks` : null)
   const selected = sets.data?.find((item) => item.id === setId)
-  const sourceTask = tasks.data?.[position]
-  const task = sourceTask
-    ? savedTasks[`${setId}:${sourceTask.sentence_id}`] || sourceTask
-    : undefined
+  const visibleTasks = (tasks.data || [])
+    .map((item) => savedTasks[`${setId}:${item.sentence_id}`] || item)
+    .filter((item) => split === 'all' || item.split === split)
+    .filter(
+      (item) =>
+        status === 'all' ||
+        (status === 'pending' ? item.status !== 'adjudicated' : item.status === 'adjudicated'),
+    )
+  const visiblePosition = Math.min(position, Math.max(0, visibleTasks.length - 1))
+  const task = visibleTasks[visiblePosition]
   useEffect(() => {
     if (pendingSet) {
       if (sets.data?.some((item) => item.id === pendingSet)) {
@@ -53,6 +62,8 @@ export default function AnnotationView({
   }, [sets.data, setId, pendingSet])
   useEffect(() => {
     setPosition(0)
+    setSplit('all')
+    setStatus('all')
   }, [setId])
   return (
     <>
@@ -146,6 +157,42 @@ export default function AnnotationView({
               </div>
             ))}
           </div>
+          <div className="annotation-filters">
+            <label>
+              Partition
+              <select
+                aria-label="Annotation partition"
+                disabled={dirty}
+                value={split}
+                onChange={(event) => {
+                  setSplit(event.target.value)
+                  setPosition(0)
+                }}
+              >
+                <option value="all">All partitions</option>
+                <option value="train">Train</option>
+                <option value="validation">Validation</option>
+                <option value="test">Test</option>
+              </select>
+            </label>
+            <label>
+              Task status
+              <select
+                aria-label="Annotation task status"
+                disabled={dirty}
+                value={status}
+                onChange={(event) => {
+                  setStatus(event.target.value)
+                  setPosition(0)
+                }}
+              >
+                <option value="all">All tasks</option>
+                <option value="pending">Still to complete</option>
+                <option value="adjudicated">Completed</option>
+              </select>
+            </label>
+            <span>{visibleTasks.length} matching sentences</span>
+          </div>
           {task && (
             <SentenceEditor
               key={`${setId}-${task.sentence_id}-${task.revision}`}
@@ -153,6 +200,8 @@ export default function AnnotationView({
               task={task}
               setId={setId}
               total={selected.total}
+              visiblePosition={visiblePosition}
+              visibleTotal={visibleTasks.length}
               onSaved={(updated) => {
                 setSavedTasks((current) => ({
                   ...current,
@@ -162,6 +211,11 @@ export default function AnnotationView({
               }}
               onMove={(next) => setPosition(next)}
             />
+          )}
+          {!task && !tasks.loading && (
+            <section className="panel">
+              <Empty title="No matching sentences">Choose another partition or task status.</Empty>
+            </section>
           )}
         </>
       )}
@@ -173,6 +227,8 @@ function SentenceEditor({
   task,
   setId,
   total,
+  visiblePosition,
+  visibleTotal,
   onSaved,
   onMove,
   onDirtyChange,
@@ -180,6 +236,8 @@ function SentenceEditor({
   task: Task
   setId: string
   total: number
+  visiblePosition: number
+  visibleTotal: number
   onSaved: (task: Task) => void
   onMove: (position: number) => void
   onDirtyChange: (dirty: boolean) => void
@@ -258,21 +316,22 @@ function SentenceEditor({
               : task.revision
                 ? 'Draft saved'
                 : 'Awaiting your labels'}{' '}
-            · revision {task.revision}
+            · {task.split} · revision {task.revision} · {visiblePosition + 1} of {visibleTotal} in
+            this view
           </p>
         </div>
         <div className="annotation-navigation">
           <button
             aria-label="Previous sentence"
-            disabled={!task.position || dirty || busy}
-            onClick={() => onMove(task.position - 1)}
+            disabled={!visiblePosition || dirty || busy}
+            onClick={() => onMove(visiblePosition - 1)}
           >
             <ChevronLeft size={18} />
           </button>
           <button
             aria-label="Next sentence"
-            disabled={task.position + 1 >= total || dirty || busy}
-            onClick={() => onMove(task.position + 1)}
+            disabled={visiblePosition + 1 >= visibleTotal || dirty || busy}
+            onClick={() => onMove(visiblePosition + 1)}
           >
             <ChevronRight size={18} />
           </button>
