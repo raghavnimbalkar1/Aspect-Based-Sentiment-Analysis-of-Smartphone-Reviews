@@ -1,0 +1,19 @@
+{
+  "source": "grikomsn/amazon-cell-phones-reviews",
+  "version": "2",
+  "selection_policy": "An explicit selection of smartphone listings checked against source titles. Keep listing condition visible. Listings are not grouped across renewed/new condition or unidentified variants.",
+  "products": [
+    {"asin":"B07FZH9BGV","model":"Samsung Galaxy Note 9","brand":"Samsung","condition":"new"},
+    {"asin":"B06Y16RL4W","model":"Samsung Galaxy S8+","brand":"Samsung","condition":"new"},
+    {"asin":"B07QQYHSR5","model":"Samsung Galaxy A50","brand":"Samsung","condition":"new"},
+    {"asin":"B01LY3OB8D","model":"Google Pixel XL","brand":"Google","condition":"new"},
+    {"asin":"B07WSJYDXX","model":"Motorola Moto G6","brand":"Motorola","condition":"new"},
+    {"asin":"B07C6FCC8G","model":"Huawei Mate 10 Pro","brand":"HUAWEI","condition":"new"},
+    {"asin":"B07HD3QC65","model":"Nokia 7.1","brand":"Nokia","condition":"new"},
+    {"asin":"B07PY52GVP","model":"Xiaomi Redmi Note 7","brand":"Xiaomi","condition":"new"},
+    {"asin":"B01FJT7E3M","model":"Sony Xperia XA Ultra","brand":"Sony","condition":"new"},
+    {"asin":"B0775451TT","model":"Apple iPhone X · Renewed","brand":"Apple","condition":"renewed"},
+    {"asin":"B0731HBTZ7","model":"Apple iPhone 7 · Renewed","brand":"Apple","condition":"renewed"},
+    {"asin":"B07K76LBLZ","model":"OnePlus 6T","brand":"OnePlus","condition":"new"}
+  ]
+}

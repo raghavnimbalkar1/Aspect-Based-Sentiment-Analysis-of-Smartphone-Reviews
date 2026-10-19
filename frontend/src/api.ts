@@ -1,0 +1,150 @@
+export type Sentiment = 'positive' | 'negative' | 'neutral' | 'mixed'
+export type Dataset = {
+  id: string
+  name: string
+  source: string
+  accepted: number
+  rejected: number
+  analysed: number
+}
+export type Product = {
+  id: string
+  name: string
+  brand: string
+  condition: string
+  reviews: number
+}
+export type Evidence = {
+  text: string
+  start: number
+  end: number
+  sentiment: Sentiment
+  score: number | null
+}
+export type Aspect = { category: string; sentiment: Sentiment; evidence: Evidence[] }
+export type Analysis = {
+  model_id: string
+  aspects: Aspect[]
+  warnings: string[]
+  language: string
+  supported: boolean
+}
+export type AspectStats = {
+  category: string
+  name: string
+  positive: number
+  negative: number
+  neutral: number
+  mixed: number
+  mentions: number
+  net_sentiment: number | null
+  mention_rate: number
+  limited_evidence: boolean
+}
+export type Overview = {
+  reviews: number
+  analysed: number
+  supported: number
+  pending: number
+  unsupported: number
+  products: number
+  date_from: string | null
+  date_to: string | null
+  aspects: AspectStats[]
+  sentiment_totals: Record<Sentiment, number>
+  languages: { language: string; count: number }[]
+}
+export type Review = {
+  id: string
+  text: string
+  title: string
+  product_name: string
+  brand: string
+  date: string | null
+  rating: number | null
+  language: string
+  analysis: Analysis | null
+}
+export type ReviewPage = { total: number; page: number; page_size: number; items: Review[] }
+export type Job = {
+  id: string
+  status: string
+  total: number
+  processed: number
+  failed: number
+  error: string | null
+}
+export type ModelSpec = {
+  id: string
+  name: string
+  kind?: string
+  available: boolean
+  description: string
+  device?: string
+  setup?: string
+}
+export type Evaluation = {
+  active_model: string
+  models: (ModelSpec & { status: string })[]
+  reports: {
+    experiment: string
+    model_id: string
+    training_sentences: number
+    validation: Record<string, { tuple_micro: { f1: number }; presence_micro: { f1: number } }>
+    test_evaluated: boolean
+    elapsed_seconds: number
+  }[]
+}
+export type FilterValues = { product: string; category: string; sentiment: string; q: string }
+export const emptyFilters: FilterValues = { product: '', category: '', sentiment: '', q: '' }
+export const names: Record<string, string> = {
+  battery: 'Battery',
+  charging: 'Charging',
+  camera: 'Camera',
+  display: 'Display',
+  performance: 'Performance & thermals',
+  software: 'Software',
+  build: 'Build & design',
+  audio: 'Audio',
+  connectivity: 'Connectivity',
+  value: 'Value',
+}
+export const states: Sentiment[] = ['positive', 'negative', 'neutral', 'mixed']
+export const colors: Record<Sentiment, string> = {
+  positive: '#4f8d76',
+  negative: '#cf8576',
+  neutral: '#c4cbd2',
+  mixed: '#c2a569',
+}
+
+export async function request<T>(url: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(url, init)
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}))
+    const detail = payload.detail
+    throw new Error(
+      typeof detail === 'string'
+        ? detail
+        : Array.isArray(detail)
+          ? detail.map((item: { msg: string }) => item.msg).join('; ')
+          : `Request failed (${response.status})`,
+    )
+  }
+  return response.json()
+}
+
+export function query(filters: FilterValues, model = 'rules-v1'): string {
+  return new URLSearchParams([
+    ...Object.entries(filters).filter(([, value]) => value !== ''),
+    ['model', model],
+  ]).toString()
+}
+
+export function number(value: number): string {
+  return new Intl.NumberFormat('en-IN').format(value)
+}
+export function dateRange(from: string | null, to: string | null): string {
+  const format = (value: string) =>
+    new Date(`${value}T12:00:00`).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
+  return from && to ? `${format(from)} – ${format(to)}` : 'Date coverage unavailable'
+}

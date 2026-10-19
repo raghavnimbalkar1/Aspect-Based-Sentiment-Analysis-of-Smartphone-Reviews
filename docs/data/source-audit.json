@@ -1,0 +1,49 @@
+{
+  "source": "grikomsn/amazon-cell-phones-reviews@2",
+  "verified_checksums": true,
+  "files": {
+    "20191226-items.csv": {
+      "sha256": "043c1d6d5126cc294991ce6e0cb855699af912d571b786af8f967ce251aded45",
+      "bytes": 230925,
+      "rows": 720,
+      "columns": [
+        "asin",
+        "brand",
+        "title",
+        "url",
+        "image",
+        "rating",
+        "reviewUrl",
+        "totalReviews",
+        "price",
+        "originalPrice"
+      ]
+    },
+    "20191226-reviews.csv": {
+      "sha256": "ad03353b68bea3a1ba7f1ab1efd10bb212baa7c045dd7e548e53e8132ca97ba3",
+      "bytes": 25394513,
+      "rows": 67986,
+      "columns": [
+        "asin",
+        "name",
+        "rating",
+        "date",
+        "verified",
+        "title",
+        "body",
+        "helpfulVotes"
+      ]
+    }
+  },
+  "review_rows_with_missing_product": 0,
+  "empty_review_rows": 12,
+  "duplicate_product_text_rows": 1095,
+  "date_from": "2003-11-24",
+  "date_to": "2019-12-25",
+  "products_with_reviews": 720,
+  "limitations": [
+    "Raw data includes feature phones and renewed listings.",
+    "Star ratings are not aspect labels.",
+    "Duplicate detection here is exact after case/whitespace normalisation."
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "source": "grikomsn/amazon-cell-phones-reviews@2",
+  "prepared_on": "2026-10-19",
+  "selection_sha256": "604ae5803624fd726693688252be46f4d3697d7c9029e8ab7e58d2217e2aee27",
+  "output_sha256": "db699d77f7213e52cae29649319c107330fee1cca1df930cd438ccc3cb60011b",
+  "accepted": 4346,
+  "rejected": {
+    "listing_outside_selection": 61982,
+    "non_english": 281,
+    "duplicate_product_text": 83,
+    "per_product_cap": 1294
+  },
+  "per_product_limit": 400,
+  "language_policy": "English accepted; short/undetermined text retained as unknown.",
+  "duplicate_policy": "One normalised body per listing; global text hash retained for splits.",
+  "language_counts": {
+    "en": 3819,
+    "unknown": 527
+  },
+  "products": [
+    {
+      "asin": "B07FZH9BGV",
+      "model": "Samsung Galaxy Note 9",
+      "brand": "Samsung",
+      "condition": "new",
+      "accepted": 400
+    },
+    {
+      "asin": "B06Y16RL4W",
+      "model": "Samsung Galaxy S8+",
+      "brand": "Samsung",
+      "condition": "new",
+      "accepted": 400
+    },
+    {
+      "asin": "B07QQYHSR5",
+      "model": "Samsung Galaxy A50",
+      "brand": "Samsung",
+      "condition": "new",
+      "accepted": 400
+    },
+    {
+      "asin": "B01LY3OB8D",
+      "model": "Google Pixel XL",
+      "brand": "Google",
+      "condition": "new",
+      "accepted": 400
+    },
+    {
+      "asin": "B07WSJYDXX",
+      "model": "Motorola Moto G6",
+      "brand": "Motorola",
+      "condition": "new",
+      "accepted": 400
+    },
+    {
+      "asin": "B07C6FCC8G",
+      "model": "Huawei Mate 10 Pro",
+      "brand": "HUAWEI",
+      "condition": "new",
+      "accepted": 400
+    },
+    {
+      "asin": "B07HD3QC65",
+      "model": "Nokia 7.1",
+      "brand": "Nokia",
+      "condition": "new",
+      "accepted": 400
+    },
+    {
+      "asin": "B07PY52GVP",
+      "model": "Xiaomi Redmi Note 7",
+      "brand": "Xiaomi",
+      "condition": "new",
+      "accepted": 400
+    },
+    {
+      "asin": "B01FJT7E3M",
+      "model": "Sony Xperia XA Ultra",
+      "brand": "Sony",
+      "condition": "new",
+      "accepted": 400
+    },
+    {
+      "asin": "B0775451TT",
+      "model": "Apple iPhone X \u00b7 Renewed",
+      "brand": "Apple",
+      "condition": "renewed",
+      "accepted": 330
+    },
+    {
+      "asin": "B0731HBTZ7",
+      "model": "Apple iPhone 7 \u00b7 Renewed",
+      "brand": "Apple",
+      "condition": "renewed",
+      "accepted": 339
+    },
+    {
+      "asin": "B07K76LBLZ",
+      "model": "OnePlus 6T",
+      "brand": "OnePlus",
+      "condition": "new",
+      "accepted": 77
+    }
+  ]
+}
