@@ -14,6 +14,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from smartphone_absa.annotations import export_tasks, read_annotations
+from smartphone_absa.assistance import available_assistance
 from smartphone_absa.data import file_hash
 from smartphone_absa.domain import Review
 from smartphone_absa.experiments import evaluate_models, train_tfidf
@@ -41,6 +42,7 @@ class ExperimentRequest(BaseModel):
     set_id: str = Field(min_length=1, max_length=64)
     kind: Literal["compare", "train_tfidf"]
     models: list[str] = Field(default_factory=list, max_length=3)
+    assisted_training: bool = False
 
 
 class ResearchService:
@@ -99,6 +101,9 @@ class ResearchService:
                 )
             ]
 
+    def assistance(self) -> list[dict]:
+        return available_assistance(self.workbench, self.artifacts)
+
     def start(self, body: ExperimentRequest) -> dict:
         study = next((item for item in self.workbench.sets() if item["id"] == body.set_id), None)
         if study is None:
@@ -113,6 +118,8 @@ class ResearchService:
                 "Complete all validation sentences in the frozen study before evaluation"
             )
         if body.kind == "compare":
+            if body.assisted_training:
+                raise ValueError("Training assistance is only applicable to TF-IDF training")
             if not body.models or len(body.models) != len(set(body.models)):
                 raise ValueError("Choose one to three different installed models")
             for model_id in body.models:
@@ -141,7 +148,28 @@ class ResearchService:
             raise ValueError(
                 "Complete human validation labels in a full study; the pilot is train-only"
             )
-        if body.kind == "train_tfidf" and not counts["train"]:
+        assistance = None
+        if body.assisted_training:
+            assistance = next(
+                (item for item in self.assistance() if item["set_id"] == body.set_id), None
+            )
+            if assistance is None:
+                raise ValueError("No verified assisted training export for this study")
+            source = self.artifacts / "training-assistance" / body.set_id
+            (inputs / "assisted-training.csv").write_bytes((source / "labels.csv").read_bytes())
+            (inputs / "assistance-provenance.json").write_bytes(
+                (source / "provenance.json").read_bytes()
+            )
+            if file_hash(inputs / "assisted-training.csv") != assistance["labels_sha256"]:
+                raise ValueError("Assisted training export changed during submission")
+            assisted = read_annotations(
+                inputs / "assisted-training.csv",
+                inputs / "annotations.manifest.json",
+                allow_assisted_train=True,
+            )
+            if any(row["split"] != "train" or row["origin"] != "assisted" for row in assisted):
+                raise ValueError("Assisted labels must be confined to training")
+        if body.kind == "train_tfidf" and not counts["train"] and assistance is None:
             raise ValueError("Complete human training labels before training TF-IDF")
         config = {
             "models": body.models,
@@ -150,6 +178,10 @@ class ResearchService:
             "manifest_sha256": file_hash(inputs / "annotations.manifest.json"),
             "test_evaluated": False,
             "experiment": f"{body.kind.replace('_', '-')}-{run_id[:12]}",
+            "assisted_training_sha256": assistance["labels_sha256"] if assistance else None,
+            "assistance_provenance_sha256": file_hash(inputs / "assistance-provenance.json")
+            if assistance
+            else None,
         }
         with self.store.connection() as db:
             db.execute("BEGIN IMMEDIATE")
@@ -194,7 +226,18 @@ class ResearchService:
                 raise ValueError("Experiment input snapshot changed; start a new run")
             output = self.artifacts / "experiments" / config["experiment"]
             if run["kind"] == "train_tfidf":
-                report = train_tfidf(annotations, manifest, output)
+                assisted_training = None
+                if config.get("assisted_training_sha256"):
+                    assisted_training = inputs / "assisted-training.csv"
+                    if (
+                        file_hash(assisted_training) != config["assisted_training_sha256"]
+                        or file_hash(inputs / "assistance-provenance.json")
+                        != config["assistance_provenance_sha256"]
+                    ):
+                        raise ValueError("Assisted input snapshot changed; start a new run")
+                report = train_tfidf(
+                    annotations, manifest, output, assisted_training=assisted_training
+                )
             else:
                 report = evaluate_models(
                     annotations, manifest, output, config["models"], self.registry

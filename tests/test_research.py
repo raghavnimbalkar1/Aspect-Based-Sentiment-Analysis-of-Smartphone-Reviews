@@ -2,16 +2,22 @@
 
 import csv
 import hashlib
+import io
 import json
 import threading
+import zipfile
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 from fastapi.testclient import TestClient
 
+from smartphone_absa.annotations import read_annotations
 from smartphone_absa.api import create_app
+from smartphone_absa.assistance import prepare_assistance
+from smartphone_absa.baseline import RuleBaseline
 from smartphone_absa.data import file_hash
 from smartphone_absa.domain import Review
+from smartphone_absa.models.checkpoints import TRANSFER_ID
 from smartphone_absa.models.registry import ModelRegistry
 from smartphone_absa.research import (
     ExperimentBusy,
@@ -197,6 +203,32 @@ def test_training_api_registers_artifact_and_serves_real_report(research, tmp_pa
         download = client.get(f"/api/experiments/reports/{report['experiment']}")
         assert download.status_code == 200 and download.json()["model_id"] == report["model_id"]
         assert client.get("/api/experiments/reports/unknown").status_code == 404
+        predictions = f"/api/experiments/reports/{report['experiment']}/predictions"
+        errors = client.get(predictions, params={"model": "always_absent"}).json()
+        assert errors["total"] == 2
+        assert {row["error_type"] for row in errors["items"]} == {"false_negative"}
+        assert {row["split"] for row in errors["items"]} == {"validation"}
+        assert (
+            client.get(predictions, params={"model": "rules-v1", "kind": "all", "limit": 1}).json()[
+                "total"
+            ]
+            == 20
+        )
+        assert (
+            client.get(predictions, params={"model": "rules-v1", "category": "invalid"}).status_code
+            == 422
+        )
+        assert (
+            client.get(predictions, params={"model": "rules-v1", "split": "test"}).json()["total"]
+            == 0
+        )
+        assert (
+            client.get(predictions, params={"model": "rules-v1", "offset": -1}).status_code == 422
+        )
+        assert client.get(predictions + "/download").status_code == 200
+        artifact = research.artifacts / "experiments" / report["experiment"] / "predictions.jsonl"
+        artifact.write_text(artifact.read_text() + "\n")
+        assert client.get(predictions, params={"model": "rules-v1"}).status_code == 409
 
 
 def test_restart_marks_unfinished_experiments_interrupted(research):
@@ -212,3 +244,89 @@ def test_restart_marks_unfinished_experiments_interrupted(research):
         run = client.get("/api/experiments").json()[0]
         assert run["status"] == "interrupted"
         assert "snapshots are preserved" in run["error"]
+
+
+def test_training_assistance_never_generates_holdouts_and_requires_explicit_selection(
+    research, tmp_path, monkeypatch
+):
+    set_id = study_fixture(research, tmp_path)
+    called = []
+    baseline = RuleBaseline()
+
+    class FakeTeacher:
+        id = TRANSFER_ID
+
+        def analyse(self, text, review_id, language=None):
+            called.append(review_id)
+            return baseline.analyse(text, review_id, language).model_copy(
+                update={"model_id": self.id}
+            )
+
+    monkeypatch.setattr(research.registry, "get", lambda model_id: FakeTeacher())
+    before = research.workbench.tasks(set_id)
+    provenance = prepare_assistance(research.workbench, set_id, research.registry, TRANSFER_ID)
+    assert called == ["t1", "t2"]
+    assert research.workbench.tasks(set_id) == before
+    assert provenance["training_sentences"] == 2
+    folder = research.artifacts / "training-assistance" / set_id
+    assisted = read_annotations(
+        folder / "labels.csv", folder / "manifest.json", allow_assisted_train=True
+    )
+    assert {row["split"] for row in assisted} == {"train"}
+    assert {row["status"] for row in assisted} == {"generated"}
+    assert {row["origin"] for row in assisted} == {"assisted"}
+    with pytest.raises(ValueError):
+        read_annotations(folder / "labels.csv", folder / "manifest.json")
+    assert research.assistance()[0]["labels_sha256"] == provenance["labels_sha256"]
+    # Human training labels can be absent; validation still must be independently complete.
+    with research.store.connection() as db:
+        db.execute("UPDATE annotation_tasks SET status='draft' WHERE sentence_id IN ('t1','t2')")
+    with pytest.raises(ValueError, match="human training"):
+        research.start(ExperimentRequest(set_id=set_id, kind="train_tfidf"))
+    run = research.start(
+        ExperimentRequest(set_id=set_id, kind="train_tfidf", assisted_training=True)
+    )
+    research.executor.submit(lambda: None).result(timeout=10)
+    assert research.runs()[0]["status"] == "completed"
+    report = json.loads(
+        (
+            research.artifacts / "experiments" / run["config"]["experiment"] / "metrics.json"
+        ).read_text()
+    )
+    assert report["training_label_origins"] == {"assisted": 20}
+    assert not report["test_evaluated"]
+    assert report["assisted_training_sha256"] == provenance["labels_sha256"]
+    # A completed human sentence overrides the matching pseudo-labelled sentence as a unit.
+    research.workbench.save(set_id, "t1", edit("camera", "negative", revision=1))
+    second = research.start(
+        ExperimentRequest(set_id=set_id, kind="train_tfidf", assisted_training=True)
+    )
+    research.executor.submit(lambda: None).result(timeout=10)
+    report = json.loads(
+        (
+            research.artifacts / "experiments" / second["config"]["experiment"] / "metrics.json"
+        ).read_text()
+    )
+    assert report["training_label_origins"] == {"human": 10, "assisted": 10}
+    (folder / "labels.csv").write_text("tampered")
+    assert research.assistance() == []
+
+
+def test_generated_labels_are_never_accepted_as_human_validation(research, tmp_path):
+    set_id = study_fixture(research, tmp_path)
+    bundle = research.workbench.export(set_id)
+    with zipfile.ZipFile(io.BytesIO(bundle)) as archive:
+        for name in archive.namelist():
+            (tmp_path / name).write_bytes(archive.read(name))
+    labels = tmp_path / "annotations.csv"
+    with labels.open(newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    for row in rows:
+        if row["split"] == "validation":
+            row.update(origin="assisted", status="generated")
+    with labels.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+    with pytest.raises(ValueError):
+        read_annotations(labels, tmp_path / "annotations.manifest.json", allow_assisted_train=True)

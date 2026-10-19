@@ -79,3 +79,28 @@ def test_tfidf_uses_training_vocabulary_and_keeps_test_locked(tmp_path):
     assert comparison["test_evaluated"] is False and "test" not in comparison
     assert comparison["validation"][report["model_id"]] == report["validation"]["tfidf-v1"]
     assert comparison["timing"]["validation:rules-v1"]["sentences"] == 1
+    records = [json.loads(line) for line in (output / "predictions.jsonl").read_text().splitlines()]
+    assert len(records) == report["prediction_artifact"]["rows"] == 30
+    assert {row["split"] for row in records} == {"validation"}
+    for model_id, metrics in report["validation"].items():
+        model_rows = [row for row in records if row["model_id"] == model_id]
+        assert (
+            sum(row["error_type"] == "false_negative" for row in model_rows)
+            <= metrics["tuple_micro"]["false_negative"]
+        )
+        assert sum(row["gold"] != row["predicted"] for row in model_rows) == sum(
+            count
+            for gold, values in metrics["confusion_matrix"].items()
+            for predicted, count in values.items()
+            if gold != predicted
+        )
+    tested = evaluate_models(
+        annotation_file, manifest_file, tmp_path / "final", ["rules-v1"], registry, final_test=True
+    )
+    final_rows = [
+        json.loads(line) for line in (tmp_path / "final/predictions.jsonl").read_text().splitlines()
+    ]
+    assert tested["test_evaluated"] and {row["split"] for row in final_rows} == {
+        "validation",
+        "test",
+    }

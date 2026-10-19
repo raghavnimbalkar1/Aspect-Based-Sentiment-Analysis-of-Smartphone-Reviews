@@ -119,6 +119,7 @@ export type ExperimentReport = {
   annotations_sha256: string
   manifest_sha256: string
   warnings?: string[]
+  prediction_artifact?: { rows: number; sha256: string }
 }
 export type ExperimentRun = {
   id: string

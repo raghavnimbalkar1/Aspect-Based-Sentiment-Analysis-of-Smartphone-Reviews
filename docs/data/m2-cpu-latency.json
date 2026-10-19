@@ -1,0 +1,264 @@
+{
+  "kind": "inference_latency",
+  "created_at": "2026-10-19T17:32:37.776733+00:00",
+  "taxonomy_version": "smartphone-v1",
+  "environment": {
+    "python": "3.12.13",
+    "system": "Darwin",
+    "release": "27.0.0",
+    "machine": "arm64",
+    "packages": {
+      "smartphone-absa": "0.1.0",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "torch": "2.14.1",
+      "transformers": "4.57.6"
+    }
+  },
+  "input_sha256": "db699d77f7213e52cae29649319c107330fee1cca1df930cd438ccc3cb60011b",
+  "selection_seed": 42,
+  "selection_policy": "English; 40\u20131200 characters; SHA-256 order of seed:review_id",
+  "samples": [
+    {
+      "id": "26cb634d1d5bfdaf711f7ff4",
+      "characters": 152,
+      "text_sha256": "26a55c02744abcaffc849675bde341e9ae63da38454ccb37f87a5099b7b19701"
+    },
+    {
+      "id": "4d6776b9107b869186a6fb56",
+      "characters": 174,
+      "text_sha256": "cb6aca62842358dbe375fb93740b9f37bc3e5d2de27e4a2b5ebdc0ff202bcce9"
+    },
+    {
+      "id": "143f936ca30a476be8adad2e",
+      "characters": 401,
+      "text_sha256": "db120609cd1ca31293700f17154d5f61326525e455fdc382896f22acfbe4b880"
+    },
+    {
+      "id": "13d90397557b80fdb3ca7534",
+      "characters": 572,
+      "text_sha256": "1b72cf5916cef0951bc8817107d73a10a716be360d29a9e6d3b4a111297f7357"
+    },
+    {
+      "id": "55acd651c1d6090ddb455c17",
+      "characters": 99,
+      "text_sha256": "60186363b1107e14a44be3c3b7ac3623c655909175c7d6656c8e9b79bb2ed03f"
+    },
+    {
+      "id": "f065369c46700569ad271f47",
+      "characters": 619,
+      "text_sha256": "c3d324c722ba3ad6e3cb6b8ffb8971f0d1828b0d8b189a4c84186fad251ddb14"
+    },
+    {
+      "id": "4ac3e7c1f516cabf6e011b85",
+      "characters": 136,
+      "text_sha256": "73fd123b788a46f925a5e7a00da9cac35cdde98e27dc60e98d83a3aee0cf3572"
+    },
+    {
+      "id": "b3ad89bf2894670051f165eb",
+      "characters": 312,
+      "text_sha256": "d09c2b7d9c4b5992174d6b7a1c0cda5b137c5f76bb0d552029d4b3f61180de6a"
+    },
+    {
+      "id": "98a57e6f3623f22cce11ee9f",
+      "characters": 364,
+      "text_sha256": "d9e7e3729f3dd02c920fed002608633d5ece210d0447f1c8f5f14e53dbb4156e"
+    },
+    {
+      "id": "635f41535ff37676d3d1dcc7",
+      "characters": 364,
+      "text_sha256": "b72252b2f335dc5124afc6ef96086b6dc7b9779ef9ac7722b0d6ddcba9cfcc95"
+    },
+    {
+      "id": "0d71d3e00f90d97809fda415",
+      "characters": 352,
+      "text_sha256": "e25021177fe9530a856a9dc16ac3aa0a06e05dee7962ec1b70f517ef8400f49d"
+    },
+    {
+      "id": "046e82f3d0e4ff2fb0b999a7",
+      "characters": 762,
+      "text_sha256": "f1f98cfeea1c9d4bcdb11c3856b55b7aa8ada2ddba32c754fe7d6dbe7f28494d"
+    },
+    {
+      "id": "b196d0c16090e4b55f8ad765",
+      "characters": 214,
+      "text_sha256": "2034b81efc6d4099be94bade8d3fdd25ca6799c395f42d13ec1cda10c05e6330"
+    },
+    {
+      "id": "70b8b1b2aa63c1ccef952910",
+      "characters": 230,
+      "text_sha256": "b004cefb8c7be229b0d98aac7ff2ed68abcf6dd945c2311630fad5fa48bce42b"
+    },
+    {
+      "id": "c9875eaf85738c616da1e9b3",
+      "characters": 514,
+      "text_sha256": "6dfd1adc9f684fc4c834bd169f10c71932ac531674c2e58314bae4202290a26a"
+    },
+    {
+      "id": "52cde82018e8c15686beb27b",
+      "characters": 645,
+      "text_sha256": "d4792899d5d5a08d4b92db877ded4e696f86b47c86a69854c2423bd1253695af"
+    }
+  ],
+  "repeats": 3,
+  "warmup_review_id": "143f936ca30a476be8adad2e",
+  "sample_reviews_with_explicit_cues": 12,
+  "models": {
+    "rules-v1": {
+      "spec": {
+        "id": "rules-v1",
+        "name": "Rules + VADER",
+        "kind": "rule_baseline",
+        "available": true,
+        "description": "Explicit aspect cues and clause-local sentiment rules.",
+        "device": "cpu"
+      },
+      "initialization_seconds": 4.124944098293781e-06,
+      "first_inference_ms": 6.542625022120774,
+      "warm": {
+        "requests": 48,
+        "p50_ms": 1.0550205479376018,
+        "p95_ms": 2.4385955301113422,
+        "min_ms": 0.2738339826464653,
+        "max_ms": 3.047458012588322,
+        "mean_ms": 1.1842542662634514,
+        "reviews_per_second": 844.4132552337693
+      },
+      "warm_request_ms": [
+        0.9711659513413906,
+        1.0787080973386765,
+        1.1439579539000988,
+        2.8071670094504952,
+        0.497042085044086,
+        2.2804170148447156,
+        0.44537498615682125,
+        1.3650829205289483,
+        1.581332995556295,
+        1.2897920096293092,
+        1.4255839632824063,
+        3.047458012588322,
+        2.0752500277012587,
+        1.17591698653996,
+        1.9500000635161996,
+        2.0275829592719674,
+        0.35516603384166956,
+        0.4069999558851123,
+        1.1074170470237732,
+        1.4809169806540012,
+        0.30141696333885193,
+        1.5468329656869173,
+        0.28525001835078,
+        0.7695419481024146,
+        0.9607919491827488,
+        0.9229170391336083,
+        0.8819591021165252,
+        2.323166001588106,
+        0.6269169971346855,
+        0.5761659704148769,
+        1.3243750436231494,
+        1.6217910451814532,
+        0.3767079906538129,
+        0.42758299969136715,
+        1.0313329985365272,
+        1.5460419235751033,
+        0.3244580002501607,
+        1.56045809853822,
+        0.2738339826464653,
+        0.7885830709710717,
+        1.025040983222425,
+        0.9817079408094287,
+        0.9174159495159984,
+        2.5007498916238546,
+        0.7052079308778048,
+        0.6492079701274633,
+        1.4237919822335243,
+        1.6586249694228172
+      ]
+    },
+    "deberta-absa-10c9dff3": {
+      "spec": {
+        "id": "deberta-absa-10c9dff3",
+        "name": "DeBERTa ABSA \u00b7 transferred",
+        "kind": "transferred_absa",
+        "available": true,
+        "description": "Explicit aspects with a local transformer sentiment model.",
+        "device": "cpu",
+        "smartphone_finetuned": false,
+        "checkpoint": "yangheng/deberta-v3-base-absa-v1.1",
+        "revision": "10c9dff335a44073e1352360c3a7bc54dc58eb01",
+        "adapter_version": 1,
+        "license": "MIT",
+        "setup": "make model-setup"
+      },
+      "initialization_seconds": 4.728216791991144,
+      "first_inference_ms": 2306.4304580911994,
+      "warm": {
+        "requests": 48,
+        "p50_ms": 64.29283355828375,
+        "p95_ms": 214.1199977893848,
+        "min_ms": 0.3427090123295784,
+        "max_ms": 273.7286249175668,
+        "mean_ms": 85.99343750393018,
+        "reviews_per_second": 11.628794347874473
+      },
+      "warm_request_ms": [
+        1.7414160538464785,
+        1.2351659825071692,
+        78.24945903848857,
+        71.68300007469952,
+        51.73704097978771,
+        49.15566695854068,
+        0.5745410453528166,
+        100.89795803651214,
+        208.9123330079019,
+        69.25258308183402,
+        140.73091698810458,
+        204.49420902878046,
+        110.76129099819809,
+        1.5452919760718942,
+        177.84137499984354,
+        148.61870894674212,
+        0.47820794861763716,
+        0.4690829664468765,
+        49.49695791583508,
+        59.333084034733474,
+        53.67704201489687,
+        48.34450001362711,
+        0.3762500127777457,
+        104.15625001769513,
+        161.69895802158862,
+        53.374583018012345,
+        58.994750026613474,
+        170.7333750091493,
+        107.2697500931099,
+        0.6694169715046883,
+        159.4771669479087,
+        130.76595799066126,
+        0.4563750699162483,
+        0.48225000500679016,
+        52.18462506309152,
+        57.693167007528245,
+        51.6699159052223,
+        46.626250026747584,
+        0.3427090123295784,
+        91.98724990710616,
+        185.71783299557865,
+        97.70887508057058,
+        78.76966707408428,
+        248.08041693177074,
+        273.7286249175668,
+        1.8191669369116426,
+        216.92412497941405,
+        146.74745907541364
+      ]
+    }
+  },
+  "limitations": [
+    "Latency only: no gold labels, accuracy or F1 measured.",
+    "Sequential CPU calls in one process; excludes HTTP, rendering and database I/O.",
+    "Initialization includes local integrity checks and lazy dependency/model loading.",
+    "First inference is measured separately and excluded from warm timings.",
+    "Warm repetitions reuse the same bounded sample; this is not a capacity/load test.",
+    "The first request uses a review with explicit cues to exercise neural inference. Warm sample timings also include reviews without explicit cues."
+  ]
+}

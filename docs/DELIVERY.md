@@ -7,7 +7,7 @@ Research scope approved on 19 October 2026. The one-week plan assumes one implem
 | 1 | Data and baseline foundation | Source files verified; repeatable audit/import; versioned taxonomy; annotation export; review-grouped splits; baseline and metric checks | Complete |
 | 2 | Local analysis workspace | Persisted datasets/jobs; single and batch analysis; linked filters; aspect charts; comparisons and exports; clean local restart | Complete; verification recorded below |
 | 3 | Supervised experiments | Independently checked labels; same split for TF-IDF and transformer; reproducible metrics; downloaded checkpoint runs locally | Local inference and annotation tooling complete; human evaluation pending |
-| 4 | Submission release | Final held-out results, startup guide, browser verification, known limitations, offline rehearsal | Planned |
+| 4 | Submission release | Final held-out results, startup guide, browser verification, known limitations, offline rehearsal | Guides, local checks and latency rehearsal complete; final accuracy results pending |
 
 Every working increment must identify which model it uses. A rule baseline is useful for integration and inspection; its outputs are not human annotations or measured transformer results.
 
@@ -46,3 +46,15 @@ All validation sentences must be complete before starting a dashboard experiment
 A full study targeting 300 sentences was created through the real application. It contains 303 sentences from complete reviews: 199 train, 35 validation and 69 test, all blank. The earlier 101-sentence training pilot remains blank. Human annotation and measured smartphone accuracy remain outstanding.
 
 The README now includes five direct app screenshots, installation and optional neural setup, operating instructions, data/model attribution, architecture, evaluation methodology, repository structure and current limitations. Browser checks verified study creation, rejection of incomplete validation, offline neural comparison and the full training → registration → report-inspection flow in a separate synthetic fixture workspace. Fixture scores and models are not research results.
+
+## Training assistance and release checks — 19 October 2026
+
+The user confirmed they can independently label the 35 validation and 69 test sentences. The annotation view now filters by partition and completion, including automatic removal of completed tasks from the pending view. Dirty edits still block navigation and filter changes.
+
+The pinned transferred model prepared 199 training sentences / 1,990 category states in a separate export. All rows retain `origin=assisted` and `status=generated`; no human task labels were saved by the implementation. Training requires explicit selection of this export, snapshots its CSV/provenance and discloses label origins. Completed human training sentences take precedence. Generated validation/test labels are rejected even when assisted training is enabled. The [aggregate provenance](data/training-assistance-summary.json) is committed; original text/labels remain ignored local data.
+
+New experiment reports retain every evaluated prediction in a hash-checked JSONL artifact. The dashboard filters missed aspects, extra aspects and sentiment errors against the corresponding human labels. Validation-only runs produce no test predictions. Browser verification used a separate synthetic fixture workspace; fixture scores are not research evidence.
+
+`make doctor` checks the built dashboard, SQLite integrity, migration checksums and installed model hashes without editing the workspace. It reports demo readiness separately from research-result readiness. A repeatable CPU measurement used 16 source reviews and 48 warm calls per model: median/p95 1.1/2.4 ms for rules and 64.3/214.1 ms for transferred DeBERTa. These are inference-only timings, not accuracy or capacity claims. Full method, limitations and machine-readable evidence are in [PERFORMANCE.md](PERFORMANCE.md).
+
+Verification for this increment: 66 backend tests, Ruff, frontend formatting, TypeScript and production build pass. Tests cover training-only assistance, human-label precedence, explicit opt-in, rejection of assisted holdouts, prediction/metric consistency, artifact tampering, read-only diagnostics and deterministic latency sampling. Research-result readiness remains false until actual independent holdout evaluation. The [rehearsal/final-evaluation guide](SUBMISSION.md) lists the remaining research steps.

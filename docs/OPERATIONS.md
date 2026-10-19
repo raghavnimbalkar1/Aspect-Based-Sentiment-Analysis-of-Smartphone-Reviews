@@ -45,3 +45,11 @@ The current tests and browser checks establish application behaviour and basic b
 Migration `003_experiment_runs.sql` adds durable experiment history and a constraint allowing one active experiment per study. Study preparation, review batch inference and experiment execution share the single heavy-work queue. Each experiment snapshots labels at submission and checks their hashes before execution. Startup marks unfinished experiment runs interrupted.
 
 `ABSA_ARTIFACTS` overrides the server's model/report/task directory. Pair it with `ABSA_DATABASE` when operating an isolated test workspace, so fixture reports and models cannot appear in the research workspace. The default is the repository's `artifacts` directory. CLI output paths remain explicit command arguments.
+
+## Before a demonstration
+
+After building the dashboard, run `make doctor`. It opens the existing database read-only, checks SQLite integrity/foreign keys/applied migration checksums, checks built entry assets and verifies installed model files. It reports datasets, saved predictions, active jobs, study completion and available experiment reports. It does not migrate, create an empty database, interrupt jobs, save labels or run inference. Exit status 1 means a technical readiness check failed. An optional model that is not installed remains a setup item rather than preventing the rule-based demo.
+
+`demo_ready` describes these local checks. `research_results_ready` remains false until an explicit human-test experiment report exists. Neither field certifies accuracy. Run checks after the build has finished, and avoid CPU benchmarks while batch jobs or other heavy work are running. See [the rehearsal guide](SUBMISSION.md).
+
+Assisted labels live separately under `artifacts/training-assistance`; they are never written into human annotation tables. Experiments record their hashes and label origins. Backups should preserve `data/workspace.sqlite3` **and** `artifacts` when labels, teacher provenance and trained models need to be retained together.

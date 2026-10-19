@@ -1,6 +1,7 @@
 import { Download, X } from 'lucide-react'
 import { names, number, states } from '../api'
 import type { ExperimentReport } from '../api'
+import ErrorReview from './ErrorReview'
 
 export default function ReportDetails({
   report,
@@ -125,6 +126,13 @@ export default function ReportDetails({
           </tbody>
         </table>
       </div>
+      {report.prediction_artifact && (
+        <ErrorReview
+          key={`${report.experiment}:${model}`}
+          experiment={report.experiment}
+          model={model}
+        />
+      )}
       <div className="report-provenance">
         <span>
           Label file SHA-256{' '}

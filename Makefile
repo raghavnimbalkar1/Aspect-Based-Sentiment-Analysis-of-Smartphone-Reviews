@@ -1,6 +1,6 @@
 export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 
-.PHONY: setup data seed build run check dev-api dev-ui pilot model-setup annotation-open
+.PHONY: setup data seed build run check dev-api dev-ui pilot model-setup annotation-open doctor
 
 setup:
 	uv sync --frozen --group dev
@@ -18,6 +18,9 @@ build:
 
 run:
 	.venv/bin/absa serve
+
+doctor:
+	.venv/bin/absa doctor --verify-models
 
 check:
 	.venv/bin/ruff check src tests scripts

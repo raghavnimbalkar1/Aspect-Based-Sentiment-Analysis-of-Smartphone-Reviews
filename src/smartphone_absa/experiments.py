@@ -1,9 +1,10 @@
-"""Train B2 on approved labels; leave the test partition untouched by default."""
+"""Train B2 with declared label origins; keep evaluation human and test explicit."""
 
 from __future__ import annotations
 
 import json
 import time
+from collections import Counter
 from pathlib import Path
 
 import joblib
@@ -16,11 +17,26 @@ from smartphone_absa.baseline import RuleBaseline
 from smartphone_absa.data import file_hash
 from smartphone_absa.metrics import evaluate
 from smartphone_absa.models.registry import ModelRegistry
+from smartphone_absa.predictions import prediction_records, save_predictions
 from smartphone_absa.taxonomy import CATEGORY_IDS, TAXONOMY_VERSION
 
 
-def train_tfidf(annotations: Path, manifest: Path, output: Path, final_test: bool = False) -> dict:
+def train_tfidf(
+    annotations: Path,
+    manifest: Path,
+    output: Path,
+    final_test: bool = False,
+    assisted_training: Path | None = None,
+) -> dict:
     rows = read_annotations(annotations, manifest)
+    assisted_sha256 = None
+    if assisted_training:
+        assisted = read_annotations(assisted_training, manifest, allow_assisted_train=True)
+        if any(row["split"] != "train" or row["origin"] != "assisted" for row in assisted):
+            raise ValueError("Assisted input must contain only machine-labelled training sentences")
+        human_train = {row["sentence_id"] for row in rows if row["split"] == "train"}
+        rows.extend(row for row in assisted if row["sentence_id"] not in human_train)
+        assisted_sha256 = file_hash(assisted_training)
     train = [row for row in rows if row["split"] == "train"]
     validation = [row for row in rows if row["split"] == "validation"]
     if not train or not validation:
@@ -37,6 +53,12 @@ def train_tfidf(annotations: Path, manifest: Path, output: Path, final_test: boo
     vectorizer.fit(list(texts.values()))
     models = {}
     warnings = []
+    origins = dict(Counter(row["origin"] for row in train))
+    if origins.get("assisted"):
+        warnings.append(
+            "Training includes machine-generated pseudo labels. Validation/test use independent "
+            "human labels. Teacher errors and explicit-cue gaps can be inherited."
+        )
     for category in CATEGORY_IDS:
         subset = [row for row in train if row["category"] == category]
         labels = [row["label"] for row in subset]
@@ -50,6 +72,7 @@ def train_tfidf(annotations: Path, manifest: Path, output: Path, final_test: boo
         model.fit(vectorizer.transform([row["text"] for row in subset]), labels)
         models[category] = model
     baseline = RuleBaseline()
+    records = []
 
     def score(partition: list[dict]) -> dict:
         if not partition:
@@ -64,11 +87,10 @@ def train_tfidf(annotations: Path, manifest: Path, output: Path, final_test: boo
         b2 = [
             models[row["category"]].predict(matrix[index])[0] for index, row in enumerate(partition)
         ]
-        return {
-            "always_absent": evaluate(partition, ["absent"] * len(partition)),
-            "rules-v1": evaluate(partition, b1),
-            "tfidf-v1": evaluate(partition, b2),
-        }
+        predictions = {"always_absent": ["absent"] * len(partition), "rules-v1": b1, "tfidf-v1": b2}
+        for model_id, labels in predictions.items():
+            records.extend(prediction_records(partition, labels, model_id))
+        return {model_id: evaluate(partition, labels) for model_id, labels in predictions.items()}
 
     report = {
         "model_id": "tfidf-v1",
@@ -77,6 +99,8 @@ def train_tfidf(annotations: Path, manifest: Path, output: Path, final_test: boo
         "manifest_sha256": file_hash(manifest),
         "training_sentences": len(texts),
         "training_pairs": len(train),
+        "training_label_origins": origins,
+        "assisted_training_sha256": assisted_sha256,
         "config": {"ngrams": [1, 2], "C": 1.0, "seed": 42, "class_weight": "balanced"},
         "validation": score(validation),
         "test_evaluated": final_test,
@@ -86,6 +110,7 @@ def train_tfidf(annotations: Path, manifest: Path, output: Path, final_test: boo
         report["test"] = score([row for row in rows if row["split"] == "test"])
     report["elapsed_seconds"] = time.perf_counter() - started
     output.mkdir(parents=True)
+    report["prediction_artifact"] = save_predictions(output, records)
     joblib.dump(
         {"vectorizer": vectorizer, "models": models, "taxonomy_version": TAXONOMY_VERSION},
         output / "model.joblib",
@@ -100,7 +125,14 @@ def train_tfidf(annotations: Path, manifest: Path, output: Path, final_test: boo
                 "taxonomy_version": TAXONOMY_VERSION,
                 "model_sha256": digest,
                 "annotations_sha256": report["annotations_sha256"],
-                "description": "TF-IDF and per-category classifiers trained on local labels.",
+                "training_label_origins": origins,
+                "assisted_training_sha256": assisted_sha256,
+                "description": "TF-IDF and per-category classifiers trained on local "
+                + (
+                    "human and/or machine-assisted labels."
+                    if origins.get("assisted")
+                    else "human labels."
+                ),
             },
             indent=2,
         )
@@ -141,11 +173,13 @@ def evaluate_models(
         "timing": {},
     }
     started = time.perf_counter()
+    records = []
     analyzers = {mid: registry.get(mid) for mid in model_ids}
     for split in partitions:
         subset = [row for row in rows if row["split"] == split]
         sentences = {row["sentence_id"]: row["text"] for row in subset}
         measured = {"always_absent": evaluate(subset, ["absent"] * len(subset))}
+        records.extend(prediction_records(subset, ["absent"] * len(subset), "always_absent"))
         for mid, analyzer in analyzers.items():
             inference_started = time.perf_counter()
             cache = {}
@@ -156,6 +190,7 @@ def evaluate_models(
                 cache[row["sentence_id"]].get(row["category"], "absent") for row in subset
             ]
             measured[mid] = evaluate(subset, predictions)
+            records.extend(prediction_records(subset, predictions, mid))
             report["timing"][f"{split}:{mid}"] = {
                 "sentences": len(sentences),
                 "inference_seconds": time.perf_counter() - inference_started,
@@ -163,5 +198,6 @@ def evaluate_models(
         report[split] = measured
     report["elapsed_seconds"] = time.perf_counter() - started
     output.mkdir(parents=True)
+    report["prediction_artifact"] = save_predictions(output, records)
     (output / "metrics.json").write_text(json.dumps(report, indent=2) + "\n")
     return report

@@ -39,11 +39,16 @@ def main() -> None:
     task_import.add_argument("--name", default="Annotation pilot")
     task_import.add_argument("--database", type=Path, default=Path("data/workspace.sqlite3"))
     train = sub.add_parser(
-        "train-tfidf", help="Train/evaluate only on adjudicated human annotations"
+        "train-tfidf", help="Train with independent human validation and optional assisted training"
     )
     train.add_argument("annotations", type=Path)
     train.add_argument("--manifest", type=Path, required=True)
     train.add_argument("--output", type=Path, required=True)
+    train.add_argument(
+        "--assisted-training",
+        type=Path,
+        help="Explicitly include generated training-only labels; evaluation stays human",
+    )
     train.add_argument(
         "--final-test", action="store_true", help="Explicitly evaluate the locked test set"
     )
@@ -63,10 +68,63 @@ def main() -> None:
     load.add_argument("--database", type=Path, default=Path("data/workspace.sqlite3"))
     load.add_argument("--model", default="rules-v1")
     load.add_argument("--analyse", action="store_true", help="Run the rule baseline after import")
+    doctor = sub.add_parser("doctor", help="Check local readiness without changing the workspace")
+    doctor.add_argument("--database", type=Path, default=Path("data/workspace.sqlite3"))
+    doctor.add_argument("--frontend", type=Path, default=Path("frontend/dist"))
+    doctor.add_argument("--artifacts", type=Path, default=Path("artifacts"))
+    doctor.add_argument("--verify-models", action="store_true")
+    benchmark = sub.add_parser(
+        "benchmark", help="Measure local inference latency; no accuracy claims"
+    )
+    benchmark.add_argument("input", type=Path)
+    benchmark.add_argument("--output", type=Path, required=True)
+    benchmark.add_argument("--model", action="append", required=True)
+    benchmark.add_argument("--samples", type=int, default=16)
+    benchmark.add_argument("--repeats", type=int, default=3)
+    benchmark.add_argument("--artifacts", type=Path, default=Path("artifacts"))
+    assist = sub.add_parser(
+        "assist-training", help="Prepare training-only pseudo labels with provenance"
+    )
+    assist.add_argument("--set-id", required=True)
+    assist.add_argument("--database", type=Path, default=Path("data/workspace.sqlite3"))
+    assist.add_argument("--artifacts", type=Path, default=Path("artifacts"))
+    assist.add_argument("--model", default=TRANSFER_ID)
     sub.add_parser("serve", help="Start the local API and built dashboard on port 8000")
     args = parser.parse_args()
     try:
-        if args.command == "download-model":
+        if args.command == "doctor":
+            from smartphone_absa.diagnostics import doctor
+
+            result = doctor(
+                args.database, args.frontend, ModelRegistry(args.artifacts), args.verify_models
+            )
+            print(json.dumps(result, indent=2))
+            if not result["demo_ready"]:
+                parser.exit(1)
+            return
+        elif args.command == "benchmark":
+            from smartphone_absa.diagnostics import benchmark
+
+            result = benchmark(
+                args.input,
+                args.output,
+                args.model,
+                ModelRegistry(args.artifacts),
+                args.samples,
+                args.repeats,
+            )
+        elif args.command == "assist-training":
+            from smartphone_absa.assistance import prepare_assistance
+            from smartphone_absa.store import Store
+            from smartphone_absa.workbench import AnnotationWorkbench
+
+            result = prepare_assistance(
+                AnnotationWorkbench(Store(args.database)),
+                args.set_id,
+                ModelRegistry(args.artifacts),
+                args.model,
+            )
+        elif args.command == "download-model":
             result = download_checkpoint(Path("artifacts/models") / TRANSFER_ID)
         elif args.command == "audit":
             result = audit_source(args.directory)
@@ -87,7 +145,13 @@ def main() -> None:
                 args.input, args.manifest, args.name
             )
         elif args.command == "train-tfidf":
-            result = train_tfidf(args.annotations, args.manifest, args.output, args.final_test)
+            result = train_tfidf(
+                args.annotations,
+                args.manifest,
+                args.output,
+                args.final_test,
+                args.assisted_training,
+            )
         elif args.command == "evaluate-models":
             result = evaluate_models(
                 args.annotations,
