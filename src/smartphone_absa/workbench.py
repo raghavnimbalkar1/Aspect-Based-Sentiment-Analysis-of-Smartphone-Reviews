@@ -108,13 +108,28 @@ class AnnotationWorkbench:
                 "FROM annotation_sets s JOIN annotation_tasks t ON t.set_id=s.id "
                 "GROUP BY s.id ORDER BY s.created_at DESC"
             ).fetchall()
-        return [
-            {
-                **{k: v for k, v in dict(row).items() if k != "manifest_json"},
-                "pilot_train_only": json.loads(row["manifest_json"])["pilot_train_only"],
+            partition_rows = db.execute(
+                "SELECT set_id,json_extract(task_json,'$.split') AS split,COUNT(*) AS total,"
+                "SUM(CASE WHEN status='adjudicated' THEN 1 ELSE 0 END) AS completed "
+                "FROM annotation_tasks GROUP BY set_id,split"
+            ).fetchall()
+        result = []
+        for row in rows:
+            manifest = json.loads(row["manifest_json"])
+            partitions = {
+                part["split"]: {"total": part["total"], "completed": part["completed"]}
+                for part in partition_rows
+                if part["set_id"] == row["id"]
             }
-            for row in rows
-        ]
+            result.append(
+                {
+                    **{k: v for k, v in dict(row).items() if k != "manifest_json"},
+                    "pilot_train_only": manifest["pilot_train_only"],
+                    "partitions": partitions,
+                    "dataset_id": manifest.get("source_dataset_id"),
+                }
+            )
+        return result
 
     @staticmethod
     def decode(row) -> dict:

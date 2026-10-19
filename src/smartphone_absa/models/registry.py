@@ -52,7 +52,7 @@ class ModelRegistry:
                 "description": "Explicit aspects with a local transformer sentiment model.",
                 "device": self.device,
                 "path": str(checkpoint),
-                "smartphone_evaluated": False,
+                "smartphone_finetuned": False,
                 "checkpoint": CHECKPOINT,
                 "revision": REVISION,
                 "adapter_version": 1,
