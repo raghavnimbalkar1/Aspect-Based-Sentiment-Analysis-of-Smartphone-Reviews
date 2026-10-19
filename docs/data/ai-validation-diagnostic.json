@@ -1,0 +1,712 @@
+{
+  "kind": "ai_assisted_validation_diagnostic",
+  "independent_human_evaluation": false,
+  "study_id": "702b9e3f899067ea52b7088c",
+  "evaluation_reference": {
+    "validation": {
+      "kind": "ai_assisted_diagnostic",
+      "independent": false,
+      "sentences": 35,
+      "human_only_sentences": 1,
+      "assisted_sentences": 34,
+      "label_rows_by_origin": {
+        "human": 10,
+        "assisted": 340
+      }
+    }
+  },
+  "training": {
+    "model_id": "tfidf-db3871146fbb",
+    "sentences": 199,
+    "label_rows_by_origin": {
+      "human": 10,
+      "assisted": 1980
+    },
+    "assisted_training_sha256": "2533dcf04f4b020a63089f63602d6121877cb2d6b91fa5d70d38fbe79fd047a3",
+    "warnings": [
+      "Training includes machine-generated pseudo labels. Teacher errors and explicit-cue gaps can be inherited.",
+      "AI-assisted validation diagnostic: scores measure agreement with AI-assisted reference labels and do not establish independent human-evaluated accuracy."
+    ]
+  },
+  "models": {
+    "always_absent": {
+      "tuple_micro": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 21
+      },
+      "presence_micro": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 21
+      },
+      "label_support": {
+        "absent": 329,
+        "positive": 11,
+        "neutral": 4,
+        "negative": 6
+      },
+      "per_category": {
+        "battery": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 2,
+          "gold_support": 2,
+          "predicted_support": 0
+        },
+        "charging": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 0,
+          "predicted_support": 0
+        },
+        "camera": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 1,
+          "gold_support": 1,
+          "predicted_support": 0
+        },
+        "display": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 2,
+          "gold_support": 2,
+          "predicted_support": 0
+        },
+        "performance": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 1,
+          "gold_support": 1,
+          "predicted_support": 0
+        },
+        "software": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 2,
+          "gold_support": 2,
+          "predicted_support": 0
+        },
+        "build": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 4,
+          "gold_support": 4,
+          "predicted_support": 0
+        },
+        "audio": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 0,
+          "predicted_support": 0
+        },
+        "connectivity": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 4,
+          "gold_support": 4,
+          "predicted_support": 0
+        },
+        "value": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 5,
+          "gold_support": 5,
+          "predicted_support": 0
+        }
+      },
+      "confusion_matrix": {
+        "absent": {
+          "absent": 329,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "positive": {
+          "absent": 11,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "negative": {
+          "absent": 6,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "neutral": {
+          "absent": 4,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "mixed": {
+          "absent": 0,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        }
+      },
+      "sentences": 35,
+      "pairs": 350,
+      "accuracy_including_absent": 0.94
+    },
+    "rules-v1": {
+      "tuple_micro": {
+        "precision": 0.4444444444444444,
+        "recall": 0.19047619047619047,
+        "f1": 0.26666666666666666,
+        "true_positive": 4,
+        "false_positive": 5,
+        "false_negative": 17
+      },
+      "presence_micro": {
+        "precision": 0.8888888888888888,
+        "recall": 0.38095238095238093,
+        "f1": 0.5333333333333333,
+        "true_positive": 8,
+        "false_positive": 1,
+        "false_negative": 13
+      },
+      "label_support": {
+        "absent": 329,
+        "positive": 11,
+        "neutral": 4,
+        "negative": 6
+      },
+      "per_category": {
+        "battery": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "true_positive": 2,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 2,
+          "predicted_support": 2
+        },
+        "charging": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 0,
+          "predicted_support": 0
+        },
+        "camera": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "true_positive": 1,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 1,
+          "predicted_support": 1
+        },
+        "display": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 1,
+          "false_negative": 2,
+          "gold_support": 2,
+          "predicted_support": 1
+        },
+        "performance": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 1,
+          "gold_support": 1,
+          "predicted_support": 0
+        },
+        "software": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 2,
+          "gold_support": 2,
+          "predicted_support": 0
+        },
+        "build": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 1,
+          "false_negative": 4,
+          "gold_support": 4,
+          "predicted_support": 1
+        },
+        "audio": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 1,
+          "false_negative": 0,
+          "gold_support": 0,
+          "predicted_support": 1
+        },
+        "connectivity": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 4,
+          "gold_support": 4,
+          "predicted_support": 0
+        },
+        "value": {
+          "precision": 0.3333333333333333,
+          "recall": 0.2,
+          "f1": 0.25,
+          "true_positive": 1,
+          "false_positive": 2,
+          "false_negative": 4,
+          "gold_support": 5,
+          "predicted_support": 3
+        }
+      },
+      "confusion_matrix": {
+        "absent": {
+          "absent": 328,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 1,
+          "mixed": 0
+        },
+        "positive": {
+          "absent": 5,
+          "positive": 4,
+          "negative": 0,
+          "neutral": 2,
+          "mixed": 0
+        },
+        "negative": {
+          "absent": 5,
+          "positive": 1,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "neutral": {
+          "absent": 3,
+          "positive": 0,
+          "negative": 1,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "mixed": {
+          "absent": 0,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        }
+      },
+      "sentences": 35,
+      "pairs": 350,
+      "accuracy_including_absent": 0.9485714285714286
+    },
+    "deberta-absa-10c9dff3": {
+      "tuple_micro": {
+        "precision": 0.5,
+        "recall": 0.23809523809523808,
+        "f1": 0.3225806451612903,
+        "true_positive": 5,
+        "false_positive": 5,
+        "false_negative": 16
+      },
+      "presence_micro": {
+        "precision": 0.8,
+        "recall": 0.38095238095238093,
+        "f1": 0.5161290322580645,
+        "true_positive": 8,
+        "false_positive": 2,
+        "false_negative": 13
+      },
+      "label_support": {
+        "absent": 329,
+        "positive": 11,
+        "neutral": 4,
+        "negative": 6
+      },
+      "per_category": {
+        "battery": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "true_positive": 2,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 2,
+          "predicted_support": 2
+        },
+        "charging": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 0,
+          "predicted_support": 0
+        },
+        "camera": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "true_positive": 1,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 1,
+          "predicted_support": 1
+        },
+        "display": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 1,
+          "false_negative": 2,
+          "gold_support": 2,
+          "predicted_support": 1
+        },
+        "performance": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 1,
+          "false_negative": 1,
+          "gold_support": 1,
+          "predicted_support": 1
+        },
+        "software": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 2,
+          "gold_support": 2,
+          "predicted_support": 0
+        },
+        "build": {
+          "precision": 1.0,
+          "recall": 0.25,
+          "f1": 0.4,
+          "true_positive": 1,
+          "false_positive": 0,
+          "false_negative": 3,
+          "gold_support": 4,
+          "predicted_support": 1
+        },
+        "audio": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 1,
+          "false_negative": 0,
+          "gold_support": 0,
+          "predicted_support": 1
+        },
+        "connectivity": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 4,
+          "gold_support": 4,
+          "predicted_support": 0
+        },
+        "value": {
+          "precision": 0.3333333333333333,
+          "recall": 0.2,
+          "f1": 0.25,
+          "true_positive": 1,
+          "false_positive": 2,
+          "false_negative": 4,
+          "gold_support": 5,
+          "predicted_support": 3
+        }
+      },
+      "confusion_matrix": {
+        "absent": {
+          "absent": 327,
+          "positive": 1,
+          "negative": 0,
+          "neutral": 1,
+          "mixed": 0
+        },
+        "positive": {
+          "absent": 5,
+          "positive": 4,
+          "negative": 0,
+          "neutral": 2,
+          "mixed": 0
+        },
+        "negative": {
+          "absent": 5,
+          "positive": 0,
+          "negative": 1,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "neutral": {
+          "absent": 3,
+          "positive": 0,
+          "negative": 1,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "mixed": {
+          "absent": 0,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        }
+      },
+      "sentences": 35,
+      "pairs": 350,
+      "accuracy_including_absent": 0.9485714285714286
+    },
+    "tfidf-db3871146fbb": {
+      "tuple_micro": {
+        "precision": 1.0,
+        "recall": 0.047619047619047616,
+        "f1": 0.0909090909090909,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 20
+      },
+      "presence_micro": {
+        "precision": 1.0,
+        "recall": 0.047619047619047616,
+        "f1": 0.0909090909090909,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 20
+      },
+      "label_support": {
+        "absent": 329,
+        "positive": 11,
+        "neutral": 4,
+        "negative": 6
+      },
+      "per_category": {
+        "battery": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 2,
+          "gold_support": 2,
+          "predicted_support": 0
+        },
+        "charging": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 0,
+          "predicted_support": 0
+        },
+        "camera": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "true_positive": 1,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 1,
+          "predicted_support": 1
+        },
+        "display": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 2,
+          "gold_support": 2,
+          "predicted_support": 0
+        },
+        "performance": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 1,
+          "gold_support": 1,
+          "predicted_support": 0
+        },
+        "software": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 2,
+          "gold_support": 2,
+          "predicted_support": 0
+        },
+        "build": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 4,
+          "gold_support": 4,
+          "predicted_support": 0
+        },
+        "audio": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "gold_support": 0,
+          "predicted_support": 0
+        },
+        "connectivity": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 4,
+          "gold_support": 4,
+          "predicted_support": 0
+        },
+        "value": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 5,
+          "gold_support": 5,
+          "predicted_support": 0
+        }
+      },
+      "confusion_matrix": {
+        "absent": {
+          "absent": 329,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "positive": {
+          "absent": 10,
+          "positive": 1,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "negative": {
+          "absent": 6,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "neutral": {
+          "absent": 4,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        },
+        "mixed": {
+          "absent": 0,
+          "positive": 0,
+          "negative": 0,
+          "neutral": 0,
+          "mixed": 0
+        }
+      },
+      "sentences": 35,
+      "pairs": 350,
+      "accuracy_including_absent": 0.9428571428571428
+    }
+  },
+  "source_hashes": {
+    "annotations_sha256": "4f9326b3adc39e58c28227ed4e8849c260a5e4f2b789ded16a25f06d1d7c058c",
+    "manifest_sha256": "53de44dc75a3c21c80326d1132a916b8598db471f20185ecb069c5d4eb250910",
+    "training_report_sha256": "637dcfefd7c66345a5ec10723b353081f7c5af4ee5349169fd2f78dc9eca5c46",
+    "comparison_report_sha256": "80af6ee1b1ecfce884cd48f231ada3967f2d008296ee7ab9a8c575ab098baea5",
+    "predictions_sha256": "3f3f15d7e34c5680559ba390faf7b23498fa82bf2a8e7e780db7997a8327f25f"
+  },
+  "test_evaluated": false,
+  "limitations": [
+    "34 of 35 validation sentences are AI-assisted; these are diagnostic agreement scores, not independent human accuracy.",
+    "Only 35 validation sentences and 21 reference aspect mentions; some categories and mixed sentiment have no reference examples.",
+    "AI annotations include documented ambiguous decisions and frozen-taxonomy coverage gaps.",
+    "Training uses one human-labelled sentence plus 198 pseudo-labelled sentences.",
+    "No model or label changes were made in response to these diagnostic scores."
+  ]
+}

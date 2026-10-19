@@ -1,0 +1,22 @@
+{
+  "set_id": "702b9e3f899067ea52b7088c",
+  "validation_sentences": 35,
+  "new_ai_reviewed_sentences": 34,
+  "validation_sentence_origins": {
+    "human": 1,
+    "assisted": 34
+  },
+  "validation_label_counts": {
+    "absent": 329,
+    "positive": 11,
+    "neutral": 4,
+    "negative": 6
+  },
+  "review_decisions_sha256": "bf80042c75767b1ba61dd3641cd4e076767e70fa1eae9fea5fa864130e0e5ee1",
+  "annotations_sha256": "4f9326b3adc39e58c28227ed4e8849c260a5e4f2b789ded16a25f06d1d7c058c",
+  "existing_human_edits_preserved": true,
+  "test_sentences_unchanged": 69,
+  "test_evaluated": false,
+  "method": "Direct sentence-by-sentence AI reading using smartphone-v1; no checkpoint or baseline predictions consulted.",
+  "evaluation_basis": "AI-assisted diagnostic; not independent human evaluation"
+}

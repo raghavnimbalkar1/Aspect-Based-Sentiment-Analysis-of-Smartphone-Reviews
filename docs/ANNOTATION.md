@@ -65,7 +65,7 @@ On **Model evaluation**, every validation sentence in a study must be complete b
 
 ## Assisted training for the solo workflow
 
-The user will independently label the 35 validation and 69 test sentences. To make training feasible for one person, the pinned transferred model can generate pseudo labels for the frozen training partition only:
+The training assistant is separate from validation review. To make training feasible for one person, the pinned transferred model can generate pseudo labels for the frozen training partition only:
 
 ```sh
 .venv/bin/absa assist-training --set-id 702b9e3f899067ea52b7088c
@@ -73,6 +73,16 @@ The user will independently label the 35 validation and 69 test sentences. To ma
 
 For a different study, use its ID from `/api/annotations`. The command writes ignored `artifacts/training-assistance/<study-id>/labels.csv`, `manifest.json` and `provenance.json`. It refuses to overwrite an existing export. The prepared local set has 199 sentences / 1,990 category states. Every row is `origin=assisted`, `status=generated`, with the teacher's model ID; no human approval is implied. Hashes and the pinned teacher specification are recorded. Validation/test text is never passed to the teacher by this command. The human workbench and edit history remain unchanged.
 
-On **Model evaluation**, select **Train TF-IDF** and explicitly check **Use saved assisted training labels**. It stays disabled until all human validation sentences are complete. A completed human training sentence replaces all ten matching machine labels. The run snapshots the assisted CSV and provenance alongside the human export and checks hashes before execution. Reports and registered-model metadata disclose human/assisted training row counts.
+On **Model evaluation**, select **Train TF-IDF** and explicitly check **Use saved assisted training labels**. All validation sentences must be complete; assisted validation additionally requires diagnostic mode. A completed human training sentence replaces all ten matching machine labels. The run snapshots the assisted CSV/provenance and human/assisted reference export and checks hashes before execution. Reports and registered-model metadata disclose training origins.
 
-For CLI training, add `--assisted-training artifacts/training-assistance/<study-id>/labels.csv` to `train-tfidf`. This flag never allows generated validation/test labels. Teacher errors, missed implicit aspects and class imbalance may be inherited. Describe the result as a classifier trained with pseudo labels and evaluated on a single-annotator human holdout, not a fully human-labelled training study.
+For CLI training, add `--assisted-training artifacts/training-assistance/<study-id>/labels.csv` to `train-tfidf`. This flag never permits assisted validation/test by itself. Teacher errors, missed implicit aspects and class imbalance may be inherited. Disclose both training origins and the evaluation reference's actual provenance.
+
+## AI-assisted validation review
+
+At the user's request, the AI assistant read and labelled the remaining 34 validation sentences directly against the frozen `smartphone-v1` guide. Decisions were frozen before consulting checkpoint/baseline outputs. The existing human validation annotation was preserved. Every sentence retains all ten category states, explicit/implicit references and a rationale; ambiguous interpretations and uncovered features are noted. The original test sentences were not annotated, inferred or changed by this review.
+
+Migration `004_annotation_origin.sql` adds an explicit origin to each saved sentence. These reviewed labels use `origin=assisted` and an AI annotator identifier. Completion means the review was saved, not that a human adjudicated it. The UI shows human/assisted completion separately; exports and edit history preserve origin. Editing an assisted sentence or changing its annotator name cannot silently convert it into independent human labels. Assisted saves to the test partition are rejected.
+
+The local validation collection now contains 1 human and 34 AI-assisted sentences. The default evaluator still rejects assisted references. **Use AI-assisted validation (diagnostic only)** explicitly enables comparison or training against them. CLI equivalents use `--assisted-validation`. Reports record `evaluation_reference.validation.independent=false`, counts and an AI-diagnostic warning. These scores measure agreement with the reference; they are not independent human-evaluated accuracy. Both validation and training opt-ins together still cannot admit assisted test labels.
+
+Frozen review decisions, original-label snapshots and complete exports remain in ignored local data/artifacts. Aggregate provenance is in [validation-review-summary.json](data/validation-review-summary.json). Test annotation remains separate and should not be exposed to predictions before final evaluation.
