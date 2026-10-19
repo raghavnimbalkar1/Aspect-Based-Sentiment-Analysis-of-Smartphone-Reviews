@@ -85,7 +85,7 @@ class Annotation(BaseModel):
     category: str
     label: Sentiment
     annotator: str = Field(min_length=1)
-    status: Literal["draft", "adjudicated"] = "draft"
+    status: Literal["draft", "adjudicated", "generated"] = "draft"
     origin: Literal["human", "assisted", "synthetic"] = "human"
     taxonomy_version: str
     reference: Literal["explicit", "implicit", "none"] = "none"

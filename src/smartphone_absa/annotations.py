@@ -166,7 +166,12 @@ def read_annotations(
             record = Annotation.model_validate(row)
             if record.category not in CATEGORY_IDS or record.taxonomy_version != TAXONOMY_VERSION:
                 raise ValueError("Unknown category or annotation taxonomy")
-            if record.status != "adjudicated":
+            assisted_train = (
+                allow_assisted_train and split == "train" and record.origin == "assisted"
+            )
+            if record.status != "adjudicated" and not (
+                assisted_train and record.status == "generated"
+            ):
                 raise ValueError("Training/evaluation requires adjudicated annotations")
             expected = manifest["split_by_review"].get(record.review_id)
             expected_group = manifest["group_by_review"].get(record.review_id)
@@ -176,9 +181,7 @@ def read_annotations(
                 record.sentence_id
             ):
                 raise ValueError("Annotation changed the frozen sentence text or identity")
-            if record.origin != "human" and not (
-                allow_assisted_train and split == "train" and record.origin == "assisted"
-            ):
+            if record.origin != "human" and not assisted_train:
                 raise ValueError("Independent human labels are required, especially for evaluation")
             key = (record.sentence_id, record.category)
             if key in seen:
