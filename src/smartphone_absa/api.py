@@ -5,6 +5,7 @@ import io
 import json
 import logging
 import os
+import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -15,12 +16,14 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from smartphone_absa import __version__
-from smartphone_absa.baseline import RuleBaseline
-from smartphone_absa.domain import JobRequest, SingleAnalysisRequest
+from smartphone_absa.annotation_api import annotation_router
+from smartphone_absa.domain import JobRequest, ModelComparisonRequest, SingleAnalysisRequest
 from smartphone_absa.jobs import run_job
+from smartphone_absa.models.registry import ModelRegistry, ModelUnavailable
 from smartphone_absa.store import Filters, Store
 from smartphone_absa.taxonomy import CATEGORIES, CATEGORY_IDS, PRESENT_LABELS, TAXONOMY_VERSION
 from smartphone_absa.uploads import MAX_UPLOAD_BYTES, parse_csv, prepare_upload
+from smartphone_absa.workbench import AnnotationWorkbench
 
 log = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parents[2]
@@ -36,9 +39,13 @@ def query_filters(
     return Filters(product=product, category=category, sentiment=sentiment, q=q)
 
 
-def create_app(database: Path | None = None, frontend: Path | None = None) -> FastAPI:
+def create_app(
+    database: Path | None = None,
+    frontend: Path | None = None,
+    registry: ModelRegistry | None = None,
+) -> FastAPI:
     store = Store(database or Path(os.getenv("ABSA_DATABASE", ROOT / "data/workspace.sqlite3")))
-    model = RuleBaseline()
+    registry = registry or ModelRegistry(ROOT / "artifacts")
     executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="absa-analysis")
 
     @asynccontextmanager
@@ -49,6 +56,8 @@ def create_app(database: Path | None = None, frontend: Path | None = None) -> Fa
 
     app = FastAPI(title="Smartphone ABSA", version=__version__, lifespan=lifespan)
     app.state.store = store
+    app.state.registry = registry
+    app.include_router(annotation_router(AnnotationWorkbench(store)))
 
     @app.middleware("http")
     async def local_requests(request: Request, call_next):
@@ -82,7 +91,7 @@ def create_app(database: Path | None = None, frontend: Path | None = None) -> Fa
             "status": "ok",
             "version": __version__,
             "mode": "local",
-            "model": model.id,
+            "model": "rules-v1",
             "device": "cpu",
             "taxonomy_version": TAXONOMY_VERSION,
         }
@@ -101,11 +110,43 @@ def create_app(database: Path | None = None, frontend: Path | None = None) -> Fa
     def analyse(body: SingleAnalysisRequest):
         if not body.text.strip():
             raise HTTPException(422, "Enter a review to analyse")
-        return model.analyse(body.text)
+        return registry.get(body.model).analyse(body.text)
+
+    @app.exception_handler(ModelUnavailable)
+    async def unavailable_model(request: Request, exc: ModelUnavailable):
+        return JSONResponse({"detail": str(exc)}, 503)
+
+    def public_specs():
+        return [
+            {key: value for key, value in spec.items() if key != "path"}
+            for spec in registry.specs()
+        ]
+
+    @app.get("/api/models")
+    def models():
+        return public_specs()
+
+    @app.post("/api/analyse/compare")
+    def compare_models(body: ModelComparisonRequest):
+        if not body.text.strip() or len(set(body.models)) != len(body.models):
+            raise HTTPException(422, "Enter a review and select different models")
+        analyzers = [registry.get(model_id) for model_id in body.models]
+        results = []
+        for analyzer in analyzers:
+            started = time.perf_counter()
+            analysis = analyzer.analyse(body.text)
+            results.append(
+                {
+                    "analysis": analysis.model_dump(mode="json"),
+                    "elapsed_ms": round((time.perf_counter() - started) * 1000, 1),
+                }
+            )
+        return {"results": results}
 
     @app.get("/api/datasets")
-    def datasets():
-        return store.datasets()
+    def datasets(model: str = "rules-v1"):
+        registry.describe(model)
+        return store.datasets(model)
 
     @app.get("/api/datasets/{dataset_id}")
     def dataset(dataset_id: str):
@@ -148,9 +189,12 @@ def create_app(database: Path | None = None, frontend: Path | None = None) -> Fa
         return store.products(dataset_id)
 
     @app.get("/api/datasets/{dataset_id}/overview")
-    def overview(dataset_id: str, filters: Filters = Depends(query_filters)):
+    def overview(
+        dataset_id: str, filters: Filters = Depends(query_filters), model: str = "rules-v1"
+    ):
         require_dataset(dataset_id)
-        return store.overview(dataset_id, filters)
+        registry.describe(model)
+        return store.overview(dataset_id, filters, model)
 
     @app.get("/api/datasets/{dataset_id}/reviews")
     def reviews(
@@ -158,49 +202,77 @@ def create_app(database: Path | None = None, frontend: Path | None = None) -> Fa
         filters: Filters = Depends(query_filters),
         page: int = Query(1, ge=1),
         page_size: int = Query(20, ge=1, le=100),
+        model: str = "rules-v1",
     ):
         require_dataset(dataset_id)
-        return store.reviews(dataset_id, filters, page, page_size)
+        registry.describe(model)
+        return store.reviews(dataset_id, filters, page, page_size, model)
 
     @app.get("/api/datasets/{dataset_id}/compare")
-    def compare(dataset_id: str, products: list[str] = Query(...), q: str = ""):
+    def compare(
+        dataset_id: str, products: list[str] = Query(...), q: str = "", model: str = "rules-v1"
+    ):
         require_dataset(dataset_id)
         if not 2 <= len(set(products)) <= 3:
             raise HTTPException(422, "Choose two or three different phone models")
+        registry.describe(model)
         known = {product["id"] for product in store.products(dataset_id)}
         if not set(products) <= known:
             raise HTTPException(422, "A phone model does not belong to this dataset")
         return [
-            {"product_id": product, **store.overview(dataset_id, Filters(product=product, q=q))}
+            {
+                "product_id": product,
+                **store.overview(dataset_id, Filters(product=product, q=q), model),
+            }
             for product in dict.fromkeys(products)
         ]
 
     @app.post("/api/datasets/{dataset_id}/jobs", status_code=202)
     def start_job(dataset_id: str, body: JobRequest):
         require_dataset(dataset_id)
-        job, created = store.create_job(dataset_id)
+        spec = registry.describe(body.model)
+        if not spec["available"]:
+            raise ModelUnavailable("Model is not installed; see Model evaluation for setup.")
+        job, created = store.create_job(dataset_id, body.model)
         if created:
-            executor.submit(run_job, store, job, model)
+
+            def execute():
+                try:
+                    run_job(store, job, registry.get(body.model))
+                except Exception:
+                    log.exception("Could not initialize job model")
+                    store.update_job(
+                        job["id"],
+                        "failed",
+                        0,
+                        0,
+                        "Model could not load. Check the local server log and retry.",
+                    )
+
+            executor.submit(execute)
         return job
 
     @app.get("/api/datasets/{dataset_id}/jobs")
-    def jobs(dataset_id: str):
+    def jobs(dataset_id: str, model: str = "rules-v1"):
         require_dataset(dataset_id)
-        return store.jobs(dataset_id)
+        registry.describe(model)
+        return store.jobs(dataset_id, model)
 
     @app.get("/api/datasets/{dataset_id}/export")
     def export(
         dataset_id: str,
         filters: Filters = Depends(query_filters),
         format: str = Query("csv", pattern="^(csv|json)$"),
+        model: str = "rules-v1",
     ):
         require_dataset(dataset_id)
-        items = store.reviews(dataset_id, filters, page_size=10000)["items"]
+        registry.describe(model)
+        items = store.reviews(dataset_id, filters, page_size=10000, model_id=model)["items"]
         if format == "json":
             return Response(
                 json.dumps(
                     {
-                        "model_id": model.id,
+                        "model_id": model,
                         "taxonomy_version": TAXONOMY_VERSION,
                         "filters": filters.__dict__,
                         "reviews": items,
@@ -233,7 +305,7 @@ def create_app(database: Path | None = None, frontend: Path | None = None) -> Fa
                     item["text"],
                     aspect["category"],
                     aspect["sentiment"],
-                    model.id,
+                    model,
                     TAXONOMY_VERSION,
                 ]
                 # Prevent uploaded text being executed as a spreadsheet formula.
@@ -263,26 +335,19 @@ def create_app(database: Path | None = None, frontend: Path | None = None) -> Fa
                 log.warning("Could not read experiment report %s", path.name)
         return {
             "reports": reports,
-            "active_model": model.id,
+            "active_model": "rules-v1",
             "models": [
+                {**spec, "status": "available" if spec["available"] else "not_installed"}
+                for spec in public_specs()
+            ]
+            + [
                 {
-                    "id": "rules-v1",
-                    "name": "Rules + VADER",
-                    "status": "available",
-                    "description": "Explicit aspect cues and local sentiment rules. CPU inference.",
-                },
-                {
-                    "id": "tfidf-v1",
+                    "id": "tfidf-supervised",
                     "name": "TF-IDF + logistic regression",
                     "status": "awaiting_annotations",
-                    "description": "Training command is ready; requires adjudicated human labels.",
-                },
-                {
-                    "id": "distilbert-pair",
-                    "name": "DistilBERT pair classifier",
-                    "status": "planned",
-                    "description": "Next modeling phase after the annotation pilot.",
-                },
+                    "available": False,
+                    "description": "Requires human training and validation labels.",
+                }
             ],
         }
 

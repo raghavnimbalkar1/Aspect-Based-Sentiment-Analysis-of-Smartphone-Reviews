@@ -3,17 +3,20 @@ from __future__ import annotations
 import logging
 
 from smartphone_absa.baseline import RuleBaseline
+from smartphone_absa.models.inference import Analyzer
 from smartphone_absa.store import Store
 
 log = logging.getLogger(__name__)
 
 
-def run_job(store: Store, job: dict, model: RuleBaseline | None = None) -> None:
+def run_job(store: Store, job: dict, model: Analyzer | None = None) -> None:
     model = model or RuleBaseline()
+    if model.id != job["model_id"]:
+        raise ValueError("Job and inference model IDs differ")
     processed = failed = 0
     store.update_job(job["id"], "running", 0, 0)
     try:
-        for review in store.pending_reviews(job["dataset_id"]):
+        for review in store.pending_reviews(job["dataset_id"], job["model_id"]):
             try:
                 result = model.analyse(review.text, review.id, review.language)
                 store.save_analysis(job["dataset_id"], review.id, result)

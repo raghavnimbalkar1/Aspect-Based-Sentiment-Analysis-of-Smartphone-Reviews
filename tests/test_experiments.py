@@ -6,7 +6,8 @@ import json
 
 import joblib
 
-from smartphone_absa.experiments import train_tfidf
+from smartphone_absa.experiments import evaluate_models, train_tfidf
+from smartphone_absa.models.registry import ModelRegistry
 from smartphone_absa.taxonomy import CATEGORY_IDS, TAXONOMY_VERSION
 
 
@@ -52,7 +53,7 @@ def test_tfidf_uses_training_vocabulary_and_keeps_test_locked(tmp_path):
         writer.writerows(rows)
     manifest_file = tmp_path / "manifest.json"
     manifest_file.write_text(json.dumps(manifest))
-    output = tmp_path / "experiment"
+    output = tmp_path / "artifacts/experiments/fixture"
     report = train_tfidf(annotation_file, manifest_file, output)
     assert report["training_sentences"] == 3
     assert report["test_evaluated"] is False
@@ -61,3 +62,20 @@ def test_tfidf_uses_training_vocabulary_and_keeps_test_locked(tmp_path):
     assert "xylophone" not in vocabulary
     assert "quetzal" not in vocabulary
     assert set(report["validation"]) == {"always_absent", "rules-v1", "tfidf-v1"}
+    registry = ModelRegistry(tmp_path / "artifacts")
+    analyzer = registry.get(report["model_id"])
+    result = analyzer.analyse("The camera is excellent.", language="en")
+    assert result.model_id == report["model_id"]
+    assert any(spec["id"] == report["model_id"] for spec in registry.specs())
+    for aspect in result.aspects:
+        assert aspect.evidence[0].text == "The camera is excellent."
+    comparison = evaluate_models(
+        annotation_file,
+        manifest_file,
+        tmp_path / "comparison",
+        ["rules-v1", report["model_id"]],
+        registry,
+    )
+    assert comparison["test_evaluated"] is False and "test" not in comparison
+    assert comparison["validation"][report["model_id"]] == report["validation"]["tfidf-v1"]
+    assert comparison["timing"]["validation:rules-v1"]["sentences"] == 1

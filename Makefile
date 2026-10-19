@@ -1,6 +1,6 @@
 export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 
-.PHONY: setup data seed build run check dev-api dev-ui pilot
+.PHONY: setup data seed build run check dev-api dev-ui pilot model-setup annotation-open
 
 setup:
 	uv sync --frozen --group dev
@@ -20,8 +20,8 @@ run:
 	.venv/bin/absa serve
 
 check:
-	uv run --frozen ruff check src tests scripts
-	uv run --frozen pytest
+	.venv/bin/ruff check src tests scripts
+	.venv/bin/pytest
 	npm --prefix frontend run format:check
 	npm --prefix frontend run build
 
@@ -33,3 +33,10 @@ dev-ui:
 
 pilot:
 	uv run --frozen absa annotation-tasks data/processed/reviews.jsonl --output data/annotations/pilot.csv --sentences 100
+
+model-setup:
+	uv sync --frozen --extra training --group dev
+	HF_HUB_DISABLE_XET=1 .venv/bin/absa download-model
+
+annotation-open:
+	.venv/bin/absa annotation-import data/annotations/pilot.csv --manifest data/annotations/pilot.manifest.json --name "Smartphone annotation pilot"

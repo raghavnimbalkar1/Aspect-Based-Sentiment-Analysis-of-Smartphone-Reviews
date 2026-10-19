@@ -59,11 +59,16 @@ class Analysis(BaseModel):
 
 class SingleAnalysisRequest(BaseModel):
     text: str = Field(min_length=1, max_length=30000)
-    model: Literal["rules-v1"] = "rules-v1"
+    model: str = Field(default="rules-v1", min_length=1, max_length=80, pattern=r"^[a-z0-9-]+$")
 
 
 class JobRequest(BaseModel):
-    model: Literal["rules-v1"] = "rules-v1"
+    model: str = Field(default="rules-v1", min_length=1, max_length=80, pattern=r"^[a-z0-9-]+$")
+
+
+class ModelComparisonRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=30000)
+    models: list[str] = Field(min_length=2, max_length=3)
 
 
 class DatasetRequest(BaseModel):

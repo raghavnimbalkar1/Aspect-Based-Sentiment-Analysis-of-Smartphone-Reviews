@@ -15,6 +15,7 @@ from smartphone_absa.annotations import read_annotations
 from smartphone_absa.baseline import RuleBaseline
 from smartphone_absa.data import file_hash
 from smartphone_absa.metrics import evaluate
+from smartphone_absa.models.registry import ModelRegistry
 from smartphone_absa.taxonomy import CATEGORY_IDS, TAXONOMY_VERSION
 
 
@@ -89,5 +90,78 @@ def train_tfidf(annotations: Path, manifest: Path, output: Path, final_test: boo
         {"vectorizer": vectorizer, "models": models, "taxonomy_version": TAXONOMY_VERSION},
         output / "model.joblib",
     )
+    digest = file_hash(output / "model.joblib")
+    report["model_id"] = f"tfidf-{digest[:12]}"
+    (output / "model-info.json").write_text(
+        json.dumps(
+            {
+                "id": report["model_id"],
+                "kind": "tfidf",
+                "taxonomy_version": TAXONOMY_VERSION,
+                "model_sha256": digest,
+                "annotations_sha256": report["annotations_sha256"],
+                "description": "TF-IDF and per-category classifiers trained on local labels.",
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+    (output / "metrics.json").write_text(json.dumps(report, indent=2) + "\n")
+    return report
+
+
+def evaluate_models(
+    annotations: Path,
+    manifest: Path,
+    output: Path,
+    model_ids: list[str],
+    registry: ModelRegistry,
+    final_test: bool = False,
+) -> dict:
+    """Measure installed models against the same independent, frozen sentence labels."""
+    rows = read_annotations(annotations, manifest)
+    partitions = ["validation", "test"] if final_test else ["validation"]
+    if output.exists():
+        raise ValueError("Experiment output already exists; use a new directory")
+    if not model_ids or len(model_ids) != len(set(model_ids)):
+        raise ValueError("Choose different installed model IDs")
+    for split in partitions:
+        if not any(row["split"] == split for row in rows):
+            raise ValueError(f"No independent human {split} labels; pilot is train-only")
+    report = {
+        "model_id": "comparison",
+        "taxonomy_version": TAXONOMY_VERSION,
+        "annotations_sha256": file_hash(annotations),
+        "manifest_sha256": file_hash(manifest),
+        "training_sentences": 0,
+        "test_evaluated": final_test,
+        "model_specs": [
+            {k: v for k, v in registry.describe(mid).items() if k != "path"} for mid in model_ids
+        ],
+        "timing": {},
+    }
+    started = time.perf_counter()
+    analyzers = {mid: registry.get(mid) for mid in model_ids}
+    for split in partitions:
+        subset = [row for row in rows if row["split"] == split]
+        sentences = {row["sentence_id"]: row["text"] for row in subset}
+        measured = {"always_absent": evaluate(subset, ["absent"] * len(subset))}
+        for mid, analyzer in analyzers.items():
+            inference_started = time.perf_counter()
+            cache = {}
+            for sid, text in sentences.items():
+                result = analyzer.analyse(text, sid, language="en")
+                cache[sid] = {aspect.category: aspect.sentiment for aspect in result.aspects}
+            predictions = [
+                cache[row["sentence_id"]].get(row["category"], "absent") for row in subset
+            ]
+            measured[mid] = evaluate(subset, predictions)
+            report["timing"][f"{split}:{mid}"] = {
+                "sentences": len(sentences),
+                "inference_seconds": time.perf_counter() - inference_started,
+            }
+        report[split] = measured
+    report["elapsed_seconds"] = time.perf_counter() - started
+    output.mkdir(parents=True)
     (output / "metrics.json").write_text(json.dumps(report, indent=2) + "\n")
     return report

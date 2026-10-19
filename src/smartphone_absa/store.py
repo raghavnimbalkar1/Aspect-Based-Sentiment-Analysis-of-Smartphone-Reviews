@@ -126,7 +126,7 @@ class Store:
             "duplicate": False,
         }
 
-    def datasets(self) -> list[dict]:
+    def datasets(self, model_id: str = MODEL_ID) -> list[dict]:
         with self.connection() as connection:
             rows = connection.execute(
                 """
@@ -135,7 +135,7 @@ class Store:
                      AND a.model_id=? AND a.taxonomy_version=?) AS analysed
                 FROM datasets d ORDER BY d.imported_at DESC
             """,
-                (MODEL_ID, TAXONOMY_VERSION),
+                (model_id, TAXONOMY_VERSION),
             ).fetchall()
             return [dict(row) for row in rows]
 
@@ -161,7 +161,7 @@ class Store:
                 ).fetchall()
             ]
 
-    def pending_reviews(self, dataset_id: str) -> list[Review]:
+    def pending_reviews(self, dataset_id: str, model_id: str = MODEL_ID) -> list[Review]:
         with self.connection() as connection:
             rows = connection.execute(
                 """
@@ -170,7 +170,7 @@ class Store:
                   AND a.model_id=? AND a.taxonomy_version=?
                 WHERE r.dataset_id=? AND a.id IS NULL ORDER BY r.id
             """,
-                (MODEL_ID, TAXONOMY_VERSION, dataset_id),
+                (model_id, TAXONOMY_VERSION, dataset_id),
             ).fetchall()
             return [Review.model_validate_json(row[0]) for row in rows]
 
@@ -229,10 +229,15 @@ class Store:
         )
 
     def reviews(
-        self, dataset_id: str, filters: Filters, page: int = 1, page_size: int = 20
+        self,
+        dataset_id: str,
+        filters: Filters,
+        page: int = 1,
+        page_size: int = 20,
+        model_id: str = MODEL_ID,
     ) -> dict:
         where, values = self._where(dataset_id, filters)
-        bindings = [MODEL_ID, TAXONOMY_VERSION, *values]
+        bindings = [model_id, TAXONOMY_VERSION, *values]
         with self.connection() as connection:
             total = connection.execute(
                 "SELECT COUNT(*)" + self._join() + "WHERE " + where, bindings
@@ -258,10 +263,12 @@ class Store:
                 ],
             }
 
-    def overview(self, dataset_id: str, filters: Filters | None = None) -> dict:
+    def overview(
+        self, dataset_id: str, filters: Filters | None = None, model_id: str = MODEL_ID
+    ) -> dict:
         filters = filters or Filters()
         where, values = self._where(dataset_id, filters)
-        bindings = [MODEL_ID, TAXONOMY_VERSION, *values]
+        bindings = [model_id, TAXONOMY_VERSION, *values]
         with self.connection() as connection:
             stats = dict(
                 connection.execute(
@@ -336,17 +343,17 @@ class Store:
                 "aspects": aspects,
                 "sentiment_totals": sentiment_totals,
                 "languages": languages,
-                "model_id": MODEL_ID,
+                "model_id": model_id,
                 "taxonomy_version": TAXONOMY_VERSION,
             }
 
-    def create_job(self, dataset_id: str) -> tuple[dict, bool]:
+    def create_job(self, dataset_id: str, model_id: str = MODEL_ID) -> tuple[dict, bool]:
         with self.connection() as connection:
             connection.execute("BEGIN IMMEDIATE")
             existing = connection.execute(
                 "SELECT * FROM jobs WHERE dataset_id=? AND model_id=? "
                 "AND taxonomy_version=? AND status IN ('queued','running')",
-                (dataset_id, MODEL_ID, TAXONOMY_VERSION),
+                (dataset_id, model_id, TAXONOMY_VERSION),
             ).fetchone()
             if existing:
                 return dict(existing), False
@@ -356,7 +363,7 @@ class Store:
                   a.dataset_id=r.dataset_id AND a.review_id=r.id AND a.model_id=?
                   AND a.taxonomy_version=? WHERE r.dataset_id=? AND a.id IS NULL
             """,
-                (MODEL_ID, TAXONOMY_VERSION, dataset_id),
+                (model_id, TAXONOMY_VERSION, dataset_id),
             ).fetchone()[0]
             job_id = uuid.uuid4().hex
             connection.execute(
@@ -365,7 +372,7 @@ class Store:
                 (
                     job_id,
                     dataset_id,
-                    MODEL_ID,
+                    model_id,
                     TAXONOMY_VERSION,
                     "queued" if total else "completed",
                     total,
@@ -374,13 +381,14 @@ class Store:
             row = connection.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
             return dict(row), total > 0
 
-    def jobs(self, dataset_id: str) -> list[dict]:
+    def jobs(self, dataset_id: str, model_id: str = MODEL_ID) -> list[dict]:
         with self.connection() as connection:
             return [
                 dict(row)
                 for row in connection.execute(
-                    "SELECT * FROM jobs WHERE dataset_id=? ORDER BY created_at DESC LIMIT 10",
-                    (dataset_id,),
+                    "SELECT * FROM jobs WHERE dataset_id=? AND model_id=? AND taxonomy_version=? "
+                    "ORDER BY created_at DESC, rowid DESC LIMIT 10",
+                    (dataset_id, model_id, TAXONOMY_VERSION),
                 ).fetchall()
             ]
 
