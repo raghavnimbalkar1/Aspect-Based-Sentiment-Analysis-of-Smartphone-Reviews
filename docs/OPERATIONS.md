@@ -39,3 +39,9 @@ Migration `002_annotation_workbench.sql` adds task collections, sentence labels 
 ## Verification limits
 
 The current tests and browser checks establish application behaviour and basic baseline semantics. They do not establish ABSA accuracy on an independent human-labeled smartphone test set. The demo corpus is historical, product-balanced, and filtered by automatic language identification. Near-duplicate grouping uses lexical similarity and cannot guarantee removal of all semantic paraphrases.
+
+## Research jobs and workspace isolation
+
+Migration `003_experiment_runs.sql` adds durable experiment history and a constraint allowing one active experiment per study. Study preparation, review batch inference and experiment execution share the single heavy-work queue. Each experiment snapshots labels at submission and checks their hashes before execution. Startup marks unfinished experiment runs interrupted.
+
+`ABSA_ARTIFACTS` overrides the server's model/report/task directory. Pair it with `ABSA_DATABASE` when operating an isolated test workspace, so fixture reports and models cannot appear in the research workspace. The default is the repository's `artifacts` directory. CLI output paths remain explicit command arguments.

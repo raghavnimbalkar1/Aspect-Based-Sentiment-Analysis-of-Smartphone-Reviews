@@ -11,7 +11,7 @@ Research scope approved on 19 October 2026. The one-week plan assumes one implem
 
 Every working increment must identify which model it uses. A rule baseline is useful for integration and inspection; its outputs are not human annotations or measured transformer results.
 
-The preferred source is Griko Nibras's [Amazon Cell Phones Reviews, version 2](https://www.kaggle.com/datasets/grikomsn/amazon-cell-phones-reviews/versions/2). Actual file counts and smartphone filtering decisions will be recorded after inspecting the download.
+The preferred source is Griko Nibras's [Amazon Cell Phones Reviews, version 2](https://www.kaggle.com/datasets/grikomsn/amazon-cell-phones-reviews/versions/2). File counts and smartphone filtering decisions are recorded in the data audit below.
 
 ## First working increment — 19 October 2026
 
@@ -36,3 +36,13 @@ The annotation screen imports the existing 101-sentence training pilot with zero
 Verification covers model isolation, unknown/unavailable models, paired inference/evidence offsets, trained-model loading, annotation validation, persistence, conflicts, export compatibility and locked test evaluation. Browser checks cover local neural comparison, blank task navigation and a persisted neural job on five original source reviews. See the final verification record in the commit/CI history.
 
 Final verification for this increment: 56 backend tests pass; Ruff, frontend formatting, TypeScript and the production build pass. The real checkpoint runs offline on CPU. Five source reviews completed neural batch analysis with zero failures. The browser draft → complete → history flow was checked using a separate temporary database of explicitly synthetic fixtures, keeping the real annotation pilot at zero completed labels.
+
+## Experiment workflow and repository documentation — 19 October 2026
+
+The verified modeling/application branches were merged into `main`. The next increment adds dashboard study creation, partition completion counts and background validation/training runs. Labels and manifests are snapshotted at submission and hash-checked before execution. An additive migration records experiment history and prevents concurrent duplicate runs for a study. On restart, unfinished runs become interrupted without deleting their input snapshots.
+
+All validation sentences must be complete before starting a dashboard experiment; TF-IDF also requires completed training labels. The dashboard never evaluates test. Report inspection now includes exact tuple precision/recall/F1, presence F1, aspect support and a five-state confusion matrix, with JSON download. Newly trained classifiers appear in the model selector.
+
+A full study targeting 300 sentences was created through the real application. It contains 303 sentences from complete reviews: 199 train, 35 validation and 69 test, all blank. The earlier 101-sentence training pilot remains blank. Human annotation and measured smartphone accuracy remain outstanding.
+
+The README now includes five direct app screenshots, installation and optional neural setup, operating instructions, data/model attribution, architecture, evaluation methodology, repository structure and current limitations. Browser checks verified study creation, rejection of incomplete validation, offline neural comparison and the full training → registration → report-inspection flow in a separate synthetic fixture workspace. Fixture scores and models are not research results.

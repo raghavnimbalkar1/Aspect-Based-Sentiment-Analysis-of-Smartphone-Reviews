@@ -10,8 +10,8 @@ This is a local research application for finding opinions about individual phone
 4. **Phone comparison:** compares two or three listings, with mention counts, review dates and warnings for small samples. The net score is `(positive − negative) / all mentions × 100`. Historical or renewed listings are identified in the source selection.
 5. **CSV import and export:** checks uploaded columns, reports invalid rows and duplicates, saves accepted reviews, and exports predictions as CSV or JSON. It does not scrape live shopping sites.
 6. **Background analysis:** processes a dataset with the chosen model, saves completed results, reports failures and resumes unfinished records after an interruption. Different models have separate saved results.
-7. **Annotation workbench:** shows one sentence at a time without ratings or predictions. You assign all ten category states, save drafts, mark sentences complete and export completed labels. Each save has a revision and history record. Conflicting edits are rejected.
-8. **Model evaluation:** lists available models and reads actual experiment reports. Tuple F1 requires the correct aspect and sentiment together. The application does not invent accuracy figures when human labels are missing.
+7. **Annotation workbench:** creates frozen studies from imported datasets and shows one sentence at a time without ratings or predictions. You assign all ten category states, save drafts, mark sentences complete and export completed labels. Each save has a revision and history record. Conflicting edits are rejected.
+8. **Model evaluation:** queues validation comparisons or TF-IDF training from completed labels, lists available models and reads actual experiment reports. Tuple F1 requires the correct aspect and sentiment together. The application does not invent accuracy figures when human labels are missing.
 
 ## Models
 
@@ -62,4 +62,4 @@ A request follows `React → FastAPI → model/storage → SQLite → React`. Bu
 
 The verified source contains 67,986 historical review rows. Our bounded corpus has 4,346 reviews from 12 selected listings. Automatic language filtering retained 3,819 English and 527 short/uncertain records. The 101-sentence annotation pilot contains training examples only and starts blank.
 
-The next research dependency is your human annotation. Time a small part of the pilot, check ambiguous decisions, then choose a manageable full sample with frozen validation/test partitions. Only then can we publish model comparisons or decide whether Colab fine-tuning improves the result. Hindi/Hinglish support remains a later extension.
+The dashboard can now create a full study, track partition completion and queue experiments. A 303-sentence full study has been created locally with 199 training, 35 validation and 69 test sentences; it remains blank. The next research dependency is your human annotation. Time a small part of the pilot, check ambiguous decisions, then choose a manageable full sample with frozen validation/test partitions. Only then can we publish model comparisons or decide whether Colab fine-tuning improves the result. Hindi/Hinglish support remains a later extension.

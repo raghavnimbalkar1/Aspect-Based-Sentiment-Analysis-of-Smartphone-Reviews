@@ -52,3 +52,11 @@ Open **Annotation**. Choose a collection, read the sentence and assign each aspe
 Completed exports download as a ZIP containing `annotations.csv` and `annotations.manifest.json`. Draft sentences are excluded. The original partitions, duplicate groups and sentence text remain fixed. You can reopen a completed sentence, save a draft to withdraw it from exports, then complete it after review; earlier revisions remain in the database.
 
 Use the 101-sentence training pilot to time the work and refine the guide. The 300-sentence full export above is a starting target, not an accuracy guarantee. Confirm that it contains enough validation/test sentences and relevant classes before drawing conclusions. A tiny evaluation set can produce unstable scores. The workbench deliberately provides no model suggestions; assisted annotation would need a separately recorded training-only workflow.
+
+## Create a study in the application
+
+Open **Annotation → New study** and choose an imported dataset, a name, a sentence target and either a training pilot or a full study. Preparation runs in the same local work queue as analysis/experiments. Existing labels are preserved. The task CSV and frozen manifest are retained under ignored `artifacts/annotation-tasks`; the editable labels live in SQLite.
+
+The full study created during this increment has 303 sentences: 199 train, 35 validation and 69 test, all blank. The target was 300; the extra sentences keep reviews complete. Partition counts follow grouped reviews and need not be exactly 60/20/20 in a small sample.
+
+On **Model evaluation**, every validation sentence in a study must be complete before an experiment can start. TF-IDF training also needs completed training labels. Each submission freezes a copy of completed labels and the manifest; subsequent edits cannot change that run. Dashboard experiments calculate validation metrics only.
