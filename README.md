@@ -1,26 +1,59 @@
-# Smartphone Review Analysis
+# Aspect — Smartphone Review Analysis
 
-A local workspace for aspect-based sentiment analysis of smartphone reviews. The project covers data preparation, annotation, baseline and transformer experiments, and a dashboard for investigating the evidence behind feature-level sentiment.
+**Aspect-Based Sentiment Analysis of Smartphone Reviews**
 
-The implementation follows the approved [research proposal](RESEARCH_PLAN.md). See the [application guide](docs/APP_GUIDE.md) for a feature/architecture explanation and the [delivery phases](docs/DELIVERY.md) for progress.
+A local research application that turns smartphone reviews into feature-level opinions, with the original sentences kept alongside each prediction. It combines data preparation, model inference, human annotation and reproducible evaluation in one dashboard.
 
-## Current increment
+[![Checks](https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews/actions/workflows/checks.yml)
+![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![React and TypeScript](https://img.shields.io/badge/React-TypeScript-3178C6?logo=react&logoColor=white)
+![Local inference](https://img.shields.io/badge/Inference-local_CPU-39725c)
 
-- A React dashboard with aspect charts, single-review analysis, linked review filters, phone comparison, and CSV/JSON exports.
-- A local FastAPI service with SQLite migrations, validated imports, persistent results, and resumable batch analysis.
-- A verified historical corpus of 4,346 reviews across 12 explicitly selected smartphone models/listings.
-- A rule baseline using explicit aspect cues and VADER, with source sentences attached to predictions.
-- A sentence annotation workbench with drafts, edit history, frozen task identities and training-format export.
-- Local model selection, transferred DeBERTa inference, same-review comparison, and model-isolated saved results.
-- Duplicate-aware partitions, exact tuple metrics, a TF-IDF training command and installed-model evaluation.
+![Review intelligence dashboard showing the historical smartphone corpus, aspect sentiment and linked evidence](docs/screenshots/overview.jpg)
 
-**Rules + VADER is the default.** A transferred transformer is installed in the development workspace and can be installed on another machine with `make model-setup`. Human labels, smartphone fine-tuning and held-out accuracy remain outstanding. See [modeling and attribution](docs/MODELING.md).
+[Quick start](#quick-start) · [How it works](#how-it-works) · [Screenshots](#screenshots) · [Models](#models) · [Research workflow](#research-workflow) · [Documentation](#documentation)
 
-## Run locally
+## Why aspect-based analysis?
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and Node.js 24 or later. The project uses Python 3.12 through uv. Run these commands from the repository root:
+An overall rating cannot tell us which part of a phone someone liked. For example:
+
+> The camera is excellent, but the battery is terrible.
+
+| Aspect | Sentiment | Supporting evidence |
+| --- | --- | --- |
+| Camera | Positive | The original sentence |
+| Battery | Negative | The original sentence |
+
+The application tracks ten categories: **battery, charging, camera, display, performance and thermals, software, build and design, audio, connectivity, and value**. A mentioned aspect can be positive, negative, neutral or mixed. Annotation and supervised training also use an explicit **absent** state.
+
+## Features
+
+| Workspace | What you can do |
+| --- | --- |
+| **Overview** | Inspect aspect counts, sentiment distributions and the reviews behind each chart. |
+| **Analyse a review** | Analyse English text and compare the selected model against the rule baseline on the same input. |
+| **Review explorer** | Search original reviews, filter by phone/aspect/sentiment and inspect supporting sentences. |
+| **Compare phones** | Compare two or three listings, with mention counts, review periods and low-support indicators. |
+| **Annotation** | Create a frozen study, label sentences without predictions or ratings, save drafts and export completed labels. |
+| **Model evaluation** | Queue validation experiments, train TF-IDF classifiers, inspect per-aspect scores and confusion matrices, and download reports. |
+
+CSV import supports column mapping and reports invalid rows and duplicates. Batch analysis preserves completed results and can resume unfinished records. Results, jobs and exports are separated by model and taxonomy version.
+
+## Quick start
+
+### Requirements
+
+- Git, a POSIX shell and `make`.
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) for the Python environment. The repository selects Python 3.12.
+- [Node.js](https://nodejs.org/) 24 or later; `.nvmrc` selects 24.
+- Internet for initial dependency/data downloads. The installed application runs locally afterward.
+
+The CPU inference path has been verified on an M2 MacBook Air with 8 GB RAM. A GPU and paid inference API are not required.
 
 ```sh
+git clone https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews.git
+cd Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews
+
 make setup
 make data
 make seed
@@ -28,72 +61,208 @@ make build
 make run
 ```
 
-Open [http://localhost:8000](http://localhost:8000). After setup, `make run` uses the saved database and built dashboard without internet. You can also start with `bash scripts/start.sh`.
+Open **[http://localhost:8000](http://localhost:8000)**. The backend serves both the API and the built frontend. Stop it with `Ctrl+C`.
 
-`make data` downloads the fixed public Kaggle source version, verifies CSV checksums, applies the explicit smartphone selection, filters language, removes repeated listing/text rows, and writes a bounded corpus. `make seed` imports it idempotently and runs the baseline. Neither command writes raw reviews or databases into Git.
+| Command | Purpose |
+| --- | --- |
+| `make setup` | Install locked Python and frontend dependencies. |
+| `make data` | Download the fixed source version, verify checksums and prepare the selected smartphone corpus. |
+| `make seed` | Import the prepared corpus idempotently and run the baseline. |
+| `make build` | Build the React application. |
+| `make run` | Start the saved workspace on port 8000 without downloading dependencies. |
+| `make model-setup` | Install optional neural dependencies and download the pinned ABSA checkpoint. |
+| `make check` | Run backend tests/lint, frontend formatting checks and the production build. |
 
-The source spans older devices and includes explicitly marked renewed listings. This workspace describes those historical reviews; it does not rank current phones. See the [data audit](docs/data/README.md).
+To start with your own CSV, skip `make data` and `make seed`, then choose **Import reviews**. After the initial setup, `bash scripts/start.sh` also starts the built application.
 
-## Work with your own reviews
-
-Choose **Import reviews**, upload a UTF-8 CSV, and map its text column. Product, brand, date, and rating columns are optional. The importer reports invalid rows and duplicates. Dates accept ISO format, English month names, or `MM/DD/YYYY`; individual review text is limited to 30,000 characters. The upload limit is 16 MB and 10,000 rows.
-
-Choose **Run analysis** to process an imported dataset. Completed records persist as the job advances. After an interruption, retry processes only unfinished records. Use one API process/worker per database.
-
-The source import filters detected non-English reviews. Custom uploads retain them for visibility, while analysis marks unsupported languages instead of creating aspect results. Short text may have uncertain language identification and is processed provisionally. Product relevance in custom uploads is supplied by the user.
-
-The explorer, overview, and exports use the same review filters. The comparison screen is a separate full-corpus view for the selected products. Main charts count each review/category once. Net sentiment is `(positive − negative) / all present-state mentions × 100`; neutral and mixed mentions stay in the denominator. Low-support comparisons are identified.
-
-## Annotation and experiments
+### Enable the neural model
 
 ```sh
-make pilot
-make annotation-open
-# A separate full study is needed for validation/test labels; adjust the target after timing the pilot.
-.venv/bin/absa annotation-tasks data/processed/reviews.jsonl --output data/annotations/full.csv --sentences 300 --full
+make model-setup
+make run
 ```
 
-Open **Annotation** to label the pilot. Export completed labels as a ZIP, extract it into `data/annotations`, and preserve the sidecar manifest. The pilot alone cannot produce validation metrics. Follow the [annotation guide](docs/ANNOTATION.md) and check the full-study labels before training:
+Choose **DeBERTa ABSA · transferred** in the model selector. The download contains approximately 706 MiB of weights/tokenizer files, in addition to the optional Python dependencies. Inference loads local files and uses CPU by default. Initial loading takes longer than subsequent requests. See [model setup and attribution](docs/MODELING.md).
 
-```sh
-.venv/bin/absa train-tfidf data/annotations/annotations.csv --manifest data/annotations/annotations.manifest.json --output artifacts/experiments/tfidf-001
+## How it works
+
+1. **Import and validate.** Preserve original review text, validate optional metadata, detect language and report rejected or repeated rows.
+2. **Prepare evidence.** Split reviews into sentences while retaining their character offsets.
+3. **Predict aspect sentiment.** Run the chosen analyzer and combine its sentence-level results into one result per review/category.
+4. **Persist and inspect.** Save results in SQLite; use the same review selection for overview charts, the explorer and exports.
+5. **Create human labels.** Sample complete reviews, group duplicates before partitioning and freeze task identities in a manifest.
+6. **Evaluate reproducibly.** Compare models against completed human validation labels using an immutable input snapshot. Keep final test evaluation separate.
+
+```mermaid
+flowchart LR
+    Reviews[Review CSV] --> API[FastAPI service]
+    UI[React dashboard] <--> API
+    API <--> DB[(SQLite workspace)]
+    API --> Queue[Local work queue]
+    Queue --> Models[Rules / DeBERTa / TF-IDF]
+    Models --> DB
+    Queue --> Studies[Frozen annotation studies]
+    Studies --> Human[Human labels]
+    Human --> Experiments[Training and validation]
+    Experiments --> Reports[Versioned models and JSON reports]
+    Reports --> API
 ```
 
-This produces validation comparisons for rules, TF-IDF, and always-absent predictions and registers the trained classifier for dashboard selection. The evaluation page reads the resulting metrics. Test evaluation requires the explicit `--final-test` option and belongs after model selection. Existing task and experiment output paths are protected against overwrites.
+### Import your own reviews
 
-## Development and checks
+Only a text column is required. Product, brand, date and overall rating are optional:
+
+```csv
+text,product,brand,date,rating
+"The camera is sharp, but the battery drains quickly.",Phone A,Example,2026-01-15,3
+"The display is bright and charging is fast.",Phone B,Example,2026-01-16,5
+```
+
+These rows are illustrative examples, not benchmark data. Map the columns in **Import reviews**, select a model and choose **Run analysis**. UTF-8 uploads are limited to 16 MB, 10,000 rows and 30,000 characters per review. Overall ratings remain metadata; they are never used as aspect labels.
+
+Charts count each review/category once. Phone comparisons use:
+
+```text
+net sentiment = 100 × (positive mentions − negative mentions) / all present-state mentions
+```
+
+Neutral and mixed mentions remain in the denominator. The comparison screen covers the selected phones across the dataset; overview/explorer exports follow the active review filters.
+
+## Screenshots
+
+Screenshots below are captured from the running local application. Corpus views use the rule baseline. The neural comparison uses an illustrative input outside the evaluation set. The annotation and evaluation views show the actual unlabelled study; they do not display invented accuracy scores.
+
+<details>
+<summary><strong>Single-review analysis and model comparison</strong></summary>
+
+![Rules and transferred DeBERTa analyzing the same review, with source-sentence evidence](docs/screenshots/model-comparison.jpg)
+
+</details>
+
+<details>
+<summary><strong>Phone comparison with sample sizes</strong></summary>
+
+![Feature-level comparison of two historical phone listings, including mention counts and review periods](docs/screenshots/phone-comparison.jpg)
+
+</details>
+
+<details>
+<summary><strong>Blind sentence annotation</strong></summary>
+
+![Annotation study showing frozen partitions, blank category states and draft/completion controls](docs/screenshots/annotation.jpg)
+
+</details>
+
+<details>
+<summary><strong>Validation experiment workspace</strong></summary>
+
+![Model availability and validation controls correctly waiting for completed human labels](docs/screenshots/evaluation.jpg)
+
+</details>
+
+## Models
+
+| Model | Method | Status |
+| --- | --- | --- |
+| **Rules + VADER** | Explicit feature cues, clause-local sentiment and documented domain heuristics. | Default baseline; all 4,346 corpus reviews processed. |
+| **Transferred DeBERTa ABSA** | Explicit smartphone candidates paired with a pretrained three-state sentiment classifier. Opposing predictions are aggregated as mixed. | Local CPU inference verified; smartphone fine-tuning and independent benchmark results remain pending. |
+| **TF-IDF + logistic classifiers** | Training-only word uni/bigrams and one five-state classifier per category. Single-class categories use a disclosed constant classifier. | Training, evaluation, registration and dashboard inference implemented; requires human labels. |
+
+The neural checkpoint is **[`yangheng/deberta-v3-base-absa-v1.1`](https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1)**, pinned to revision `10c9dff335a44073e1352360c3a7bc54dc58eb01`. Its published metadata declares MIT licensing. The downloader records file hashes, and inference uses local safetensors without executing repository-supplied Python code.
+
+Our application adds the smartphone taxonomy, candidate pairing, evidence tracking, aggregation, persistence and research workflow. The transferred checkpoint is not presented as a model trained by this project. See [modeling decisions and limitations](docs/MODELING.md).
+
+## Data
+
+The source is Griko Nibras's [Amazon Cell Phones Reviews, version 2](https://www.kaggle.com/datasets/grikomsn/amazon-cell-phones-reviews/versions/2), whose dataset metadata declares CC0.
+
+| Stage | Count |
+| --- | ---: |
+| Source review rows | 67,986 |
+| Source product listings | 720 |
+| Selected smartphone listings | 12 |
+| Prepared corpus | 4,346 reviews |
+| Detected English | 3,819 reviews |
+| Short/undetermined language, retained provisionally | 527 reviews |
+
+Preparation uses an explicit listing selection, preserves renewed/new condition, removes exact repeated listing/text rows and caps each listing at 400 reviews. The selected corpus spans July 2016–December 2019. It describes historical reviews and does not rank current phones.
+
+Checksums and aggregate preparation evidence are committed under [docs/data](docs/data/README.md). Raw reviews, generated corpora, databases, labels and weights stay outside Git.
+
+## Research workflow
+
+1. Open **Annotation → New study** and choose an imported dataset. Use a training-only pilot to refine the annotation guide; use a full study for frozen train/validation/test partitions.
+2. Label all ten category states for each sentence, including absent. Ratings and model predictions are hidden. Save drafts or mark reviewed decisions complete; edits retain their revision history.
+3. Open **Model evaluation** after completing every validation sentence in the selected study. Choose installed-model comparison or TF-IDF training. Training also requires completed training labels.
+4. Inspect tuple precision/recall/F1, presence F1, category support and the five-state confusion matrix. Download the JSON report to retain its source hashes and configuration.
+5. Select the final model using validation. Final test evaluation requires the explicit CLI option described in [MODELING.md](docs/MODELING.md#human-evaluation-and-supervised-training).
+
+The primary metric is **exact category–sentiment tuple micro-F1**. Detecting the correct aspect with the wrong sentiment counts as both a false positive and a false negative. An always-absent reference is included. Accuracy over predominantly absent categories is not used as the headline result.
+
+A dashboard run freezes completed labels at submission and verifies their hashes before execution. It never evaluates test. Duplicate groups stay in one partition. Single-annotator labels must be reported as such; edit history does not establish inter-annotator agreement.
+
+**Current research status:** the 101-sentence training pilot and 303-sentence full study are blank. No independent smartphone accuracy, project-trained TF-IDF model or smartphone fine-tuning result is claimed. Test fixtures are isolated and are not published as experiment results.
+
+## Technology and structure
+
+| Layer | Technology |
+| --- | --- |
+| Interface | React, TypeScript, Vite, Recharts, Lucide |
+| API and validation | Python, FastAPI, Pydantic |
+| Persistence | SQLite, WAL journaling, numbered/checksum-checked migrations |
+| Text processing | pysbd, langdetect, explicit feature expressions, VADER |
+| Classical ML | scikit-learn, TF-IDF, logistic regression, joblib |
+| Neural inference | PyTorch, Transformers, SentencePiece, safetensors |
+| Verification | pytest, Ruff, Prettier, TypeScript, GitHub Actions |
+
+```text
+frontend/src/               Dashboard views, components and API types
+src/smartphone_absa/
+  api.py                   Review analysis and dataset routes
+  annotation_api.py        Blind annotation routes
+  research_api.py          Study creation, experiment runs and reports
+  store.py, migrations/    SQLite persistence and schema upgrades
+  baseline.py, models/     Model registry and inference adapters
+  annotations.py           Sampling, duplicate grouping and frozen splits
+  workbench.py             Label edits, conflicts, history and export
+  research.py              Study preparation and immutable experiment inputs
+  experiments.py           TF-IDF training and model comparisons
+  metrics.py               Exact tuple and presence metrics
+  data.py, uploads.py      Verified corpus preparation and CSV validation
+  cli.py                   Repeatable command-line workflows
+config/products.json       Reviewed source-listing selection
+docs/                      Research, guides, audit evidence and screenshots
+tests/                     Isolated behavior, persistence and leakage checks
+data/, artifacts/          Generated local files; ignored by Git
+```
+
+## Development and operations
 
 ```sh
 make check
 ```
 
-For separate development servers, run `make dev-api` and `make dev-ui` in two terminals, then open [http://localhost:5173](http://localhost:5173). The frontend proxies API calls to port 8000. Production-style local serving uses the built frontend through the single backend process.
+For separate development servers, run `make dev-api` and `make dev-ui` in two terminals, then open [localhost:5173](http://localhost:5173). The frontend proxies API requests to port 8000. Interactive API documentation is available at [localhost:8000/docs](http://localhost:8000/docs).
 
-The SQLite database defaults to `data/workspace.sqlite3`. Override it with `ABSA_DATABASE`. Numbered migrations under `src/smartphone_absa/migrations` apply automatically and are checked for changes after application. Back up a valuable local database before upgrading it.
+The default database is `data/workspace.sqlite3`; set `ABSA_DATABASE` and `ABSA_ARTIFACTS` to isolate another server workspace. Run one API process per database. Heavy background jobs share one local worker. Back up valuable labels before upgrades; introduce new numbered migrations instead of editing applied ones.
 
-Model and taxonomy IDs participate in persistence keys. A behaviour-changing baseline update must receive a new model ID before processing existing data. Model files, experiment outputs, annotation copies, and database files stay local.
+A model behavior change requires a new model ID before reprocessing data. Local TF-IDF IDs derive from their artifacts. Only load trusted local joblib artifacts. See [operations and backups](docs/OPERATIONS.md) and [contribution guidance](CONTRIBUTING.md).
 
-## Repository layout
+### Limits
 
-| Path | Purpose |
-| --- | --- |
-| `src/smartphone_absa` | API, storage, data preparation, annotation, models, and metrics |
-| `frontend` | React/TypeScript dashboard |
-| `config/products.json` | Reviewed smartphone listing selection |
-| `docs/data` | Source checksums and aggregate preparation evidence |
-| `docs/ANNOTATION.md` | Annotation and evaluation instructions |
-| `tests` | Model behaviour, leakage, persistence, import, and API checks |
-| `data` / `artifacts` | Local generated data, databases, labels, and experiments; ignored by Git |
+- English is supported first. Short text can have uncertain language detection; Hindi/Hinglish remains a later extension.
+- Explicit candidate detection can miss implicit features, sarcasm, cross-sentence references and difficult opinion attachment. Neural clauses over 512 tokens are rejected rather than silently truncated.
+- Prediction scores are model-specific and uncalibrated. Sample sizes, historical coverage and renewed listings affect comparisons.
+- This is a single-machine research workspace. It does not claim distributed processing, multi-user deployment or production-scale model accuracy.
 
-## Delivery
+## Documentation
 
-1. Data audit, annotation format, grouped splits, and reproducible baseline.
-2. Local API, persistent analysis jobs, and dashboard.
-3. Supervised model comparison and local transformer inference.
-4. Final evaluation, verification, and submission packaging.
+- [Research plan and sources](RESEARCH_PLAN.md)
+- [Application walkthrough and architecture](docs/APP_GUIDE.md)
+- [Annotation protocol](docs/ANNOTATION.md)
+- [Model setup, attribution and evaluation commands](docs/MODELING.md)
+- [Data audit and preparation evidence](docs/data/README.md)
+- [Delivery phases and verification record](docs/DELIVERY.md)
+- [Local operations and database backups](docs/OPERATIONS.md)
 
-Review-level ratings are metadata. They are never substituted for aspect sentiment labels. Real model measurements will be published only after evaluation on independently checked annotations.
-
-## Development workflow
-
-Use focused feature branches and pull requests. Raw datasets, local databases, trained checkpoints, credentials, and generated exports stay out of Git. See [contribution guidance](CONTRIBUTING.md).
+Dataset and pretrained-model licensing are documented with their sources above. Third-party libraries retain their own licenses; their use does not assign a license to this repository's original code.

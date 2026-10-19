@@ -20,6 +20,8 @@ from smartphone_absa.annotation_api import annotation_router
 from smartphone_absa.domain import JobRequest, ModelComparisonRequest, SingleAnalysisRequest
 from smartphone_absa.jobs import run_job
 from smartphone_absa.models.registry import ModelRegistry, ModelUnavailable
+from smartphone_absa.research import ResearchService
+from smartphone_absa.research_api import research_router
 from smartphone_absa.store import Filters, Store
 from smartphone_absa.taxonomy import CATEGORIES, CATEGORY_IDS, PRESENT_LABELS, TAXONOMY_VERSION
 from smartphone_absa.uploads import MAX_UPLOAD_BYTES, parse_csv, prepare_upload
@@ -45,19 +47,23 @@ def create_app(
     registry: ModelRegistry | None = None,
 ) -> FastAPI:
     store = Store(database or Path(os.getenv("ABSA_DATABASE", ROOT / "data/workspace.sqlite3")))
-    registry = registry or ModelRegistry(ROOT / "artifacts")
+    registry = registry or ModelRegistry(Path(os.getenv("ABSA_ARTIFACTS", ROOT / "artifacts")))
     executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="absa-analysis")
+    research = ResearchService(store, registry.artifacts, registry, executor)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         store.interrupt_jobs()
+        research.interrupt()
         yield
         executor.shutdown(wait=True, cancel_futures=False)
 
     app = FastAPI(title="Smartphone ABSA", version=__version__, lifespan=lifespan)
     app.state.store = store
     app.state.registry = registry
+    app.state.research = research
     app.include_router(annotation_router(AnnotationWorkbench(store)))
+    app.include_router(research_router(research))
 
     @app.middleware("http")
     async def local_requests(request: Request, call_next):
@@ -327,20 +333,19 @@ def create_app(
     @app.get("/api/evaluation")
     def evaluation():
         reports = []
-        for path in sorted((ROOT / "artifacts/experiments").glob("*/metrics.json")):
+        for path in sorted((registry.artifacts / "experiments").glob("*/metrics.json")):
             try:
                 report = json.loads(path.read_text())
                 reports.append({"experiment": path.parent.name, **report})
             except (ValueError, OSError):
                 log.warning("Could not read experiment report %s", path.name)
-        return {
-            "reports": reports,
-            "active_model": "rules-v1",
-            "models": [
-                {**spec, "status": "available" if spec["available"] else "not_installed"}
-                for spec in public_specs()
-            ]
-            + [
+        specs = public_specs()
+        cards = [
+            {**spec, "status": "available" if spec["available"] else "not_installed"}
+            for spec in specs
+        ]
+        if not any(spec.get("kind") == "tfidf" for spec in specs):
+            cards.append(
                 {
                     "id": "tfidf-supervised",
                     "name": "TF-IDF + logistic regression",
@@ -348,8 +353,8 @@ def create_app(
                     "available": False,
                     "description": "Requires human training and validation labels.",
                 }
-            ],
-        }
+            )
+        return {"reports": reports, "active_model": "rules-v1", "models": cards}
 
     build = frontend or ROOT / "frontend/dist"
     if (build / "index.html").exists():

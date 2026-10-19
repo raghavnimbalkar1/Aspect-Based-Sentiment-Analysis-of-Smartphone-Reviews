@@ -63,3 +63,11 @@ To train the classical classifier:
 Training fits vocabulary on training sentences only. Each category gets a five-state classifier; a category with only one training state uses a disclosed constant classifier. The artifact's hash determines its ID, and a `model-info.json` makes it discoverable in the dashboard. Only load artifacts produced locally; a checksum verifies identity, not the safety of an unknown joblib file.
 
 Reports become visible on **Model evaluation**. Automated test fixtures exercise these paths in temporary directories and never appear as project experiment results. One annotator's completed labels must be disclosed as single-annotator work; edit history does not constitute inter-annotator agreement.
+
+## Run experiments from the dashboard
+
+The evaluation page can compare one to three installed models or train the fixed TF-IDF baseline. Select a full annotation study after all its validation sentences are complete. The pilot cannot estimate validation performance. Training also requires completed training labels.
+
+A submission stores a CSV/manifest snapshot under `artifacts/experiment-inputs/<run-id>` and records its hashes in SQLite. The single local worker verifies those files, executes the experiment and writes a new result directory. The report includes snapshot provenance. Active duplicate runs for the same study are rejected. Interrupted runs retain their inputs; start a new run rather than overwriting a result directory.
+
+Inspect a validation row to see tuple precision, recall and F1; presence F1; category-level gold/prediction support; and a five-state confusion matrix. Download the complete JSON report for its configuration and hashes. The interface never requests final test evaluation; the explicit CLI option remains the final-stage route.

@@ -83,17 +83,57 @@ export type ModelSpec = {
   device?: string
   setup?: string
 }
+export type TaskSet = {
+  id: string
+  name: string
+  total: number
+  completed: number
+  drafts: number
+  pilot_train_only: boolean
+  partitions: Record<string, { total: number; completed: number }>
+}
+export type MetricScore = {
+  precision: number
+  recall: number
+  f1: number
+  true_positive: number
+  false_positive: number
+  false_negative: number
+}
+export type ModelMetrics = {
+  tuple_micro: MetricScore
+  presence_micro: MetricScore
+  tuple_macro_f1: number
+  per_category: Record<string, MetricScore & { gold_support: number; predicted_support: number }>
+  confusion_matrix: Record<string, Record<string, number>>
+  sentences: number
+  pairs: number
+}
+export type ExperimentReport = {
+  experiment: string
+  model_id: string
+  training_sentences: number
+  validation: Record<string, ModelMetrics>
+  test_evaluated: boolean
+  elapsed_seconds: number
+  annotations_sha256: string
+  manifest_sha256: string
+  warnings?: string[]
+}
+export type ExperimentRun = {
+  id: string
+  study_name: string
+  set_id: string
+  kind: 'compare' | 'train_tfidf'
+  status: string
+  created_at: string
+  error: string | null
+  config: { experiment: string; models: string[]; completed_sentences: Record<string, number> }
+}
 export type Evaluation = {
   active_model: string
   models: (ModelSpec & { status: string })[]
-  reports: {
-    experiment: string
-    model_id: string
-    training_sentences: number
-    validation: Record<string, { tuple_micro: { f1: number }; presence_micro: { f1: number } }>
-    test_evaluated: boolean
-    elapsed_seconds: number
-  }[]
+  reports: ExperimentReport[]
 }
 export type FilterValues = { product: string; category: string; sentiment: string; q: string }
 export const emptyFilters: FilterValues = { product: '', category: '', sentiment: '', q: '' }
