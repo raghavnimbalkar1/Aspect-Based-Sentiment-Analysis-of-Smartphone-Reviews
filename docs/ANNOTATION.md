@@ -51,12 +51,28 @@ Open **Annotation**. Choose a collection, read the sentence and assign each aspe
 
 Completed exports download as a ZIP containing `annotations.csv` and `annotations.manifest.json`. Draft sentences are excluded. The original partitions, duplicate groups and sentence text remain fixed. You can reopen a completed sentence, save a draft to withdraw it from exports, then complete it after review; earlier revisions remain in the database.
 
-Use the 101-sentence training pilot to time the work and refine the guide. The 300-sentence full export above is a starting target, not an accuracy guarantee. Confirm that it contains enough validation/test sentences and relevant classes before drawing conclusions. A tiny evaluation set can produce unstable scores. The workbench deliberately provides no model suggestions; assisted annotation would need a separately recorded training-only workflow.
+Use the 101-sentence training pilot to time the work and refine the guide. The 300-sentence full export above is a starting target, not an accuracy guarantee. Confirm that it contains enough validation/test sentences and relevant classes before drawing conclusions. A tiny evaluation set can produce unstable scores. The workbench deliberately provides no model suggestions; assisted training uses the separate workflow below.
+
+Use **Partition** and **Task status → Still to complete** to work through validation or test directly. Saving a completed sentence removes it from that pending view. Filters and navigation are disabled while there are unsaved changes. General praise without a feature does not imply positive labels for every category; mark only the features that the sentence supports.
 
 ## Create a study in the application
 
 Open **Annotation → New study** and choose an imported dataset, a name, a sentence target and either a training pilot or a full study. Preparation runs in the same local work queue as analysis/experiments. Existing labels are preserved. The task CSV and frozen manifest are retained under ignored `artifacts/annotation-tasks`; the editable labels live in SQLite.
 
-The full study created during this increment has 303 sentences: 199 train, 35 validation and 69 test, all blank. The target was 300; the extra sentences keep reviews complete. Partition counts follow grouped reviews and need not be exactly 60/20/20 in a small sample.
+The full study has 303 sentences: 199 train, 35 validation and 69 test. Human task labels started blank. The target was 300; the extra sentences keep reviews complete. Partition counts follow grouped reviews and need not be exactly 60/20/20 in a small sample.
 
-On **Model evaluation**, every validation sentence in a study must be complete before an experiment can start. TF-IDF training also needs completed training labels. Each submission freezes a copy of completed labels and the manifest; subsequent edits cannot change that run. Dashboard experiments calculate validation metrics only.
+On **Model evaluation**, every validation sentence in a study must be complete before an experiment can start. TF-IDF training also needs completed training labels or an explicitly selected assisted set. Each submission freezes a copy of its inputs; subsequent edits cannot change that run. Dashboard experiments calculate validation metrics only.
+
+## Assisted training for the solo workflow
+
+The user will independently label the 35 validation and 69 test sentences. To make training feasible for one person, the pinned transferred model can generate pseudo labels for the frozen training partition only:
+
+```sh
+.venv/bin/absa assist-training --set-id 702b9e3f899067ea52b7088c
+```
+
+For a different study, use its ID from `/api/annotations`. The command writes ignored `artifacts/training-assistance/<study-id>/labels.csv`, `manifest.json` and `provenance.json`. It refuses to overwrite an existing export. The prepared local set has 199 sentences / 1,990 category states. Every row is `origin=assisted`, `status=generated`, with the teacher's model ID; no human approval is implied. Hashes and the pinned teacher specification are recorded. Validation/test text is never passed to the teacher by this command. The human workbench and edit history remain unchanged.
+
+On **Model evaluation**, select **Train TF-IDF** and explicitly check **Use saved assisted training labels**. It stays disabled until all human validation sentences are complete. A completed human training sentence replaces all ten matching machine labels. The run snapshots the assisted CSV and provenance alongside the human export and checks hashes before execution. Reports and registered-model metadata disclose human/assisted training row counts.
+
+For CLI training, add `--assisted-training artifacts/training-assistance/<study-id>/labels.csv` to `train-tfidf`. This flag never allows generated validation/test labels. Teacher errors, missed implicit aspects and class imbalance may be inherited. Describe the result as a classifier trained with pseudo labels and evaluated on a single-annotator human holdout, not a fully human-labelled training study.

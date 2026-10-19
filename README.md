@@ -34,8 +34,8 @@ The application tracks ten categories: **battery, charging, camera, display, per
 | **Analyse a review** | Analyse English text and compare the selected model against the rule baseline on the same input. |
 | **Review explorer** | Search original reviews, filter by phone/aspect/sentiment and inspect supporting sentences. |
 | **Compare phones** | Compare two or three listings, with mention counts, review periods and low-support indicators. |
-| **Annotation** | Create a frozen study, label sentences without predictions or ratings, save drafts and export completed labels. |
-| **Model evaluation** | Queue validation experiments, train TF-IDF classifiers, inspect per-aspect scores and confusion matrices, and download reports. |
+| **Annotation** | Create a frozen study, filter by partition/completion, label sentences without predictions or ratings, save drafts and export completed labels. |
+| **Model evaluation** | Queue validation experiments, train TF-IDF classifiers, inspect scores, confusion matrices and individual errors, and download reports/predictions. |
 
 CSV import supports column mapping and reports invalid rows and duplicates. Batch analysis preserves completed results and can resume unfinished records. Results, jobs and exports are separated by model and taxonomy version.
 
@@ -72,6 +72,7 @@ Open **[http://localhost:8000](http://localhost:8000)**. The backend serves both
 | `make run` | Start the saved workspace on port 8000 without downloading dependencies. |
 | `make model-setup` | Install optional neural dependencies and download the pinned ABSA checkpoint. |
 | `make check` | Run backend tests/lint, frontend formatting checks and the production build. |
+| `make doctor` | Check the built dashboard, database, migrations and installed model integrity without changing labels. |
 
 To start with your own CSV, skip `make data` and `make seed`, then choose **Import reviews**. After the initial setup, `bash scripts/start.sh` also starts the built application.
 
@@ -166,7 +167,7 @@ Screenshots below are captured from the running local application. Corpus views 
 | --- | --- | --- |
 | **Rules + VADER** | Explicit feature cues, clause-local sentiment and documented domain heuristics. | Default baseline; all 4,346 corpus reviews processed. |
 | **Transferred DeBERTa ABSA** | Explicit smartphone candidates paired with a pretrained three-state sentiment classifier. Opposing predictions are aggregated as mixed. | Local CPU inference verified; smartphone fine-tuning and independent benchmark results remain pending. |
-| **TF-IDF + logistic classifiers** | Training-only word uni/bigrams and one five-state classifier per category. Single-class categories use a disclosed constant classifier. | Training, evaluation, registration and dashboard inference implemented; requires human labels. |
+| **TF-IDF + logistic classifiers** | Training-only word uni/bigrams and one five-state classifier per category. Single-class categories use a disclosed constant classifier. | Supports human or explicitly selected assisted training; independent human validation remains required. |
 
 The neural checkpoint is **[`yangheng/deberta-v3-base-absa-v1.1`](https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1)**, pinned to revision `10c9dff335a44073e1352360c3a7bc54dc58eb01`. Its published metadata declares MIT licensing. The downloader records file hashes, and inference uses local safetensors without executing repository-supplied Python code.
 
@@ -193,15 +194,15 @@ Checksums and aggregate preparation evidence are committed under [docs/data](doc
 
 1. Open **Annotation → New study** and choose an imported dataset. Use a training-only pilot to refine the annotation guide; use a full study for frozen train/validation/test partitions.
 2. Label all ten category states for each sentence, including absent. Ratings and model predictions are hidden. Save drafts or mark reviewed decisions complete; edits retain their revision history.
-3. Open **Model evaluation** after completing every validation sentence in the selected study. Choose installed-model comparison or TF-IDF training. Training also requires completed training labels.
-4. Inspect tuple precision/recall/F1, presence F1, category support and the five-state confusion matrix. Download the JSON report to retain its source hashes and configuration.
+3. Open **Model evaluation** after completing every validation sentence in the selected study. Choose installed-model comparison or TF-IDF training. Training accepts completed human training labels or an explicitly selected, separately prepared assisted training set.
+4. Inspect tuple precision/recall/F1, presence F1, category support, the confusion matrix and individual errors. Download the JSON report and per-pair predictions to retain the evidence and source hashes.
 5. Select the final model using validation. Final test evaluation requires the explicit CLI option described in [MODELING.md](docs/MODELING.md#human-evaluation-and-supervised-training).
 
 The primary metric is **exact category–sentiment tuple micro-F1**. Detecting the correct aspect with the wrong sentiment counts as both a false positive and a false negative. An always-absent reference is included. Accuracy over predominantly absent categories is not used as the headline result.
 
 A dashboard run freezes completed labels at submission and verifies their hashes before execution. It never evaluates test. Duplicate groups stay in one partition. Single-annotator labels must be reported as such; edit history does not establish inter-annotator agreement.
 
-**Current research status:** the 101-sentence training pilot and 303-sentence full study are blank. No independent smartphone accuracy, project-trained TF-IDF model or smartphone fine-tuning result is claimed. Test fixtures are isolated and are not published as experiment results.
+**Current research status:** a full study contains 199 training, 35 validation and 69 test sentences. A separate machine-generated training export covers the 199 training sentences; it does not fill the blind human tasks. Independent human annotation and measured smartphone accuracy remain pending. No project-trained TF-IDF model or smartphone fine-tuning result is claimed. Test fixtures are isolated and are not published as experiment results. See the [assisted training protocol](docs/ANNOTATION.md#assisted-training-for-the-solo-workflow).
 
 ## Technology and structure
 
@@ -227,6 +228,9 @@ src/smartphone_absa/
   workbench.py             Label edits, conflicts, history and export
   research.py              Study preparation and immutable experiment inputs
   experiments.py           TF-IDF training and model comparisons
+  assistance.py            Training-only generated labels and provenance
+  predictions.py           Auditable per-pair predictions and error types
+  diagnostics.py           Read-only readiness checks and latency measurement
   metrics.py               Exact tuple and presence metrics
   data.py, uploads.py      Verified corpus preparation and CSV validation
   cli.py                   Repeatable command-line workflows
@@ -248,6 +252,8 @@ The default database is `data/workspace.sqlite3`; set `ABSA_DATABASE` and `ABSA_
 
 A model behavior change requires a new model ID before reprocessing data. Local TF-IDF IDs derive from their artifacts. Only load trusted local joblib artifacts. See [operations and backups](docs/OPERATIONS.md) and [contribution guidance](CONTRIBUTING.md).
 
+CPU latency was measured on the M2 Air using 16 frozen source reviews and 48 warm requests per model. Warm median/p95 were **1.1/2.4 ms** for rules and **64.3/214.1 ms** for transferred DeBERTa. Neural initialization took 4.7 seconds, followed by a separate 2.3-second first inference. These are direct inference measurements, excluding HTTP/UI/database work; four sampled reviews had no explicit aspect cues. They measure responsiveness, not accuracy or concurrent capacity. The [method and full measurement record](docs/PERFORMANCE.md) describe the limits.
+
 ### Limits
 
 - English is supported first. Short text can have uncertain language detection; Hindi/Hinglish remains a later extension.
@@ -264,5 +270,8 @@ A model behavior change requires a new model ID before reprocessing data. Local 
 - [Data audit and preparation evidence](docs/data/README.md)
 - [Delivery phases and verification record](docs/DELIVERY.md)
 - [Local operations and database backups](docs/OPERATIONS.md)
+- [Demo rehearsal and final evaluation checklist](docs/SUBMISSION.md)
+- [CPU performance measurement](docs/PERFORMANCE.md)
+- [Review of alternative labelled datasets](docs/BENCHMARK_DATA_REVIEW.md)
 
 Dataset and pretrained-model licensing are documented with their sources above. Third-party libraries retain their own licenses; their use does not assign a license to this repository's original code.

@@ -1,0 +1,31 @@
+{
+  "set_id": "702b9e3f899067ea52b7088c",
+  "origin": "assisted",
+  "status": "generated",
+  "training_sentences": 199,
+  "training_pairs": 1990,
+  "labels_sha256": "2533dcf04f4b020a63089f63602d6121877cb2d6b91fa5d70d38fbe79fd047a3",
+  "manifest_sha256": "717c1489f3ce89262aed0697fa4fe7b6af470d8eda623743cefbfa61e7bf39a4",
+  "teacher": {
+    "id": "deberta-absa-10c9dff3",
+    "name": "DeBERTa ABSA \u00b7 transferred",
+    "kind": "transferred_absa",
+    "available": true,
+    "description": "Explicit aspects with a local transformer sentiment model.",
+    "device": "cpu",
+    "smartphone_finetuned": false,
+    "checkpoint": "yangheng/deberta-v3-base-absa-v1.1",
+    "revision": "10c9dff335a44073e1352360c3a7bc54dc58eb01",
+    "adapter_version": 1,
+    "license": "MIT",
+    "setup": "make model-setup"
+  },
+  "label_counts": {
+    "absent": 1890,
+    "positive": 51,
+    "neutral": 22,
+    "negative": 23,
+    "mixed": 4
+  },
+  "policy": "Only frozen training sentences are inferred. No holdout labels generated. Blind human tasks remain blank. Human training labels take precedence when fitting."
+}

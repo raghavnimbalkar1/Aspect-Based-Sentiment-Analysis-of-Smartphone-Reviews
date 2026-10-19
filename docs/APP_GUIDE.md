@@ -10,8 +10,8 @@ This is a local research application for finding opinions about individual phone
 4. **Phone comparison:** compares two or three listings, with mention counts, review dates and warnings for small samples. The net score is `(positive − negative) / all mentions × 100`. Historical or renewed listings are identified in the source selection.
 5. **CSV import and export:** checks uploaded columns, reports invalid rows and duplicates, saves accepted reviews, and exports predictions as CSV or JSON. It does not scrape live shopping sites.
 6. **Background analysis:** processes a dataset with the chosen model, saves completed results, reports failures and resumes unfinished records after an interruption. Different models have separate saved results.
-7. **Annotation workbench:** creates frozen studies from imported datasets and shows one sentence at a time without ratings or predictions. You assign all ten category states, save drafts, mark sentences complete and export completed labels. Each save has a revision and history record. Conflicting edits are rejected.
-8. **Model evaluation:** queues validation comparisons or TF-IDF training from completed labels, lists available models and reads actual experiment reports. Tuple F1 requires the correct aspect and sentiment together. The application does not invent accuracy figures when human labels are missing.
+7. **Annotation workbench:** creates frozen studies and filters sentences by partition/completion without ratings or predictions. You assign all ten category states, save drafts, mark sentences complete and export labels. Each save has a revision/history record. Conflicting edits are rejected.
+8. **Model evaluation:** queues validation comparisons or TF-IDF training, lists installed models and reads actual reports. Training can explicitly use a separately prepared assisted set; evaluation stays human. Reports show aggregate metrics and individual prediction errors. The application does not invent accuracy figures when human labels are missing.
 
 ## Models
 
@@ -19,7 +19,7 @@ This is a local research application for finding opinions about individual phone
 | --- | --- | --- |
 | Rules + VADER | Explicit aspect phrases, clause splitting and sentiment heuristics | Working baseline; all 4,346 source reviews processed |
 | Transferred DeBERTa ABSA | Explicit aspect candidates paired with a pretrained transformer sentiment classifier | Installed and verified locally on CPU; no smartphone benchmark yet |
-| TF-IDF + logistic classifiers | Learns five states per category from this project's human labels | Training, evaluation and dashboard loading implemented; no real trained artifact yet |
+| TF-IDF + logistic classifiers | Learns five states per category from human or disclosed assisted training labels | Training, evaluation and dashboard loading implemented; independent human validation pending |
 
 The transferred model is third-party pretrained work. Our implementation supplies smartphone categories, candidate detection, clause pairing, evidence tracking, aggregation, storage, evaluation and the application. Details and attribution are in [the modeling notes](MODELING.md).
 
@@ -47,6 +47,9 @@ src/smartphone_absa/
   annotations.py             Blind sampling, grouped splits and label validation
   workbench.py               Annotation persistence, revisions and export
   experiments.py, metrics.py Training, comparisons and scoring
+  assistance.py              Training-only pseudo labels with provenance
+  predictions.py             Per-pair records and error classes
+  diagnostics.py             Readiness checks and latency measurement
   data.py, uploads.py         Audited corpus preparation and CSV imports
   cli.py                     Repeatable terminal commands
 config/products.json         Explicit smartphone listing selection
@@ -62,4 +65,4 @@ A request follows `React → FastAPI → model/storage → SQLite → React`. Bu
 
 The verified source contains 67,986 historical review rows. Our bounded corpus has 4,346 reviews from 12 selected listings. Automatic language filtering retained 3,819 English and 527 short/uncertain records. The 101-sentence annotation pilot contains training examples only and starts blank.
 
-The dashboard can now create a full study, track partition completion and queue experiments. A 303-sentence full study has been created locally with 199 training, 35 validation and 69 test sentences; it remains blank. The next research dependency is your human annotation. Time a small part of the pilot, check ambiguous decisions, then choose a manageable full sample with frozen validation/test partitions. Only then can we publish model comparisons or decide whether Colab fine-tuning improves the result. Hindi/Hinglish support remains a later extension.
+The full study has 199 training, 35 validation and 69 test sentences. A separate machine-generated export covers the training partition; the human task collection is not prefilled. The user will independently label validation/test in the application. Once validation is complete, run TF-IDF training and model comparison, then choose the final configuration before evaluating test. See [the submission steps](SUBMISSION.md). Smartphone transformer fine-tuning and Hindi/Hinglish remain extensions.
