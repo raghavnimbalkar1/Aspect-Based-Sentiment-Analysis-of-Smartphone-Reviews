@@ -330,3 +330,72 @@ def test_generated_labels_are_never_accepted_as_human_validation(research, tmp_p
         writer.writerows(rows)
     with pytest.raises(ValueError):
         read_annotations(labels, tmp_path / "annotations.manifest.json", allow_assisted_train=True)
+
+
+def test_ai_validation_requires_opt_in_and_marks_training_and_comparison_diagnostic(
+    research, tmp_path
+):
+    set_id = study_fixture(research, tmp_path)
+    ai_edit = edit("camera", "positive", revision=1).model_copy(
+        update={"origin": "assisted", "annotator": "AI fixture"}
+    )
+    research.workbench.save(set_id, "v1", ai_edit)
+    with pytest.raises(ValueError, match="Independent human"):
+        research.start(ExperimentRequest(set_id=set_id, kind="compare", models=["rules-v1"]))
+    for kind in ("compare", "train_tfidf"):
+        run = research.start(
+            ExperimentRequest(
+                set_id=set_id,
+                kind=kind,
+                models=["rules-v1"] if kind == "compare" else [],
+                assisted_validation=True,
+            )
+        )
+        research.executor.submit(lambda: None).result(timeout=10)
+        assert research.runs()[0]["status"] == "completed"
+        report = json.loads(
+            (
+                research.artifacts / "experiments" / run["config"]["experiment"] / "metrics.json"
+            ).read_text()
+        )
+        reference = report["evaluation_reference"]["validation"]
+        assert reference["kind"] == "ai_assisted_diagnostic" and reference["independent"] is False
+        assert reference["label_rows_by_origin"] == {"assisted": 10, "human": 10}
+        assert reference["human_only_sentences"] == reference["assisted_sentences"] == 1
+        assert any("do not establish independent" in warning for warning in report["warnings"])
+        assert report["test_evaluated"] is False and "test" not in report
+
+
+def test_assisted_test_is_rejected_by_workbench_and_annotation_reader(research, tmp_path):
+    set_id = study_fixture(research, tmp_path)
+    with pytest.raises(ValueError, match="locked test"):
+        research.workbench.save(
+            set_id, "x1", edit("audio", "positive").model_copy(update={"origin": "assisted"})
+        )
+    assert (
+        next(task for task in research.workbench.tasks(set_id) if task["sentence_id"] == "x1")[
+            "revision"
+        ]
+        == 0
+    )
+    research.workbench.save(set_id, "x1", edit("audio", "positive"))
+    with zipfile.ZipFile(io.BytesIO(research.workbench.export(set_id))) as archive:
+        for name in archive.namelist():
+            (tmp_path / name).write_bytes(archive.read(name))
+    path = tmp_path / "annotations.csv"
+    with path.open(newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    for row in rows:
+        if row["split"] == "test":
+            row["origin"] = "assisted"
+    with path.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+    with pytest.raises(ValueError, match="Independent human"):
+        read_annotations(
+            path,
+            tmp_path / "annotations.manifest.json",
+            allow_assisted_train=True,
+            allow_assisted_validation=True,
+        )

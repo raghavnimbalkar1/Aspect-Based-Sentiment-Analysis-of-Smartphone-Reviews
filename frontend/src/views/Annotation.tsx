@@ -12,6 +12,7 @@ type Task = {
   text: string
   position: number
   split: string
+  origin: 'human' | 'assisted'
   revision: number
   status: string
   annotator: string
@@ -153,7 +154,10 @@ export default function AnnotationView({
                   {selected.partitions[split]?.completed || 0} /{' '}
                   {selected.partitions[split]?.total || 0}
                 </strong>
-                <small>sentences complete</small>
+                <small>
+                  {selected.partitions[split]?.completed_human || 0} human ·{' '}
+                  {selected.partitions[split]?.completed_assisted || 0} AI-assisted
+                </small>
               </div>
             ))}
           </div>
@@ -290,6 +294,7 @@ function SentenceEditor({
           note,
           labels,
           status: complete ? 'adjudicated' : 'draft',
+          origin: task.origin,
         }),
       })
       localStorage.setItem(`aspect.annotator.${setId}`, annotator)
@@ -338,6 +343,14 @@ function SentenceEditor({
         </div>
       </div>
       <blockquote className="annotation-sentence">{task.text}</blockquote>
+      {task.origin === 'assisted' && (
+        <div className="alert info annotation-origin">
+          <span>
+            AI-assisted annotation. These labels are not an independent human reference. Edits
+            retain this origin.
+          </span>
+        </div>
+      )}
       <div className="annotation-instructions">
         <p>
           <strong>Absent</strong>: feature is not mentioned. <strong>Neutral</strong>: feature is
@@ -445,7 +458,9 @@ function SentenceEditor({
             ? 'Unsaved changes · save before changing sentence'
             : saved
               ? message
-              : 'Labels are saved locally. No suggestions are prefilled.'}
+              : task.origin === 'assisted'
+                ? 'AI-assisted labels · provenance retained in exports and history.'
+                : 'Labels are saved locally. No suggestions are prefilled.'}
         </span>
         {dirty && (
           <button

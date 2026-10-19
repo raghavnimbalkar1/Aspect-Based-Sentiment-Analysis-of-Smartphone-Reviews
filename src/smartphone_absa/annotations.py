@@ -150,7 +150,10 @@ def export_tasks(
 
 
 def read_annotations(
-    path: Path, manifest_path: Path, allow_assisted_train: bool = False
+    path: Path,
+    manifest_path: Path,
+    allow_assisted_train: bool = False,
+    allow_assisted_validation: bool = False,
 ) -> list[dict]:
     manifest = json.loads(manifest_path.read_text())
     if manifest["taxonomy_version"] != TAXONOMY_VERSION:
@@ -181,7 +184,10 @@ def read_annotations(
                 record.sentence_id
             ):
                 raise ValueError("Annotation changed the frozen sentence text or identity")
-            if record.origin != "human" and not assisted_train:
+            assisted_validation = (
+                allow_assisted_validation and split == "validation" and record.origin == "assisted"
+            )
+            if record.origin != "human" and not (assisted_train or assisted_validation):
                 raise ValueError("Independent human labels are required, especially for evaluation")
             key = (record.sentence_id, record.category)
             if key in seen:

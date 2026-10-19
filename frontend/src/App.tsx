@@ -135,7 +135,7 @@ function App() {
     ],
     annotation: [
       'Annotation workbench',
-      'Build the human labels used to train and evaluate the models.',
+      'Review sentence labels with their human or AI-assisted origin recorded.',
     ],
     evaluation: [
       'Model evaluation',

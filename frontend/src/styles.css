@@ -1909,6 +1909,10 @@ blockquote {
 .annotation-editor {
   padding-bottom: 22px;
 }
+.annotation-origin {
+  margin-left: 24px;
+  margin-right: 24px;
+}
 .annotation-sentence {
   margin: 0 24px 20px;
   padding: 20px 22px;

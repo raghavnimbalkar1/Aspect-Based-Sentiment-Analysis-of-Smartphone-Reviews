@@ -11,6 +11,7 @@ type Prediction = {
   predicted: string
   error_type: string
   reference: string
+  origin: string
 }
 
 export default function ErrorReview({ experiment, model }: { experiment: string; model: string }) {
@@ -24,7 +25,7 @@ export default function ErrorReview({ experiment, model }: { experiment: string;
     <div className="error-review">
       <h3 className="report-section-heading">Review validation errors</h3>
       <p className="report-description">
-        Compare each prediction with the saved human label. Missed aspects, extra aspects and
+        Compare each prediction with the saved reference label. Missed aspects, extra aspects and
         sentiment mistakes are shown separately.
       </p>
       <div className="annotation-filters">
@@ -92,8 +93,9 @@ export default function ErrorReview({ experiment, model }: { experiment: string;
               </div>
               <p>{row.text}</p>
               <small>
-                Human: <strong>{row.gold}</strong> · Predicted: <strong>{row.predicted}</strong> ·{' '}
-                {row.reference} reference
+                Reference: <strong>{row.gold}</strong> (
+                {row.origin === 'assisted' ? 'AI-assisted' : 'human'}) · Predicted:{' '}
+                <strong>{row.predicted}</strong> · {row.reference} reference
               </small>
             </article>
           ))}

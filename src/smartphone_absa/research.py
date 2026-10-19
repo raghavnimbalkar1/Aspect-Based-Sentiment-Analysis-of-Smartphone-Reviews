@@ -43,6 +43,7 @@ class ExperimentRequest(BaseModel):
     kind: Literal["compare", "train_tfidf"]
     models: list[str] = Field(default_factory=list, max_length=3)
     assisted_training: bool = False
+    assisted_validation: bool = False
 
 
 class ResearchService:
@@ -135,7 +136,11 @@ class ResearchService:
         with zipfile.ZipFile(io.BytesIO(bundle)) as archive:
             for name in ("annotations.csv", "annotations.manifest.json"):
                 (inputs / name).write_bytes(archive.read(name))
-        rows = read_annotations(inputs / "annotations.csv", inputs / "annotations.manifest.json")
+        rows = read_annotations(
+            inputs / "annotations.csv",
+            inputs / "annotations.manifest.json",
+            allow_assisted_validation=body.assisted_validation,
+        )
         counts = {
             split: len({row["sentence_id"] for row in rows if row["split"] == split})
             for split in ("train", "validation", "test")
@@ -173,6 +178,7 @@ class ResearchService:
             raise ValueError("Complete human training labels before training TF-IDF")
         config = {
             "models": body.models,
+            "assisted_validation": body.assisted_validation,
             "completed_sentences": counts,
             "annotations_sha256": file_hash(inputs / "annotations.csv"),
             "manifest_sha256": file_hash(inputs / "annotations.manifest.json"),
@@ -236,11 +242,20 @@ class ResearchService:
                     ):
                         raise ValueError("Assisted input snapshot changed; start a new run")
                 report = train_tfidf(
-                    annotations, manifest, output, assisted_training=assisted_training
+                    annotations,
+                    manifest,
+                    output,
+                    assisted_training=assisted_training,
+                    allow_assisted_validation=config.get("assisted_validation", False),
                 )
             else:
                 report = evaluate_models(
-                    annotations, manifest, output, config["models"], self.registry
+                    annotations,
+                    manifest,
+                    output,
+                    config["models"],
+                    self.registry,
+                    allow_assisted_validation=config.get("assisted_validation", False),
                 )
             report["study_snapshot"] = {"set_id": run["set_id"], **config}
             (output / "metrics.json").write_text(json.dumps(report, indent=2) + "\n")

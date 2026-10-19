@@ -27,7 +27,7 @@ function EvaluationView({ onModelsChanged }: { onModelsChanged: () => void }) {
         <div>
           <h2>Models and measured results</h2>
           <p>
-            Run validation on human labels and inspect where each model succeeds or fails.
+            Inspect model results against frozen human or explicitly identified AI-assisted labels.
             Pretrained checkpoints and classifiers trained on your own labels are identified
             separately.
           </p>
@@ -105,7 +105,12 @@ function EvaluationView({ onModelsChanged }: { onModelsChanged: () => void }) {
                           : ''
                       }
                     >
-                      <td>{report.experiment}</td>
+                      <td>
+                        {report.experiment}
+                        {report.evaluation_reference?.validation?.independent === false && (
+                          <small className="support-note">AI-assisted diagnostic</small>
+                        )}
+                      </td>
                       <td>{model === 'tfidf-v1' ? report.model_id : model}</td>
                       <td>{metrics.tuple_micro.f1.toFixed(3)}</td>
                       <td>{metrics.presence_micro.f1.toFixed(3)}</td>

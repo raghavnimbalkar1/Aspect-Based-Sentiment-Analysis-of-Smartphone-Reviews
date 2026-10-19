@@ -123,7 +123,7 @@ class TransferredABSA:
                     )
                 )
         warnings = [
-            "Transferred checkpoint; not yet evaluated or fine-tuned on this smartphone corpus.",
+            "Transferred checkpoint; not fine-tuned on this smartphone corpus.",
             "Aspect detection uses explicit cues. Implicit aspects may be missed.",
             "Mixed combines opposing clause predictions; scores are uncalibrated.",
         ]
