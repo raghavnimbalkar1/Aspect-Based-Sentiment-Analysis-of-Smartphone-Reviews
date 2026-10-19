@@ -32,7 +32,9 @@ Each completed review analysis is committed independently. On application startu
 
 The first increment runs `rules-v1` with `smartphone-v1`. A change that alters predictions must use a new model ID, and a taxonomy change must use a new taxonomy version. Persistence keys include both. Preserve old experiment manifests and checkpoints so reported results remain reproducible.
 
-The dashboard is currently connected only to the rule baseline. TF-IDF training writes a trusted local model artifact and measured validation report. Selecting supervised checkpoints for live inference is part of the next modeling phase.
+The model selector applies to analysis, dataset counts, jobs, filters, comparisons and exports. Rules, transferred DeBERTa and locally trained TF-IDF artifacts have separate persisted results. The transformer is loaded lazily and reused within one process. Its first load verifies downloaded file hashes. See [model setup](MODELING.md).
+
+Migration `002_annotation_workbench.sql` adds task collections, sentence labels and append-only edit history. An annotation save checks its expected revision in a transaction; a stale browser receives HTTP 409. Completing a sentence requires all ten states and consistent explicit/implicit references. Export includes only completed sentences. Backups preserve these labels together with predictions.
 
 ## Verification limits
 

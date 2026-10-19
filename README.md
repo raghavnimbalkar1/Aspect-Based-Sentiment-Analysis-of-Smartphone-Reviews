@@ -2,7 +2,7 @@
 
 A local workspace for aspect-based sentiment analysis of smartphone reviews. The project covers data preparation, annotation, baseline and transformer experiments, and a dashboard for investigating the evidence behind feature-level sentiment.
 
-The implementation follows the approved [research proposal](RESEARCH_PLAN.md). See the [delivery phases](docs/DELIVERY.md) for progress and acceptance criteria.
+The implementation follows the approved [research proposal](RESEARCH_PLAN.md). See the [application guide](docs/APP_GUIDE.md) for a feature/architecture explanation and the [delivery phases](docs/DELIVERY.md) for progress.
 
 ## Current increment
 
@@ -10,9 +10,11 @@ The implementation follows the approved [research proposal](RESEARCH_PLAN.md). S
 - A local FastAPI service with SQLite migrations, validated imports, persistent results, and resumable batch analysis.
 - A verified historical corpus of 4,346 reviews across 12 explicitly selected smartphone models/listings.
 - A rule baseline using explicit aspect cues and VADER, with source sentences attached to predictions.
-- Blind annotation exports, duplicate-aware review partitions, exact tuple metrics, and a TF-IDF training command.
+- A sentence annotation workbench with drafts, edit history, frozen task identities and training-format export.
+- Local model selection, transferred DeBERTa inference, same-review comparison, and model-isolated saved results.
+- Duplicate-aware partitions, exact tuple metrics, a TF-IDF training command and installed-model evaluation.
 
-**The active model is a rule baseline.** Human annotation and supervised model experiments are the next phase. No transformer performance or held-out accuracy is claimed.
+**Rules + VADER is the default.** A transferred transformer is installed in the development workspace and can be installed on another machine with `make model-setup`. Human labels, smartphone fine-tuning and held-out accuracy remain outstanding. See [modeling and attribution](docs/MODELING.md).
 
 ## Run locally
 
@@ -46,16 +48,18 @@ The explorer, overview, and exports use the same review filters. The comparison 
 
 ```sh
 make pilot
-uv run absa annotation-tasks data/processed/reviews.jsonl --output data/annotations/full.csv --sentences 1200 --full
+make annotation-open
+# A separate full study is needed for validation/test labels; adjust the target after timing the pilot.
+.venv/bin/absa annotation-tasks data/processed/reviews.jsonl --output data/annotations/full.csv --sentences 300 --full
 ```
 
-Follow the [annotation guide](docs/ANNOTATION.md), preserve the sidecar manifests, and independently check the labels before training:
+Open **Annotation** to label the pilot. Export completed labels as a ZIP, extract it into `data/annotations`, and preserve the sidecar manifest. The pilot alone cannot produce validation metrics. Follow the [annotation guide](docs/ANNOTATION.md) and check the full-study labels before training:
 
 ```sh
-uv run absa train-tfidf data/annotations/reconciled.csv --manifest data/annotations/full.manifest.json --output artifacts/experiments/tfidf-001
+.venv/bin/absa train-tfidf data/annotations/annotations.csv --manifest data/annotations/annotations.manifest.json --output artifacts/experiments/tfidf-001
 ```
 
-This produces validation comparisons for rules, TF-IDF, and always-absent predictions. The evaluation page reads the resulting metrics. Test evaluation requires the explicit `--final-test` option and belongs after model selection. Existing task and experiment output paths are protected against overwrites.
+This produces validation comparisons for rules, TF-IDF, and always-absent predictions and registers the trained classifier for dashboard selection. The evaluation page reads the resulting metrics. Test evaluation requires the explicit `--final-test` option and belongs after model selection. Existing task and experiment output paths are protected against overwrites.
 
 ## Development and checks
 

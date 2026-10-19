@@ -8,7 +8,7 @@ After preparing the source corpus:
 
 ```sh
 uv run absa annotation-tasks data/processed/reviews.jsonl --output data/annotations/pilot.csv --sentences 100
-uv run absa annotation-tasks data/processed/reviews.jsonl --output data/annotations/full.csv --sentences 1200 --full
+uv run absa annotation-tasks data/processed/reviews.jsonl --output data/annotations/full.csv --sentences 300 --full
 ```
 
 The pilot uses training reviews only. The full export includes train/validation/test partitions. A complete review is retained when the sentence target is reached, so the final count may be slightly larger than requested. Sampling rotates across selected products; it is not a representative population benchmark. Report this product-balanced sampling in the eventual evaluation.
@@ -36,3 +36,19 @@ uv run absa train-tfidf data/annotations/reconciled.csv --manifest data/annotati
 This trains on the training partition and compares rules, TF-IDF, and always-absent predictions on validation. It does not evaluate test. Add `--final-test` only after model configuration is selected; use a new output directory so old results cannot be overwritten.
 
 The output contains a local `model.joblib` and a metrics JSON with source hashes. Treat model files as trusted local artifacts; do not load files supplied by unknown users. The dashboard will show measured results only when real experiment artifacts are available.
+
+## Use the dashboard workbench
+
+Import an untouched blank export and its original manifest:
+
+```sh
+.venv/bin/absa annotation-import data/annotations/pilot.csv --manifest data/annotations/pilot.manifest.json --name "Smartphone annotation pilot"
+```
+
+Open **Annotation**. Choose a collection, read the sentence and assign each aspect a state. Choose explicit or implicit for present aspects; absent uses no reference. “Mark remaining aspects absent” is an explicit shortcut you control, not a model prediction. Enter a consistent annotator name, then save a draft or mark the sentence complete. Save or discard changes before moving to another sentence.
+
+“Mark complete” records your final decision as `adjudicated`; it does not imply that a second person reviewed it. Since implementation and initial annotation are solo, report single-annotator labels and do not report inter-annotator agreement unless another independent annotator actually participates. Review ambiguous cases in a separate pass.
+
+Completed exports download as a ZIP containing `annotations.csv` and `annotations.manifest.json`. Draft sentences are excluded. The original partitions, duplicate groups and sentence text remain fixed. You can reopen a completed sentence, save a draft to withdraw it from exports, then complete it after review; earlier revisions remain in the database.
+
+Use the 101-sentence training pilot to time the work and refine the guide. The 300-sentence full export above is a starting target, not an accuracy guarantee. Confirm that it contains enough validation/test sentences and relevant classes before drawing conclusions. A tiny evaluation set can produce unstable scores. The workbench deliberately provides no model suggestions; assisted annotation would need a separately recorded training-only workflow.
