@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { CircleHelp, GitCompareArrows } from 'lucide-react'
 import { colors, dateRange, names, number, states } from '../api'
 import type { Overview, Product } from '../api'
@@ -16,13 +16,13 @@ function CompareView({
   revision: number
   modelId: string
 }) {
-  const [selected, setSelected] = useState<string[]>([])
-  useEffect(() => {
-    setSelected(products.slice(0, 2).map((product) => product.id))
-  }, [base, products])
+  const [selection, setSelection] = useState<{ base: string; ids: string[] } | null>(null)
+  const selected =
+    selection?.base === base ? selection.ids : [products[0]?.id || '', products[1]?.id || '', '']
+  const chosen = selected.filter(Boolean)
   const url =
-    selected.length >= 2
-      ? `${base}/compare?${selected.map((id) => `products=${encodeURIComponent(id)}`).join('&')}&model=${modelId}`
+    chosen.length >= 2
+      ? `${base}/compare?${chosen.map((id) => `products=${encodeURIComponent(id)}`).join('&')}&model=${modelId}`
       : null
   const result = useRemote<(Overview & { product_id: string })[]>(url, revision)
   return (
@@ -47,7 +47,7 @@ function CompareView({
               onChange={(event) => {
                 const next = [...selected]
                 next[index] = event.target.value
-                setSelected(next.filter(Boolean))
+                setSelection({ base, ids: next })
               }}
             >
               <option value="">Select a phone</option>
@@ -69,7 +69,7 @@ function CompareView({
           {result.error}
         </div>
       )}
-      {!result.data || selected.length < 2 ? (
+      {!result.data || chosen.length < 2 ? (
         <Empty title="Choose models to compare" icon={<GitCompareArrows size={26} />}>
           At least two phone models with analysed reviews are needed.
         </Empty>

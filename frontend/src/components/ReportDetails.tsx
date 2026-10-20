@@ -6,22 +6,26 @@ import ErrorReview from './ErrorReview'
 export default function ReportDetails({
   report,
   model,
+  partition = 'validation',
   onClose,
 }: {
   report: ExperimentReport
   model: string
+  partition?: 'validation' | 'test'
   onClose: () => void
 }) {
-  const metrics = report.validation[model]
+  const metrics = report[partition]![model]
   const labels = ['absent', ...states]
   return (
     <section className="panel report-details" aria-label="Selected experiment details">
       <div className="panel-title">
         <div>
           <h2>
-            {report.evaluation_reference?.validation?.independent === false
-              ? 'AI-assisted validation diagnostic'
-              : 'Validation detail'}
+            {partition === 'test'
+              ? 'Final test evaluation'
+              : report.evaluation_reference?.validation?.independent === false
+                ? 'AI-assisted validation diagnostic'
+                : 'Validation detail'}
           </h2>
           <p>
             {report.experiment} ·{' '}
@@ -32,7 +36,7 @@ export default function ReportDetails({
           <X size={18} />
         </button>
       </div>
-      {report.evaluation_reference?.validation?.independent === false && (
+      {report.evaluation_reference?.[partition]?.independent === false && (
         <div className="alert info">
           <span>
             Reference labels include AI assistance. These scores measure agreement with that
@@ -40,7 +44,7 @@ export default function ReportDetails({
           </span>
         </div>
       )}
-      {report.development?.reference_previously_inspected && (
+      {partition === 'validation' && report.development?.reference_previously_inspected && (
         <p className="report-description">
           Development comparison: the reference errors were inspected before these model changes.
           Trial {report.development.trial}. Use an independent test set for final accuracy.
@@ -61,8 +65,8 @@ export default function ReportDetails({
       </div>
       <div className="report-context">
         <span>
-          {number(metrics.sentences)} validation sentences · {number(metrics.pairs)} category states
-          · {number(report.training_sentences)} local training sentences
+          {number(metrics.sentences)} {partition} sentences · {number(metrics.pairs)} category
+          states · {number(report.training_sentences)} local training sentences
         </span>
         <a
           className="button secondary"
@@ -147,9 +151,10 @@ export default function ReportDetails({
       </div>
       {report.prediction_artifact && (
         <ErrorReview
-          key={`${report.experiment}:${model}`}
+          key={`${report.experiment}:${model}:${partition}`}
           experiment={report.experiment}
           model={model}
+          split={partition}
         />
       )}
       <div className="report-provenance">

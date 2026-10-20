@@ -2265,3 +2265,43 @@ blockquote {
     gap: 8px;
   }
 }
+
+.dataset-details {
+  margin: 0 0 20px;
+  padding: 0;
+  overflow: hidden;
+}
+.dataset-details > summary {
+  cursor: pointer;
+  padding: 16px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.dataset-details[open] > summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.dataset-details > :not(summary) {
+  margin-left: 22px;
+  margin-right: 22px;
+}
+.dataset-details code {
+  overflow-wrap: anywhere;
+}
+.dataset-details > :last-child {
+  margin-bottom: 22px;
+}
+.report-partition {
+  max-width: 380px;
+  margin: 0 0 22px;
+}
+
+@media (max-width: 600px) {
+  .topbar .breadcrumb {
+    display: none;
+  }
+  .topbar {
+    justify-content: flex-end;
+  }
+}

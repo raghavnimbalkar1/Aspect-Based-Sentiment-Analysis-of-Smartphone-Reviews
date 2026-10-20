@@ -118,6 +118,7 @@ export type ExperimentReport = {
   model_id: string
   training_sentences: number
   validation: Record<string, ModelMetrics>
+  test?: Record<string, ModelMetrics>
   test_evaluated: boolean
   elapsed_seconds: number
   annotations_sha256: string
@@ -132,6 +133,14 @@ export type ExperimentReport = {
   evaluation_reference?: Record<
     string,
     { kind: string; independent: boolean; human_only_sentences: number; assisted_sentences: number }
+  >
+  evaluation_coverage?: Record<
+    string,
+    {
+      expected_sentences: number | null
+      labelled_sentences: number
+      complete: boolean
+    }
   >
 }
 export type ExperimentRun = {
@@ -148,6 +157,7 @@ export type Evaluation = {
   active_model: string
   models: (ModelSpec & { status: string })[]
   reports: ExperimentReport[]
+  report_errors?: { experiment: string; error: string }[]
 }
 export type FilterValues = { product: string; category: string; sentiment: string; q: string }
 export const emptyFilters: FilterValues = { product: '', category: '', sentiment: '', q: '' }

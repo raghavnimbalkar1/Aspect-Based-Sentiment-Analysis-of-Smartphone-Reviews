@@ -16,9 +16,11 @@ export function useRemote<T>(url: string | null, revision = 0) {
     setLoading(true)
     setError('')
     request<T>(url, { signal: controller.signal })
-      .then((data) => setResponse({ url, data }))
+      .then((data) => {
+        if (!controller.signal.aborted) setResponse({ url, data })
+      })
       .catch((error) => {
-        if (error.name !== 'AbortError') setError(error.message)
+        if (!controller.signal.aborted && error.name !== 'AbortError') setError(error.message)
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false)
