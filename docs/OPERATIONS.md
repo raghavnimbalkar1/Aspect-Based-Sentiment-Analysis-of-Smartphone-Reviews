@@ -52,4 +52,8 @@ After building the dashboard, run `make doctor`. It opens the existing database 
 
 `demo_ready` describes these local checks. `research_results_ready` remains false until an explicit human-test experiment report exists. Neither field certifies accuracy. Run checks after the build has finished, and avoid CPU benchmarks while batch jobs or other heavy work are running. See [the rehearsal guide](SUBMISSION.md).
 
+Release 1.0.0 validates reports before listing or downloading them. Damaged reports receive a clear diagnostic and do not break valid results. Research readiness also checks human reference origins and complete frozen test coverage. Old test reports without that evidence do not establish readiness. Repeated artifact IDs occupy one model-catalog entry while each training report remains available.
+
+Run `make verify-release` for a separate synthetic workflow workspace, or `make verify-release-neural` after installing the checkpoint. These commands preserve the research database, labels and test partition. The [quality record](QUALITY_ASSURANCE.md) describes the checks and limits. Readiness and QA establish software operation, not independent accuracy.
+
 Assisted training exports live separately under `artifacts/training-assistance`. AI-reviewed validation labels live in the workbench with explicit `origin=assisted`, introduced by additive migration `004_annotation_origin.sql`; prior human rows default to human. Existing human edits were preserved and the database was backed up before applying it. Experiments snapshot inputs and record hashes/origins. Backups should preserve both the database and `artifacts` to retain labels, provenance and trained models.

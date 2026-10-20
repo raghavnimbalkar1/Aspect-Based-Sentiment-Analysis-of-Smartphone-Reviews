@@ -4,6 +4,8 @@
 
 A local research application that turns smartphone reviews into feature-level opinions, with the original sentences kept alongside each prediction. It combines data preparation, model inference, human annotation and reproducible evaluation in one dashboard.
 
+**Release 1.0.0:** the documented application workflows are complete. Verification includes 104 automated tests, 245 assertions across all five installed models and 14 browser scenarios. Independent human test accuracy remains pending. See the [quality record](docs/QUALITY_ASSURANCE.md) and [release notes](CHANGELOG.md).
+
 [![Checks](https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews/actions/workflows/checks.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![React and TypeScript](https://img.shields.io/badge/React-TypeScript-3178C6?logo=react&logoColor=white)
@@ -35,9 +37,11 @@ The application tracks ten categories: **battery, charging, camera, display, per
 | **Review explorer** | Search original reviews, filter by phone/aspect/sentiment and inspect supporting sentences. |
 | **Compare phones** | Compare two or three listings, with mention counts, review periods and low-support indicators. |
 | **Annotation** | Create a frozen study, filter by partition/completion, label sentences without predictions or ratings, save drafts and export completed labels. |
-| **Model evaluation** | Queue validation experiments, train TF-IDF classifiers, inspect scores, confusion matrices and individual errors, and download reports/predictions. |
+| **Model evaluation** | Queue validation experiments, train either TF-IDF method, inspect validation or saved final-test reports, and download metrics/predictions. |
 
 CSV import supports column mapping and reports invalid rows and duplicates. Batch analysis preserves completed results and can resume unfinished records. Results, jobs and exports are separated by model and taxonomy version.
+
+**Dataset details and import checks** exposes row rejection reasons, mapped columns and a downloadable manifest. Final-test inspection displays saved results only and never triggers inference.
 
 ## Quick start
 
@@ -73,8 +77,12 @@ Open **[http://localhost:8000](http://localhost:8000)**. The backend serves both
 | `make model-setup` | Install optional neural dependencies and download the pinned ABSA checkpoint. |
 | `make check` | Run backend tests/lint, frontend formatting checks and the production build. |
 | `make doctor` | Check the built dashboard, database, migrations and installed model integrity without changing labels. |
+| `make verify-release` | Exercise import, analysis, annotation, training and evaluation in an isolated fixture workspace. |
+| `make verify-release-neural` | Repeat integration checks with both installed neural adapters. |
 
 To start with your own CSV, skip `make data` and `make seed`, then choose **Import reviews**. After the initial setup, `bash scripts/start.sh` also starts the built application.
+
+[Download the illustrative CSV](examples/smartphone_reviews.csv) to try column mapping without downloading the historical corpus. These ten written examples are demonstration inputs, not evaluation data.
 
 ### Enable the neural model
 
@@ -159,12 +167,25 @@ Screenshots below are captured from the running local application. Corpus views 
 
 ![Domain adapter results explicitly identified as a development comparison against AI-assisted validation](docs/screenshots/evaluation-refinement.png)
 
+Final-test results remain unavailable until the independent human study is complete:
+
+![Saved final-test results view accurately showing that no final evaluation exists yet](docs/screenshots/final-test-status.png)
+
 </details>
 
 <details>
 <summary><strong>Two-stage training with explicit label origins</strong></summary>
 
 ![Two-stage TF-IDF selected with separate assisted-training and AI-validation options](docs/screenshots/training-methods.png)
+
+</details>
+
+<details>
+<summary><strong>Dataset provenance and review explorer</strong></summary>
+
+![Dataset manifest summary showing source, fingerprint and exclusion reasons](docs/screenshots/dataset-details.png)
+
+![Review explorer with combined aspect and sentiment filters](docs/screenshots/review-explorer.png)
 
 </details>
 
@@ -283,5 +304,6 @@ CPU latency was measured on the M2 Air using 16 frozen source reviews and 48 war
 - [CPU performance measurement](docs/PERFORMANCE.md)
 - [Review of alternative labelled datasets](docs/BENCHMARK_DATA_REVIEW.md)
 - [AI-assisted validation diagnostic and limitations](docs/RESULTS.md)
+- [Release quality checks and their scope](docs/QUALITY_ASSURANCE.md)
 
 Dataset and pretrained-model licensing are documented with their sources above. Third-party libraries retain their own licenses; their use does not assign a license to this repository's original code.

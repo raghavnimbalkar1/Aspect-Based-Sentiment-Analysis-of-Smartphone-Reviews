@@ -1,6 +1,8 @@
 export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 
-.PHONY: setup data seed build run check dev-api dev-ui pilot model-setup annotation-open doctor
+.PHONY: setup data seed build run check dev-api dev-ui pilot model-setup annotation-open doctor verify-release verify-release-neural
+
+QA_RUN_DIR ?= artifacts/release-qa/$(shell date +%Y%m%d-%H%M%S)
 
 setup:
 	uv sync --frozen --group dev
@@ -21,6 +23,12 @@ run:
 
 doctor:
 	.venv/bin/absa doctor --verify-models
+
+verify-release:
+	.venv/bin/python scripts/verify_release.py --output $(QA_RUN_DIR)
+
+verify-release-neural:
+	.venv/bin/python scripts/verify_release.py --output $(QA_RUN_DIR) --neural
 
 check:
 	.venv/bin/ruff check src tests scripts
