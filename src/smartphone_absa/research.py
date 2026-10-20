@@ -44,6 +44,7 @@ class ExperimentRequest(BaseModel):
     models: list[str] = Field(default_factory=list, max_length=3)
     assisted_training: bool = False
     assisted_validation: bool = False
+    training_profile: Literal["flat", "hierarchical"] = "flat"
 
 
 class ResearchService:
@@ -119,6 +120,8 @@ class ResearchService:
                 "Complete all validation sentences in the frozen study before evaluation"
             )
         if body.kind == "compare":
+            if body.training_profile != "flat":
+                raise ValueError("A training profile is only applicable to TF-IDF training")
             if body.assisted_training:
                 raise ValueError("Training assistance is only applicable to TF-IDF training")
             if not body.models or len(body.models) != len(set(body.models)):
@@ -178,6 +181,7 @@ class ResearchService:
             raise ValueError("Complete human training labels before training TF-IDF")
         config = {
             "models": body.models,
+            "training_profile": body.training_profile,
             "assisted_validation": body.assisted_validation,
             "completed_sentences": counts,
             "annotations_sha256": file_hash(inputs / "annotations.csv"),
@@ -246,6 +250,7 @@ class ResearchService:
                     manifest,
                     output,
                     assisted_training=assisted_training,
+                    profile=config.get("training_profile", "flat"),
                     allow_assisted_validation=config.get("assisted_validation", False),
                 )
             else:

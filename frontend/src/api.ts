@@ -82,6 +82,7 @@ export type ModelSpec = {
   description: string
   device?: string
   setup?: string
+  development_tuned?: boolean
 }
 export type TaskSet = {
   id: string
@@ -122,6 +123,11 @@ export type ExperimentReport = {
   annotations_sha256: string
   manifest_sha256: string
   warnings?: string[]
+  development?: {
+    reference_previously_inspected: boolean
+    protocol_sha256: string
+    trial: number
+  }
   prediction_artifact?: { rows: number; sha256: string }
   evaluation_reference?: Record<
     string,
