@@ -20,6 +20,7 @@ from smartphone_absa.annotation_api import annotation_router
 from smartphone_absa.domain import JobRequest, ModelComparisonRequest, SingleAnalysisRequest
 from smartphone_absa.jobs import run_job
 from smartphone_absa.models.registry import ModelRegistry, ModelUnavailable
+from smartphone_absa.reports import report_catalog
 from smartphone_absa.research import ResearchService
 from smartphone_absa.research_api import research_router
 from smartphone_absa.store import Filters, Store
@@ -69,8 +70,21 @@ def create_app(
     async def local_requests(request: Request, call_next):
         origin = request.headers.get("origin")
         if request.method not in ("GET", "HEAD", "OPTIONS") and origin:
-            parsed = urlparse(origin)
-            if parsed.hostname not in ("127.0.0.1", "localhost") or parsed.port not in (8000, 5173):
+            try:
+                parsed = urlparse(origin)
+                allowed = (
+                    parsed.scheme == request.url.scheme
+                    and parsed.hostname in ("127.0.0.1", "localhost")
+                    and parsed.port in (request.url.port or 80, 5173)
+                    and not parsed.username
+                    and not parsed.password
+                    and parsed.path in ("", "/")
+                    and not parsed.query
+                    and not parsed.fragment
+                )
+            except ValueError:
+                allowed = False
+            if not allowed:
                 return JSONResponse(
                     {"detail": "Requests must originate from the local application"}, 403
                 )
@@ -158,6 +172,13 @@ def create_app(
     def dataset(dataset_id: str):
         return require_dataset(dataset_id)
 
+    @app.get("/api/datasets/{dataset_id}/manifest")
+    def dataset_manifest(dataset_id: str):
+        return JSONResponse(
+            require_dataset(dataset_id),
+            headers={"Content-Disposition": 'attachment; filename="dataset-manifest.json"'},
+        )
+
     @app.post("/api/import/preview")
     def import_preview(file: UploadFile = File(...)):
         content = file.file.read(MAX_UPLOAD_BYTES + 1)
@@ -184,8 +205,13 @@ def create_app(
                 "rating": rating_column,
             },
         )
+        saved = store.import_reviews(name.strip() or "Imported reviews", reviews, manifest)
         return {
-            **store.import_reviews(name.strip() or "Imported reviews", reviews, manifest),
+            "id": saved["id"],
+            "name": saved["name"],
+            "accepted": len(reviews),
+            "rejected": sum(manifest["rejected"].values()),
+            "duplicate": saved["duplicate"],
             "validation": manifest,
         }
 
@@ -332,13 +358,7 @@ def create_app(
 
     @app.get("/api/evaluation")
     def evaluation():
-        reports = []
-        for path in sorted((registry.artifacts / "experiments").glob("*/metrics.json")):
-            try:
-                report = json.loads(path.read_text())
-                reports.append({"experiment": path.parent.name, **report})
-            except (ValueError, OSError):
-                log.warning("Could not read experiment report %s", path.name)
+        reports, errors = report_catalog(registry.artifacts)
         specs = public_specs()
         cards = [
             {**spec, "status": "available" if spec["available"] else "not_installed"}
@@ -355,7 +375,12 @@ def create_app(
                     "and AI-validation diagnostics each require explicit selection.",
                 }
             )
-        return {"reports": reports, "active_model": "rules-v1", "models": cards}
+        return {
+            "reports": reports,
+            "report_errors": errors,
+            "active_model": "rules-v1",
+            "models": cards,
+        }
 
     build = frontend or ROOT / "frontend/dist"
     if (build / "index.html").exists():

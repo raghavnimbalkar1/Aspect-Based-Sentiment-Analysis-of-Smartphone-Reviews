@@ -54,6 +54,20 @@ def require_complete_test(rows: list[dict], manifest: Path) -> None:
         )
 
 
+def evaluation_coverage(rows: list[dict], manifest: Path, splits: list[str]) -> dict:
+    expected = json.loads(manifest.read_text()).get("split_sentence_counts", {})
+    result = {}
+    for split in splits:
+        actual = len({row["sentence_id"] for row in rows if row["split"] == split})
+        count = expected.get(split)
+        result[split] = {
+            "expected_sentences": count,
+            "labelled_sentences": actual,
+            "complete": count is not None and actual == count,
+        }
+    return result
+
+
 def train_tfidf(
     annotations: Path,
     manifest: Path,
@@ -131,6 +145,7 @@ def train_tfidf(
         "training_label_origins": origins,
         "assisted_training_sha256": assisted_sha256,
         "evaluation_reference": reference,
+        "evaluation_coverage": evaluation_coverage(rows, manifest, list(reference)),
         "config": config,
         "validation": score(validation),
         "test_evaluated": final_test,
@@ -210,6 +225,7 @@ def evaluate_models(
         ],
         "timing": {},
         "evaluation_reference": evaluation_reference(rows, partitions),
+        "evaluation_coverage": evaluation_coverage(rows, manifest, partitions),
     }
     if not report["evaluation_reference"]["validation"]["independent"]:
         report["warnings"] = [AI_VALIDATION_WARNING]

@@ -76,6 +76,7 @@ class ModelRegistry:
                 "development_tuned": True,
             }
         )
+        trained = {}
         for metadata in sorted((self.artifacts / "experiments").glob("*/model-info.json")):
             try:
                 info = json.loads(metadata.read_text())
@@ -85,16 +86,20 @@ class ModelRegistry:
                     and re.fullmatch(r"tfidf-[a-f0-9]{12}", info["id"])
                     and (metadata.parent / "model.joblib").exists()
                 ):
-                    result.append(
-                        {
-                            **info,
-                            "available": True,
-                            "path": str(metadata.parent),
-                            "name": f"TF-IDF · {info.get('training_profile', 'flat')} · "
-                            f"{metadata.parent.name}",
-                            "device": "cpu",
-                        }
-                    )
+                    if info["id"] in trained:
+                        trained[info["id"]]["training_runs"].append(metadata.parent.name)
+                        continue
+                    spec = {
+                        **info,
+                        "available": True,
+                        "path": str(metadata.parent),
+                        "name": f"TF-IDF · {info.get('training_profile', 'flat')} · "
+                        f"{metadata.parent.name}",
+                        "device": "cpu",
+                        "training_runs": [metadata.parent.name],
+                    }
+                    trained[info["id"]] = spec
+                    result.append(spec)
             except (ValueError, KeyError, OSError):
                 continue
         return result
