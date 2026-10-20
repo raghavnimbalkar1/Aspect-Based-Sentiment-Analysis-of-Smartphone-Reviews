@@ -9,6 +9,7 @@ from pathlib import Path
 from smartphone_absa.baseline import MODEL_ID, RuleBaseline
 from smartphone_absa.data import file_hash
 from smartphone_absa.models.checkpoints import CHECKPOINT, REVISION, TRANSFER_FILES, TRANSFER_ID
+from smartphone_absa.models.domain_adapter import ADAPTER_SHA256, CONFIG_SHA256, DOMAIN_ID
 from smartphone_absa.models.inference import Analyzer
 from smartphone_absa.taxonomy import TAXONOMY_VERSION
 
@@ -22,7 +23,7 @@ class ModelRegistry:
         self.artifacts = artifacts
         self.device = device
         self.loaded: dict[str, Analyzer] = {MODEL_ID: RuleBaseline()}
-        self.lock = threading.Lock()
+        self.lock = threading.RLock()
 
     def specs(self) -> list[dict]:
         checkpoint = self.artifacts / "models" / TRANSFER_ID
@@ -60,6 +61,21 @@ class ModelRegistry:
                 "setup": "make model-setup",
             },
         ]
+        result.append(
+            {
+                **result[1],
+                "id": DOMAIN_ID,
+                "name": "DeBERTa ABSA · domain adapter v2",
+                "kind": "domain_absa",
+                "description": "Shared transformer with expanded domain vocabulary "
+                "and opinion scope.",
+                "adapter_version": 2,
+                "adapter_sha256": ADAPTER_SHA256,
+                "configuration_sha256": CONFIG_SHA256,
+                "shared_backbone": TRANSFER_ID,
+                "development_tuned": True,
+            }
+        )
         for metadata in sorted((self.artifacts / "experiments").glob("*/model-info.json")):
             try:
                 info = json.loads(metadata.read_text())
@@ -74,7 +90,8 @@ class ModelRegistry:
                             **info,
                             "available": True,
                             "path": str(metadata.parent),
-                            "name": f"TF-IDF · {metadata.parent.name}",
+                            "name": f"TF-IDF · {info.get('training_profile', 'flat')} · "
+                            f"{metadata.parent.name}",
                             "device": "cpu",
                         }
                     )
@@ -98,7 +115,11 @@ class ModelRegistry:
                     "Model is not installed. Run the setup command shown in Models."
                 )
             path = Path(spec["path"])
-            if spec["kind"] == "transferred_absa":
+            if spec["kind"] == "domain_absa":
+                from smartphone_absa.models.domain_adapter import DomainABSA
+
+                analyzer = DomainABSA(self.get(TRANSFER_ID))
+            elif spec["kind"] == "transferred_absa":
                 from smartphone_absa.models.inference import TransferredABSA
 
                 info = json.loads((path / "checkpoint.json").read_text())

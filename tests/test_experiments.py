@@ -5,13 +5,15 @@ import hashlib
 import json
 
 import joblib
+import pytest
 
 from smartphone_absa.experiments import evaluate_models, train_tfidf
 from smartphone_absa.models.registry import ModelRegistry
 from smartphone_absa.taxonomy import CATEGORY_IDS, TAXONOMY_VERSION
 
 
-def test_tfidf_uses_training_vocabulary_and_keeps_test_locked(tmp_path):
+@pytest.mark.parametrize("profile", ["flat", "hierarchical"])
+def test_tfidf_uses_training_vocabulary_and_keeps_test_locked(tmp_path, profile):
     sentences = [
         ("a", "train", "The camera is excellent.", "camera", "positive"),
         ("b", "train", "The battery is terrible.", "battery", "negative"),
@@ -23,6 +25,7 @@ def test_tfidf_uses_training_vocabulary_and_keeps_test_locked(tmp_path):
         "taxonomy_version": TAXONOMY_VERSION,
         "split_by_review": {sid: split for sid, split, *_ in sentences},
         "group_by_review": {sid: sid for sid, *_ in sentences},
+        "split_sentence_counts": {"train": 3, "validation": 1, "test": 1},
         "sentence_hashes": {
             sid: hashlib.sha256(text.encode()).hexdigest() for sid, _, text, *_ in sentences
         },
@@ -54,14 +57,22 @@ def test_tfidf_uses_training_vocabulary_and_keeps_test_locked(tmp_path):
     manifest_file = tmp_path / "manifest.json"
     manifest_file.write_text(json.dumps(manifest))
     output = tmp_path / "artifacts/experiments/fixture"
-    report = train_tfidf(annotation_file, manifest_file, output)
+    report = train_tfidf(annotation_file, manifest_file, output, profile=profile)
     assert report["training_sentences"] == 3
     assert report["test_evaluated"] is False
     assert "test" not in report
-    vocabulary = joblib.load(output / "model.joblib")["vectorizer"].vocabulary_
+    artifact = joblib.load(output / "model.joblib")
+    vectorizer = artifact["vectorizer"]
+    vocabulary = (
+        vectorizer.vocabulary_
+        if profile == "flat"
+        else dict(vectorizer.transformer_list)["word"].vocabulary_
+    )
     assert "xylophone" not in vocabulary
     assert "quetzal" not in vocabulary
-    assert set(report["validation"]) == {"always_absent", "rules-v1", "tfidf-v1"}
+    alias = "tfidf-v1" if profile == "flat" else "tfidf-v2"
+    assert set(report["validation"]) == {"always_absent", "rules-v1", alias}
+    assert report["training_profile"] == profile
     registry = ModelRegistry(tmp_path / "artifacts")
     analyzer = registry.get(report["model_id"])
     result = analyzer.analyse("The camera is excellent.", language="en")
@@ -77,7 +88,7 @@ def test_tfidf_uses_training_vocabulary_and_keeps_test_locked(tmp_path):
         registry,
     )
     assert comparison["test_evaluated"] is False and "test" not in comparison
-    assert comparison["validation"][report["model_id"]] == report["validation"]["tfidf-v1"]
+    assert comparison["validation"][report["model_id"]] == report["validation"][alias]
     assert comparison["timing"]["validation:rules-v1"]["sentences"] == 1
     records = [json.loads(line) for line in (output / "predictions.jsonl").read_text().splitlines()]
     assert len(records) == report["prediction_artifact"]["rows"] == 30
@@ -104,3 +115,26 @@ def test_tfidf_uses_training_vocabulary_and_keeps_test_locked(tmp_path):
         "validation",
         "test",
     }
+    manifest["split_sentence_counts"]["test"] = 2
+    manifest_file.write_text(json.dumps(manifest))
+    for operation in (
+        lambda: evaluate_models(
+            annotation_file,
+            manifest_file,
+            tmp_path / "partial-final-comparison",
+            ["rules-v1"],
+            registry,
+            final_test=True,
+        ),
+        lambda: train_tfidf(
+            annotation_file,
+            manifest_file,
+            tmp_path / "partial-final-training",
+            final_test=True,
+            profile=profile,
+        ),
+    ):
+        with pytest.raises(ValueError, match="Complete all 2 frozen test sentences"):
+            operation()
+    assert not (tmp_path / "partial-final-comparison").exists()
+    assert not (tmp_path / "partial-final-training").exists()

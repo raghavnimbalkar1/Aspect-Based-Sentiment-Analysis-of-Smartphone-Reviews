@@ -1,0 +1,184 @@
+{
+  "adapter_version": 2,
+  "taxonomy_version": "smartphone-v1",
+  "categories": {
+    "battery": {
+      "target": "battery life",
+      "cues": [
+        "batter(?:y|ies)",
+        "standby",
+        "(?:lasts?|lasting) (?:all|a full|the whole) day",
+        "battery life",
+        "drain(?:s|ing)?",
+        "run(?:s|ning)? out of (?:power|juice)"
+      ]
+    },
+    "charging": {
+      "target": "charging",
+      "cues": [
+        "charg(?:e|es|ing|er)",
+        "usb[ -]?c",
+        "charging port",
+        "wireless charg\\w*",
+        "recharg\\w*"
+      ]
+    },
+    "camera": {
+      "target": "camera",
+      "cues": [
+        "cameras?",
+        "photos?",
+        "pictures?",
+        "selfies?",
+        "night shots?",
+        "video(?:s| recording)?",
+        "lens(?:es)?",
+        "portrait mode",
+        "autofocus"
+      ]
+    },
+    "display": {
+      "target": "screen",
+      "cues": [
+        "screens?",
+        "displays?",
+        "touchscreen",
+        "amoled",
+        "resolution",
+        "brightness",
+        "oled",
+        "refresh rate",
+        "dead pixels?"
+      ]
+    },
+    "performance": {
+      "target": "phone performance",
+      "cues": [
+        "performance",
+        "lag(?:s|gy|ging)?",
+        "slow",
+        "fast",
+        "gaming",
+        "games?",
+        "overheat(?:s|ing)?",
+        "(?:gets?|runs?|running) hot",
+        "processors?",
+        "multitask\\w*",
+        "speed",
+        "responsiv\\w*",
+        "stutter\\w*",
+        "freez(?:e|es|ing)",
+        "snappy"
+      ]
+    },
+    "software": {
+      "target": "software",
+      "cues": [
+        "software",
+        "android",
+        "ios",
+        "updates?",
+        "bloatware",
+        "interface",
+        "operating system",
+        "apps?",
+        "bugs?",
+        "bixby",
+        "galaxy store",
+        "one ui",
+        "google assistant",
+        "siri",
+        "play store",
+        "set(?:ting)?[ -]?up",
+        "preinstalled"
+      ]
+    },
+    "build": {
+      "target": "build quality",
+      "cues": [
+        "design",
+        "build",
+        "durab\\w*",
+        "lightweight",
+        "heavy",
+        "weight",
+        "ergonomic\\w*",
+        "plastic",
+        "metal",
+        "comfortable",
+        "(?:power|volume|side|home) (?:buttons?|keys?|switch(?:es)?|rockers?)",
+        "buttons?",
+        "frame",
+        "grip",
+        "hold(?:ing)?",
+        "slippery",
+        "water[- ]?(?:proof|resistan\\w*)",
+        "(?:water|liquid) damage",
+        "(?:drop\\w*|fell|touch\\w*|expos\\w*|splash\\w*).{0,30}water",
+        "crack(?:s|ed|ing)?",
+        "scratches?"
+      ]
+    },
+    "audio": {
+      "target": "sound quality",
+      "cues": [
+        "speakers?",
+        "microphones?",
+        "sound",
+        "audio",
+        "headphones?",
+        "volume",
+        "earpiece",
+        "earbuds?",
+        "call quality"
+      ]
+    },
+    "connectivity": {
+      "target": "network connectivity",
+      "cues": [
+        "wi[ -]?fi",
+        "bluetooth",
+        "gps",
+        "signal",
+        "reception",
+        "network",
+        "dropped calls?",
+        "connectivity",
+        "5g",
+        "4g",
+        "lte",
+        "sim(?: card)?",
+        "unlocked",
+        "carriers?",
+        "cellular",
+        "sprint",
+        "t[ -]?mobile",
+        "at&t",
+        "verizon",
+        "coverage",
+        "hotspot",
+        "mobile data"
+      ]
+    },
+    "value": {
+      "target": "price",
+      "cues": [
+        "price",
+        "value",
+        "money",
+        "expensive",
+        "cheap",
+        "affordable",
+        "worth",
+        "(?:great|good|bad|poor) (?:buy|deal|purchase)",
+        "overpriced",
+        "bargain",
+        "cost(?:s|ly)?"
+      ]
+    }
+  },
+  "scope": {
+    "contrast": "\\b(?:but|however|although|yet|whereas)\\b|[;\\n]",
+    "predicate": "\\b(?:is|are|was|were|has|have|had|feels?|looks?|works?|runs?|takes?|lasts?|gets?|sounds?|good|great|excellent|amazing|bad|awful|terrible|horrible|bright|poor|slow|fast|smooth|sharp|weak|strong)\\b"
+  }
+}
