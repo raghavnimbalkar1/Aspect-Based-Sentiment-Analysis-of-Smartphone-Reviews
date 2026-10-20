@@ -15,6 +15,8 @@ A local research application that turns smartphone reviews into feature-level op
 
 [Quick start](#quick-start) · [How it works](#how-it-works) · [Screenshots](#screenshots) · [Models](#models) · [Research workflow](#research-workflow) · [Documentation](#documentation)
 
+For a detailed explanation of the entire project, download the [52-slide reference guide](docs/presentation/Smartphone_ABSA_Reference_Guide.pptx). It covers the dataset, implementation, models, interface and recorded results, with extended explanations and sources in PowerPoint Notes. A [text companion](docs/presentation/STUDY_GUIDE.md) contains the same material for reading and searching.
+
 ## Why aspect-based analysis?
 
 An overall rating cannot tell us which part of a phone someone liked. For example:
@@ -293,6 +295,7 @@ CPU latency was measured on the M2 Air using 16 frozen source reviews and 48 war
 
 ## Documentation
 
+- [Detailed project reference guide and reading companion](docs/presentation/README.md)
 - [Research plan and sources](RESEARCH_PLAN.md)
 - [Application walkthrough and architecture](docs/APP_GUIDE.md)
 - [Annotation protocol](docs/ANNOTATION.md)
