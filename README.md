@@ -83,7 +83,7 @@ make model-setup
 make run
 ```
 
-Choose **DeBERTa ABSA · transferred** in the model selector. The download contains approximately 706 MiB of weights/tokenizer files, in addition to the optional Python dependencies. Inference loads local files and uses CPU by default. Initial loading takes longer than subsequent requests. See [model setup and attribution](docs/MODELING.md).
+Choose **DeBERTa ABSA · transferred** or **DeBERTa ABSA · domain adapter v2** in the model selector. Both share one approximately 706 MiB checkpoint download and one loaded backbone, in addition to the optional Python dependencies. Inference loads local files and uses CPU by default. Initial loading takes longer than subsequent requests. See [model setup and attribution](docs/MODELING.md).
 
 ## How it works
 
@@ -131,12 +131,12 @@ Neutral and mixed mentions remain in the denominator. The comparison screen cove
 
 ## Screenshots
 
-Screenshots below are captured from the running local application. Corpus views use the rule baseline. The neural comparison uses an illustrative input outside the evaluation set. The annotation and evaluation views show the actual unlabelled study; they do not display invented accuracy scores.
+Screenshots below are captured from the running local application. Corpus views use the rule baseline. The neural comparison uses an illustrative input outside the evaluation set. Annotation shows the actual reviewed validation study; evaluation identifies its AI-assisted reference and development results.
 
 <details>
 <summary><strong>Single-review analysis and model comparison</strong></summary>
 
-![Rules and transferred DeBERTa analyzing the same review, with source-sentence evidence](docs/screenshots/model-comparison.jpg)
+![Rules and domain adapter v2 analyzing the same illustrative review, with source-sentence evidence](docs/screenshots/domain-comparison.png)
 
 </details>
 
@@ -157,7 +157,14 @@ Screenshots below are captured from the running local application. Corpus views 
 <details>
 <summary><strong>Validation experiment workspace</strong></summary>
 
-![Local model comparison explicitly identified as an AI-assisted validation diagnostic](docs/screenshots/evaluation.jpg)
+![Domain adapter results explicitly identified as a development comparison against AI-assisted validation](docs/screenshots/evaluation-refinement.png)
+
+</details>
+
+<details>
+<summary><strong>Two-stage training with explicit label origins</strong></summary>
+
+![Two-stage TF-IDF selected with separate assisted-training and AI-validation options](docs/screenshots/training-methods.png)
 
 </details>
 
@@ -167,7 +174,9 @@ Screenshots below are captured from the running local application. Corpus views 
 | --- | --- | --- |
 | **Rules + VADER** | Explicit feature cues, clause-local sentiment and documented domain heuristics. | Default baseline; all 4,346 corpus reviews processed. |
 | **Transferred DeBERTa ABSA** | Explicit smartphone candidates paired with a pretrained three-state sentiment classifier. Opposing predictions are aggregated as mixed. | Local CPU inference verified; smartphone fine-tuning and independent benchmark results remain pending. |
+| **Domain adapter v2** | Expanded smartphone vocabulary, shared-predicate handling and context guards over the same DeBERTa weights. | Available alongside the original adapter; developed using inspected diagnostic errors. |
 | **TF-IDF + logistic classifiers** | Training-only word uni/bigrams and one five-state classifier per category. Single-class categories use a disclosed constant classifier. | Trained locally on 199 sentences: 1 human-labelled and 198 pseudo-labelled. Registered as `tfidf-db3871146fbb`; AI-assisted validation results are diagnostic. |
+| **Two-stage TF-IDF** | Training-only word/character features; per-category presence detection followed by present-only sentiment classification. | Trained on the same 199 sentences; `tfidf-4e97a73e6f8a`. Both training methods are available in the dashboard. |
 
 The neural checkpoint is **[`yangheng/deberta-v3-base-absa-v1.1`](https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1)**, pinned to revision `10c9dff335a44073e1352360c3a7bc54dc58eb01`. Its published metadata declares MIT licensing. The downloader records file hashes, and inference uses local safetensors without executing repository-supplied Python code.
 
@@ -194,7 +203,7 @@ Checksums and aggregate preparation evidence are committed under [docs/data](doc
 
 1. Open **Annotation → New study** and choose an imported dataset. Use a training-only pilot to refine the annotation guide; use a full study for frozen train/validation/test partitions.
 2. Label all ten category states for each sentence, including absent. Ratings and model predictions are hidden. Save drafts or mark reviewed decisions complete; edits retain their revision history.
-3. Open **Model evaluation** after completing every validation sentence. Choose model comparison or TF-IDF training. Training accepts human or separately prepared assisted labels. AI-assisted validation requires a separate explicit diagnostic-mode selection.
+3. Open **Model evaluation** after completing every validation sentence. Choose model comparison or TF-IDF training, then select the original or two-stage training method. Training accepts human or separately prepared assisted labels. AI-assisted validation requires a separate explicit diagnostic-mode selection.
 4. Inspect tuple precision/recall/F1, presence F1, category support, the confusion matrix and individual errors. Download the JSON report and per-pair predictions to retain the evidence and source hashes.
 5. Select the final model using validation. Final test evaluation requires the explicit CLI option described in [MODELING.md](docs/MODELING.md#human-evaluation-and-supervised-training).
 
@@ -202,7 +211,7 @@ The primary metric is **exact category–sentiment tuple micro-F1**. Detecting t
 
 A dashboard run freezes completed labels at submission and verifies their hashes before execution. It never evaluates test. Duplicate groups stay in one partition. Single-annotator labels must be reported as such; edit history does not establish inter-annotator agreement.
 
-**Current research status:** validation is complete with **1 human and 34 AI-assisted sentences**. TF-IDF has been trained locally, and rules, TF-IDF and transferred DeBERTa have been compared in explicitly labelled diagnostic mode. The **69 test sentences remain unchanged and unevaluated**. Independent human test accuracy and smartphone transformer fine-tuning remain pending. See the [diagnostic results and limitations](docs/RESULTS.md) and [label protocol](docs/ANNOTATION.md#ai-assisted-validation-review).
+**Current research status:** validation is complete with **1 human and 34 AI-assisted sentences**. All five model variants have been compared against the same reference. The revised neural adapter reaches **0.750 tuple F1**, versus 0.323 for the original, on this already inspected development sample. This is **not independent accuracy**. The **69 test sentences remain unchanged and unevaluated**. Independent human test annotation/evaluation remains outstanding; smartphone transformer fine-tuning remains an extension. See the [results and limitations](docs/RESULTS.md) and [label protocol](docs/ANNOTATION.md#ai-assisted-validation-review).
 
 ## Technology and structure
 
@@ -252,7 +261,7 @@ The default database is `data/workspace.sqlite3`; set `ABSA_DATABASE` and `ABSA_
 
 A model behavior change requires a new model ID before reprocessing data. Local TF-IDF IDs derive from their artifacts. Only load trusted local joblib artifacts. See [operations and backups](docs/OPERATIONS.md) and [contribution guidance](CONTRIBUTING.md).
 
-CPU latency was measured on the M2 Air using 16 frozen source reviews and 48 warm requests per model. Warm median/p95 were **1.1/2.4 ms** for rules and **64.3/214.1 ms** for transferred DeBERTa. Neural initialization took 4.7 seconds, followed by a separate 2.3-second first inference. These are direct inference measurements, excluding HTTP/UI/database work; four sampled reviews had no explicit aspect cues. They measure responsiveness, not accuracy or concurrent capacity. The [method and full measurement record](docs/PERFORMANCE.md) describe the limits.
+CPU latency was measured on the M2 Air using 16 frozen source reviews and 48 warm requests per model. In the 20 October five-variant repeat, domain adapter v2 has a **60.8 ms median / 230.8 ms p95**, and two-stage TF-IDF **2.3 / 3.5 ms**. Loading the original neural backbone took 4.5 seconds, followed by a separate 2.3-second first inference; the revised adapter shares that loaded backbone. These measurements exclude HTTP/UI/database work and describe responsiveness, not accuracy or concurrent capacity. The [method and full records](docs/PERFORMANCE.md) include the original measurement and disclose candidate-free inputs and shared initialization.
 
 ### Limits
 

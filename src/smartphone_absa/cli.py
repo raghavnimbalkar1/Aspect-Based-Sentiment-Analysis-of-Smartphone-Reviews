@@ -44,6 +44,7 @@ def main() -> None:
     train.add_argument("annotations", type=Path)
     train.add_argument("--manifest", type=Path, required=True)
     train.add_argument("--output", type=Path, required=True)
+    train.add_argument("--profile", choices=("flat", "hierarchical"), default="flat")
     train.add_argument(
         "--assisted-training",
         type=Path,
@@ -158,6 +159,7 @@ def main() -> None:
                 args.final_test,
                 args.assisted_training,
                 args.assisted_validation,
+                args.profile,
             )
         elif args.command == "evaluate-models":
             result = evaluate_models(

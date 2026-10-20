@@ -24,7 +24,8 @@ export default function ReportDetails({
               : 'Validation detail'}
           </h2>
           <p>
-            {report.experiment} · {model === 'tfidf-v1' ? report.model_id : model}
+            {report.experiment} ·{' '}
+            {['tfidf-v1', 'tfidf-v2'].includes(model) ? report.model_id : model}
           </p>
         </div>
         <button aria-label="Close experiment details" className="icon-button" onClick={onClose}>
@@ -38,6 +39,12 @@ export default function ReportDetails({
             reference and do not establish independent human-evaluated accuracy.
           </span>
         </div>
+      )}
+      {report.development?.reference_previously_inspected && (
+        <p className="report-description">
+          Development comparison: the reference errors were inspected before these model changes.
+          Trial {report.development.trial}. Use an independent test set for final accuracy.
+        </p>
       )}
       <div className="report-metrics">
         {[

@@ -8,17 +8,15 @@ from collections import Counter
 from pathlib import Path
 
 import joblib
-from sklearn.dummy import DummyClassifier
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
 
 from smartphone_absa.annotations import read_annotations
 from smartphone_absa.baseline import RuleBaseline
 from smartphone_absa.data import file_hash
 from smartphone_absa.metrics import evaluate
+from smartphone_absa.models.classical import fit_classifier, predict_category
 from smartphone_absa.models.registry import ModelRegistry
 from smartphone_absa.predictions import prediction_records, save_predictions
-from smartphone_absa.taxonomy import CATEGORY_IDS, TAXONOMY_VERSION
+from smartphone_absa.taxonomy import TAXONOMY_VERSION
 
 
 def evaluation_reference(rows: list[dict], splits: list[str]) -> dict:
@@ -44,6 +42,18 @@ AI_VALIDATION_WARNING = (
 )
 
 
+def require_complete_test(rows: list[dict], manifest: Path) -> None:
+    expected = json.loads(manifest.read_text()).get("split_sentence_counts", {}).get("test")
+    actual = len({row["sentence_id"] for row in rows if row["split"] == "test"})
+    if not isinstance(expected, int) or isinstance(expected, bool) or expected < 1:
+        raise ValueError("Final evaluation requires the frozen manifest's test sentence count")
+    if actual != expected:
+        raise ValueError(
+            f"Complete all {expected} frozen test sentences before final evaluation; "
+            f"{actual} have human labels"
+        )
+
+
 def train_tfidf(
     annotations: Path,
     manifest: Path,
@@ -51,10 +61,13 @@ def train_tfidf(
     final_test: bool = False,
     assisted_training: Path | None = None,
     allow_assisted_validation: bool = False,
+    profile: str = "flat",
 ) -> dict:
     rows = read_annotations(
         annotations, manifest, allow_assisted_validation=allow_assisted_validation
     )
+    if final_test:
+        require_complete_test(rows, manifest)
     assisted_sha256 = None
     if assisted_training:
         assisted = read_annotations(assisted_training, manifest, allow_assisted_train=True)
@@ -73,12 +86,9 @@ def train_tfidf(
         raise ValueError("Experiment output already exists; use a new directory")
     started = time.perf_counter()
     texts = {row["sentence_id"]: row["text"] for row in train}
-    vectorizer = TfidfVectorizer(
-        ngram_range=(1, 2), min_df=1, sublinear_tf=True, max_features=25000, strip_accents="unicode"
-    )
-    vectorizer.fit(list(texts.values()))
-    models = {}
-    warnings = []
+    artifact, config, warnings = fit_classifier(train, profile)
+    vectorizer = artifact["vectorizer"]
+    alias = "tfidf-v2" if profile == "hierarchical" else "tfidf-v1"
     origins = dict(Counter(row["origin"] for row in train))
     if origins.get("assisted"):
         warnings.append(
@@ -88,18 +98,6 @@ def train_tfidf(
     reference = evaluation_reference(rows, ["validation", "test"] if final_test else ["validation"])
     if not reference["validation"]["independent"]:
         warnings.append(AI_VALIDATION_WARNING)
-    for category in CATEGORY_IDS:
-        subset = [row for row in train if row["category"] == category]
-        labels = [row["label"] for row in subset]
-        if len(set(labels)) < 2:
-            model = DummyClassifier(strategy="most_frequent")
-            warnings.append(f"{category}: only one training state; using a constant classifier")
-        else:
-            model = LogisticRegression(
-                C=1.0, class_weight="balanced", max_iter=1000, random_state=42
-            )
-        model.fit(vectorizer.transform([row["text"] for row in subset]), labels)
-        models[category] = model
     baseline = RuleBaseline()
     records = []
 
@@ -114,15 +112,17 @@ def train_tfidf(
         b1 = [b1_cache[row["sentence_id"]].get(row["category"], "absent") for row in partition]
         matrix = vectorizer.transform([row["text"] for row in partition])
         b2 = [
-            models[row["category"]].predict(matrix[index])[0] for index, row in enumerate(partition)
+            predict_category(artifact, row["category"], matrix[index])[0]
+            for index, row in enumerate(partition)
         ]
-        predictions = {"always_absent": ["absent"] * len(partition), "rules-v1": b1, "tfidf-v1": b2}
+        predictions = {"always_absent": ["absent"] * len(partition), "rules-v1": b1, alias: b2}
         for model_id, labels in predictions.items():
             records.extend(prediction_records(partition, labels, model_id))
         return {model_id: evaluate(partition, labels) for model_id, labels in predictions.items()}
 
     report = {
-        "model_id": "tfidf-v1",
+        "model_id": alias,
+        "training_profile": profile,
         "taxonomy_version": TAXONOMY_VERSION,
         "annotations_sha256": file_hash(annotations),
         "manifest_sha256": file_hash(manifest),
@@ -131,7 +131,7 @@ def train_tfidf(
         "training_label_origins": origins,
         "assisted_training_sha256": assisted_sha256,
         "evaluation_reference": reference,
-        "config": {"ngrams": [1, 2], "C": 1.0, "seed": 42, "class_weight": "balanced"},
+        "config": config,
         "validation": score(validation),
         "test_evaluated": final_test,
         "warnings": warnings,
@@ -142,7 +142,7 @@ def train_tfidf(
     output.mkdir(parents=True)
     report["prediction_artifact"] = save_predictions(output, records)
     joblib.dump(
-        {"vectorizer": vectorizer, "models": models, "taxonomy_version": TAXONOMY_VERSION},
+        artifact,
         output / "model.joblib",
     )
     digest = file_hash(output / "model.joblib")
@@ -152,6 +152,8 @@ def train_tfidf(
             {
                 "id": report["model_id"],
                 "kind": "tfidf",
+                "training_profile": profile,
+                "config": config,
                 "taxonomy_version": TAXONOMY_VERSION,
                 "model_sha256": digest,
                 "annotations_sha256": report["annotations_sha256"],
@@ -186,6 +188,8 @@ def evaluate_models(
     rows = read_annotations(
         annotations, manifest, allow_assisted_validation=allow_assisted_validation
     )
+    if final_test:
+        require_complete_test(rows, manifest)
     partitions = ["validation", "test"] if final_test else ["validation"]
     if output.exists():
         raise ValueError("Experiment output already exists; use a new directory")

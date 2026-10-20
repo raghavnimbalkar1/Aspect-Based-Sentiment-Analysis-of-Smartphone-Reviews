@@ -117,7 +117,7 @@ def doctor(database: Path, frontend: Path, registry: ModelRegistry, verify_model
             if not spec["available"]:
                 continue
             try:
-                if spec["id"] == TRANSFER_ID:
+                if spec["kind"] in {"transferred_absa", "domain_absa"}:
                     from smartphone_absa.models.checkpoints import REVISION
 
                     folder = registry.artifacts / "models" / TRANSFER_ID

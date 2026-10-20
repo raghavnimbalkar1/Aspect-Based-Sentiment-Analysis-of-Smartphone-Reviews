@@ -54,6 +54,9 @@ function EvaluationView({ onModelsChanged }: { onModelsChanged: () => void }) {
             </div>
             <h2>{model.name}</h2>
             <p>{model.description}</p>
+            {model.development_tuned && (
+              <p className="small-note">Developed using inspected diagnostic examples.</p>
+            )}
             <code>{model.id}</code>
             {model.setup && !model.available && (
               <p className="small-note">
@@ -110,8 +113,11 @@ function EvaluationView({ onModelsChanged }: { onModelsChanged: () => void }) {
                         {report.evaluation_reference?.validation?.independent === false && (
                           <small className="support-note">AI-assisted diagnostic</small>
                         )}
+                        {report.development?.reference_previously_inspected && (
+                          <small className="support-note">Development comparison</small>
+                        )}
                       </td>
-                      <td>{model === 'tfidf-v1' ? report.model_id : model}</td>
+                      <td>{['tfidf-v1', 'tfidf-v2'].includes(model) ? report.model_id : model}</td>
                       <td>{metrics.tuple_micro.f1.toFixed(3)}</td>
                       <td>{metrics.presence_micro.f1.toFixed(3)}</td>
                       <td>{number(metrics.sentences)}</td>

@@ -11,3 +11,5 @@ The explicit listing selection in `config/products.json` keeps smartphone models
 `m2-cpu-latency.json` records actual direct-inference timings and deterministic sample hashes/IDs. Its method and limitations are in [PERFORMANCE.md](../PERFORMANCE.md); it contains no accuracy measurements.
 
 `validation-review-summary.json` records the completed 1-human/34-AI-assisted validation review, frozen-decision/export hashes and preservation of the 69 test sentences. `ai-validation-diagnostic.json` records actual model agreement scores, reference origins and artifact hashes. These results use an AI-assisted reference; they are not independent human-evaluated accuracy. See [RESULTS.md](../RESULTS.md).
+
+`model-refinement-diagnostic.json` records the first five-model development comparison after error inspection, the fixed protocol hash, all aggregate results and two-stage training provenance. `m2-refinement-cpu-latency.json` adds the same-sample five-variant latency repeat and discloses shared neural initialization. Neither file contains review text, individual annotation rows or model weights. The 69 test sentences remain unevaluated.

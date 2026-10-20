@@ -183,20 +183,28 @@ def test_changed_input_snapshot_fails_without_a_report(research, tmp_path):
     assert not (research.artifacts / "experiments" / run["config"]["experiment"]).exists()
 
 
-def test_training_api_registers_artifact_and_serves_real_report(research, tmp_path):
+@pytest.mark.parametrize("profile", ["flat", "hierarchical"])
+def test_training_api_registers_artifact_and_serves_real_report(research, tmp_path, profile):
     set_id = study_fixture(research, tmp_path)
     app = create_app(research.store.path, registry=research.registry)
     with TestClient(app) as client:
-        body = {"set_id": set_id, "kind": "train_tfidf", "models": []}
+        body = {
+            "set_id": set_id,
+            "kind": "train_tfidf",
+            "models": [],
+            "training_profile": profile,
+        }
         assert client.post("/api/experiments", json={**body, "final_test": True}).status_code == 422
         response = client.post("/api/experiments", json=body)
         assert response.status_code == 202
         app.state.research.executor.submit(lambda: None).result(timeout=10)
         run = client.get("/api/experiments").json()[0]
         assert run["status"] == "completed", run["error"]
+        assert run["config"]["training_profile"] == profile
         evaluation = client.get("/api/evaluation").json()
         report = evaluation["reports"][0]
         assert report["test_evaluated"] is False and "test" not in report
+        assert report["training_profile"] == profile
         assert report["validation"]["rules-v1"]["sentences"] == 2
         assert any(model["id"] == report["model_id"] for model in evaluation["models"])
         assert not any(model["id"] == "tfidf-supervised" for model in evaluation["models"])

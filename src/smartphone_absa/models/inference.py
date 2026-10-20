@@ -91,6 +91,16 @@ class TransferredABSA:
                     result.append((self.labels[index], float(row[index])))
         return result
 
+    def candidate_pairs(self, text: str) -> list[tuple[str, str, str]]:
+        return explicit_pairs(text, self.detector)
+
+    def limitations(self) -> list[str]:
+        return [
+            "Transferred checkpoint; not fine-tuned on this smartphone corpus.",
+            "Aspect detection uses explicit cues. Implicit aspects may be missed.",
+            "Mixed combines opposing clause predictions; scores are uncalibrated.",
+        ]
+
     def analyse(self, text: str, review_id: str = "input", language: str | None = None) -> Analysis:
         language = language or detect_language(text)
         if language not in ("en", "unknown"):
@@ -106,7 +116,7 @@ class TransferredABSA:
         sentences = split_sentences(text, review_id)
         grouped: dict[str, list[Evidence]] = defaultdict(list)
         for sentence in sentences:
-            pairs = explicit_pairs(sentence.text, self.detector)
+            pairs = self.candidate_pairs(sentence.text)
             predictions = self.classify(pairs)
             local: dict[str, list[tuple[str, float]]] = defaultdict(list)
             for (category, _, _), prediction in zip(pairs, predictions, strict=True):
@@ -122,11 +132,7 @@ class TransferredABSA:
                         score=sum(score for _, score in values) / len(values),
                     )
                 )
-        warnings = [
-            "Transferred checkpoint; not fine-tuned on this smartphone corpus.",
-            "Aspect detection uses explicit cues. Implicit aspects may be missed.",
-            "Mixed combines opposing clause predictions; scores are uncalibrated.",
-        ]
+        warnings = self.limitations()
         if language == "unknown":
             warnings.append("Language identification is uncertain for this short text.")
         return Analysis(
@@ -181,9 +187,11 @@ class TfidfAnalyzer:
                 language=language,
             )
         matrix = self.artifact["vectorizer"].transform([sentence.text for sentence in sentences])
+        from smartphone_absa.models.classical import predict_category
+
         aspects = []
         for category in CATEGORIES:
-            labels = self.artifact["models"][category.id].predict(matrix)
+            labels = predict_category(self.artifact, category.id, matrix)
             evidence = [
                 Evidence(
                     sentence_id=sentence.id,

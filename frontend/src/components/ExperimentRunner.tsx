@@ -19,6 +19,7 @@ export default function ExperimentRunner({
   >('/api/experiments/training-assistance', revision)
   const [setId, setSetId] = useState('')
   const [kind, setKind] = useState('compare')
+  const [trainingProfile, setTrainingProfile] = useState('flat')
   const [selectedModels, setSelectedModels] = useState(['rules-v1'])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -71,6 +72,7 @@ export default function ExperimentRunner({
           models: kind === 'compare' ? selectedModels : [],
           assisted_training: kind === 'train_tfidf' && useAssistance && !!savedAssistance,
           assisted_validation: useAssistedValidation && hasAssistedValidation,
+          training_profile: kind === 'train_tfidf' ? trainingProfile : 'flat',
         }),
       })
       refresh((value) => value + 1)
@@ -153,10 +155,27 @@ export default function ExperimentRunner({
             ))}
         </fieldset>
       ) : (
-        <p className="runner-description">
-          Fits TF-IDF on training text only, trains one classifier per aspect and compares it with
-          Rules + VADER and an always-absent reference.
-        </p>
+        <>
+          <label className="form-field">
+            Training method
+            <select
+              aria-label="TF-IDF training method"
+              value={trainingProfile}
+              disabled={busy}
+              onChange={(event) => setTrainingProfile(event.target.value)}
+            >
+              <option value="flat">Original · word features, five-state classifier</option>
+              <option value="hierarchical">Two-stage · word + character features</option>
+            </select>
+          </label>
+          <p className="runner-description">
+            {trainingProfile === 'hierarchical'
+              ? 'Learns whether each aspect is present, then classifies its sentiment using present examples. Word and character features fit training text only.'
+              : 'Fits word TF-IDF on training text only and trains one five-state classifier per aspect.'}{' '}
+            Compares with Rules + VADER and an always-absent reference. Each run keeps its own
+            model.
+          </p>
+        </>
       )}
       {kind === 'train_tfidf' && savedAssistance && (
         <div className="runner-assistance">
