@@ -12,5 +12,6 @@ Initial complete release of the local English smartphone-review analysis applica
 - Human-only, complete-partition checks for explicitly requested final evaluation. AI-assisted development results remain clearly identified.
 - Import, request, model-catalog, report-validation and responsive-layout fixes from the release review.
 - Repeatable isolated integration checks, CI, operating guides and actual application screenshots.
+- A 52-slide project reference guide with detailed Notes, source references, editable tables/charts and a text reading companion.
 
 Independent human test annotation/evaluation, transformer fine-tuning and Hindi/Hinglish remain research or scope extensions. The release does not claim production deployment or independently established smartphone accuracy.
