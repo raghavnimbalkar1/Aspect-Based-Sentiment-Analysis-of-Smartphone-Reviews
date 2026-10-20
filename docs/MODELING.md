@@ -26,6 +26,14 @@ The checkpoint does not predict absent or mixed directly. Absence follows the ca
 
 Softmax scores are uncalibrated model outputs. Averages attached to combined evidence are not probabilities that the final aspect result is correct. No smartphone-domain accuracy is claimed.
 
+## Domain adapter v2
+
+`deberta-domain-v2-10c9dff3-b377506c` reuses the same checkpoint with a separately versioned candidate/scope policy. `models/aspects_v2.json` records targets and expanded aliases within the unchanged taxonomy. Coordinated nouns retain a shared predicate; complete opinions can split at conjunctions. Context guards distinguish charging and shipping speed, volume controls and camera-versus-screen resolution. These are bounded heuristics, not a general syntactic parser.
+
+Canonical aspect targets are paired with each local clause; the transformer assigns sentiment. Full original sentences retain their offsets as evidence. No sentiment labels are assigned by the new domain rules. The model ID includes the checkpoint revision and a hash of configuration plus policy source. The registry reuses one backbone and inference lock for both neural adapters, avoiding a duplicate model allocation.
+
+The new adapter was designed after diagnostic error inspection. Its [development results](RESULTS.md) are not independent accuracy. It remains a transferred model with no smartphone weight training. Existing results under the original model ID are preserved.
+
 ## Install and run
 
 From the repository root:
@@ -38,7 +46,7 @@ make run
 
 The first command installs optional neural dependencies and downloads roughly 706 MiB of model/tokenizer files into ignored local storage. Allow additional disk space for PyTorch, dependencies and package caches. Setup needs internet; inference does not. If `make setup` removes optional dependencies, run `make model-setup` again; existing model files are reused.
 
-Choose **DeBERTa ABSA · transferred** in the model selector. On **Analyse a review**, enable comparison with Rules + VADER. To verify persistent analysis without a long run, start with a small imported dataset. The 4,346-review corpus is not automatically rerun with the neural model.
+Choose **DeBERTa ABSA · transferred** or **DeBERTa ABSA · domain adapter v2** in the model selector. Both become available from the same download. On **Analyse a review**, enable comparison with Rules + VADER. To verify persistent analysis without a long run, start with a small imported dataset. The 4,346-review corpus is not automatically rerun with either neural adapter.
 
 On this M2 Air, the initial offline smoke check took about 16 seconds to import dependencies, verify weights and load the model. After initialization, four short illustrative inputs took about 2 seconds on first inference and 46–108 ms on subsequent calls. These observations use different small inputs, include warm-up effects and are not a throughput benchmark. Browser request times can differ. The stored smoke output is local under `artifacts/smoke-tests`; it is not an evaluation report.
 
@@ -62,11 +70,13 @@ To train the classical classifier:
 
 Training fits vocabulary on training sentences only. Each category gets a five-state classifier; a category with only one training state uses a disclosed constant classifier. The artifact's hash determines its ID, and a `model-info.json` makes it discoverable in the dashboard. Only load artifacts produced locally; a checksum verifies identity, not the safety of an unknown joblib file.
 
+The optional `--profile hierarchical` selects two-stage TF-IDF: word uni/bigrams plus `char_wb` 3–5-grams, 25,000 features per vectorizer, equal weights and no validation threshold search. Each category has a balanced binary presence classifier and a present-only sentiment classifier (`C=1`, seed 42). No present examples means absent predictions; one sentiment means a constant sentiment classifier. The default remains `--profile flat`. Both profiles retain the same train/validation boundaries, origin checks, independent-test requirement and content-derived artifact IDs. Reports record the selected configuration.
+
 Reports become visible on **Model evaluation**. Automated test fixtures exercise these paths in temporary directories and never appear as project experiment results. One annotator's completed labels must be disclosed as single-annotator work; edit history does not constitute inter-annotator agreement.
 
 ## Run experiments from the dashboard
 
-The evaluation page can compare one to three installed models or train the fixed TF-IDF baseline. Select a full study after all validation sentences are complete. Training requires human labels or explicit selection of a prepared assisted training set. AI-reviewed validation requires **Use AI-assisted validation (diagnostic only)** as a separate choice. CLI commands accept `--assisted-validation`. Every resulting report identifies the non-independent reference and counts its origins. Test never accepts assisted labels. See [the label protocol](ANNOTATION.md#ai-assisted-validation-review) and [current results](RESULTS.md).
+The evaluation page can compare one to three installed models or train either TF-IDF profile using **Training method**. Select a full study after all validation sentences are complete. Training requires human labels or explicit selection of a prepared assisted training set. AI-reviewed validation requires **Use AI-assisted validation (diagnostic only)** as a separate choice. CLI commands accept `--assisted-validation`; repeated `--model` arguments allow a larger sequential comparison. Every resulting report identifies the non-independent reference and counts its origins. Test never accepts assisted labels. See [the label protocol](ANNOTATION.md#ai-assisted-validation-review) and [current results](RESULTS.md).
 
 A submission stores a CSV/manifest snapshot under `artifacts/experiment-inputs/<run-id>` and records its hashes in SQLite. The single local worker verifies those files, executes the experiment and writes a new result directory. The report includes snapshot provenance. Active duplicate runs for the same study are rejected. Interrupted runs retain their inputs; start a new run rather than overwriting a result directory.
 

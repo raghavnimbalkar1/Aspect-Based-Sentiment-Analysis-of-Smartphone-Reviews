@@ -23,3 +23,17 @@ To repeat from the repository root after setup, model installation and data prep
 ```
 
 Choose a new output filename; existing runs are preserved. Run while the application has no heavy background job. `--samples` accepts 1–100 and `--repeats` 1–10. The command rejects insufficient eligible inputs or unavailable/duplicate model IDs. Benchmark files deliberately use a separate directory/schema, so the dashboard cannot mistake latency for a model accuracy report.
+
+## Five-variant repeat — 20 October 2026
+
+The same 16 reviews and 48 warm requests were repeated in a fresh process, in the order below. Their review IDs have zero overlap with the frozen test partition. The [complete record](data/m2-refinement-cpu-latency.json) retains each request timing, environment and model identity; the original measurement above remains available.
+
+| Model | Initialization | First request | Warm median | Warm p95 |
+| --- | ---: | ---: | ---: | ---: |
+| Rules + VADER | <1 ms | 5.7 ms | 1.0 ms | 2.2 ms |
+| Original DeBERTa adapter | 4.50 s | 2,307.2 ms | 60.5 ms | 183.8 ms |
+| Domain adapter v2 | <1 ms, shared backbone | 57.8 ms, backbone warm | 60.8 ms | 230.8 ms |
+| Original flat TF-IDF | 19 ms | 28.5 ms | 1.7 ms | 3.3 ms |
+| Two-stage TF-IDF | 36 ms | 6.7 ms | 2.3 ms | 3.5 ms |
+
+Domain adapter v2 reuses the already-loaded original checkpoint, including its tokenizer, weights and inference lock. Its initialization and first request therefore do not represent standalone cold model startup. Broader candidate coverage can increase transformer work on some reviews. These measurements support a local CPU demo, not a throughput or accuracy claim.

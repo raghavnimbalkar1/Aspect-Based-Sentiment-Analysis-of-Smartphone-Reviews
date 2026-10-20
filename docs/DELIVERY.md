@@ -68,3 +68,13 @@ Migration 004 records origins in workbench rows. Exports/history retain them, an
 TF-IDF was trained on 199 sentences: 1 human and 198 pseudo-labelled. The installed model is `tfidf-db3871146fbb`. A same-reference diagnostic comparison produced tuple micro-F1 0.267 for rules, 0.323 for transferred DeBERTa and 0.091 for TF-IDF. These low, provisional agreement scores are documented in [RESULTS.md](RESULTS.md); they are not independent smartphone accuracy. Test was not evaluated. No models or annotations were adjusted from these scores.
 
 Verification: 69 backend tests, Ruff, frontend formatting, TypeScript and build pass. New checks cover persistent origins, sticky assisted provenance, explicit diagnostic opt-in and rejection of assisted test labels even with both assistance options enabled. Independent test annotation/evaluation and improved model-quality evidence remain outstanding.
+
+## Model refinement — 20 October 2026
+
+The original diagnostic exposed missed aspects and shared-predicate context loss. A [protocol](MODEL_IMPROVEMENT_PLAN.md) fixed two candidates before the next comparison: domain adapter v2 over the same pinned neural weights, and hierarchical TF-IDF with separate presence/sentiment classifiers. The new adapter has a content-derived configuration/policy ID, reuses the original backbone and preserves original sentence evidence. The original neural adapter, flat artifact, taxonomy and reference labels remain unchanged.
+
+Two-stage TF-IDF uses the same 199 training sentences, training-only word/character features and human-over-pseudo-label precedence. The API, CLI and dashboard now expose both training methods. Hash-checked artifacts still register independently; old artifacts remain compatible.
+
+The first new comparison reproduces original metrics exactly and records tuple F1 0.750 for domain adapter v2 and 0.240 for two-stage TF-IDF. These are development agreement scores on the already-inspected AI-assisted reference, not independent human accuracy. The UI and [results](RESULTS.md) identify that limitation and retain all errors. A same-sample CPU repeat measures domain adapter v2 median/p95 60.8/230.8 ms; shared initialization is disclosed.
+
+Verification: 86 backend tests, Ruff, frontend formatting, TypeScript and production build pass. Browser checks verify local domain inference, evidence, both training selections, diagnostic opt-in and new reports. Final evaluation also rejects partial test exports instead of silently reporting on a completed subset. Actual screenshots and aggregate audit records are included. The 69 test rows remain locked; independent human annotation and the final fixed-model evaluation remain outstanding.

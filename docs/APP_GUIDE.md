@@ -11,7 +11,7 @@ This is a local research application for finding opinions about individual phone
 5. **CSV import and export:** checks uploaded columns, reports invalid rows and duplicates, saves accepted reviews, and exports predictions as CSV or JSON. It does not scrape live shopping sites.
 6. **Background analysis:** processes a dataset with the chosen model, saves completed results, reports failures and resumes unfinished records after an interruption. Different models have separate saved results.
 7. **Annotation workbench:** creates frozen studies and filters sentences by partition/completion without ratings or predictions. You assign all ten category states, save drafts, mark sentences complete and export labels. Each save has a revision/history record. Conflicting edits are rejected.
-8. **Model evaluation:** queues comparisons or TF-IDF training, lists installed models and reads actual reports. Training can explicitly use assisted labels; AI-assisted validation requires a separate diagnostic opt-in. Reports identify reference origins and show aggregate metrics and individual errors. Test stays human-only.
+8. **Model evaluation:** queues comparisons or either TF-IDF training method, lists installed models and reads actual reports. Training can explicitly use assisted labels; AI-assisted validation requires a separate diagnostic opt-in. Reports identify reference origins/development comparisons and show aggregate metrics and individual errors. Test stays human-only.
 
 ## Models
 
@@ -19,7 +19,9 @@ This is a local research application for finding opinions about individual phone
 | --- | --- | --- |
 | Rules + VADER | Explicit aspect phrases, clause splitting and sentiment heuristics | Working baseline; all 4,346 source reviews processed |
 | Transferred DeBERTa ABSA | Explicit aspect candidates paired with a pretrained transformer sentiment classifier | Installed and verified locally on CPU; no smartphone benchmark yet |
+| Domain adapter v2 | Broader vocabulary and improved opinion scope over the same neural weights | Shares one loaded backbone with the original; diagnostic development comparison available |
 | TF-IDF + logistic classifiers | Learns five states per category from human or disclosed assisted training labels | Trained locally on 199 sentences; diagnostic comparison available, independent test pending |
+| Two-stage TF-IDF | Learns presence, then sentiment, with word and character features | Trained on the same 199 sentences; selectable alongside the original |
 
 The transferred model is third-party pretrained work. Our implementation supplies smartphone categories, candidate detection, clause pairing, evidence tracking, aggregation, storage, evaluation and the application. Details and attribution are in [the modeling notes](MODELING.md).
 
@@ -65,4 +67,4 @@ A request follows `React → FastAPI → model/storage → SQLite → React`. Bu
 
 The verified source contains 67,986 historical review rows. Our bounded corpus has 4,346 reviews from 12 selected listings. Automatic language filtering retained 3,819 English and 527 short/uncertain records. The 101-sentence annotation pilot contains training examples only and starts blank.
 
-The full study has 199 training, 35 validation and 69 test sentences. At the user's request, validation now contains 1 human and 34 AI-assisted annotations, with provenance and ambiguity notes. TF-IDF is trained and all three models have diagnostic comparison reports. Independent test annotation and final evaluation remain outstanding. See [results and limitations](RESULTS.md) and [submission steps](SUBMISSION.md). Smartphone transformer fine-tuning and Hindi/Hinglish remain extensions.
+The full study has 199 training, 35 validation and 69 test sentences. At the user's request, validation now contains 1 human and 34 AI-assisted annotations, with provenance and ambiguity notes. Both TF-IDF methods are trained and all five model variants have diagnostic comparison reports. The revised neural adapter was designed using inspected reference errors; its improved F1 is a development result. Independent test annotation and final evaluation remain outstanding. See [results and limitations](RESULTS.md) and [submission steps](SUBMISSION.md). Smartphone transformer fine-tuning and Hindi/Hinglish remain extensions.

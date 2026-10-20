@@ -17,8 +17,8 @@ Before the walkthrough, finish `make check`, `make build` and `make doctor`. Sta
 ## Finish the accuracy study
 
 1. Validation is now complete with 1 human and 34 AI-assisted sentences. Review its notes and disclose this reference origin. It does not provide independent human validation accuracy. A stronger independent validation study would need fresh human judgments without exposure to AI labels.
-2. TF-IDF has been trained on 199 training sentences with human-over-pseudo-label precedence. Its installed ID is `tfidf-db3871146fbb`. Reproducing the run requires explicit assisted-training and assisted-validation selections.
-3. Rules, TF-IDF and transferred DeBERTa have been compared against the same AI-assisted reference. Inspect category support/errors and the limits in [RESULTS.md](RESULTS.md). Fix the configurations to test before examining test predictions; do not treat diagnostic ranking as strong independent model-selection evidence.
+2. Flat and two-stage TF-IDF have been trained on the same 199 sentences with human-over-pseudo-label precedence. Their IDs are `tfidf-db3871146fbb` and `tfidf-4e97a73e6f8a`. Reproducing assisted runs requires separate assisted-training and assisted-validation selections.
+3. All five variants have been compared against the same AI-assisted reference. Domain adapter v2 (`deberta-domain-v2-10c9dff3-b377506c`) was designed after error inspection, under a [fixed refinement protocol](MODEL_IMPROVEMENT_PLAN.md). Inspect support/errors and [the limits](RESULTS.md). These configurations can now be frozen for final testing; the diagnostic ranking is not independent model-selection evidence.
 4. Independently complete the 69 test sentences without looking at model predictions. Export completed labels and extract the CSV/manifest to ignored `data/annotations/final`.
 5. Evaluate all selected, already fixed model IDs with the explicit final-test command below. Keep output directories immutable and retain source/artifact hashes.
 
@@ -26,14 +26,16 @@ Before the walkthrough, finish `make check`, `make build` and `make doctor`. Sta
 .venv/bin/absa evaluate-models data/annotations/final/annotations.csv \
   --manifest data/annotations/final/annotations.manifest.json \
   --model rules-v1 --model deberta-absa-10c9dff3 \
-  --model tfidf-db3871146fbb --assisted-validation \
+  --model deberta-domain-v2-10c9dff3-b377506c \
+  --model tfidf-db3871146fbb --model tfidf-4e97a73e6f8a \
+  --assisted-validation \
   --final-test --output artifacts/experiments/final-test-001
 ```
 
-Check IDs against `/api/models` if models have changed. `--assisted-validation` permits the existing diagnostic reference; it never permits assisted test labels. Final evaluation requires completed human test labels and does not retrain or tune models. Report tuple micro-F1, presence F1, category support and confusion matrices with sample counts, annotation origins, single-annotator limitations, assisted training and historical coverage. Do not tune from final-test errors and reuse the same test as independent evidence.
+Check IDs against `/api/models` if models have changed. `--assisted-validation` permits the existing diagnostic reference; it never permits assisted test labels. Final evaluation requires every frozen test sentence to have human labels; a partial test export is rejected. The manifest must declare its test sentence count. Comparison does not retrain or tune models. Report tuple micro-F1, presence F1, category support and confusion matrices with sample counts, annotation origins, single-annotator limitations, assisted training and historical coverage. Do not tune from final-test errors and reuse the same test as independent evidence.
 
 ## What is complete and what is conditional
 
-The corpus pipeline, local dashboard, model comparison, annotation, trained TF-IDF artifact, auditable diagnostic reports, CI and operating documentation are implemented. The pinned transferred checkpoint runs on CPU. Assisted training and validation origins are recorded separately; existing human edits are preserved.
+The corpus pipeline, local dashboard, model comparison, annotation, two trained TF-IDF variants, versioned neural adapters, auditable development reports, CI and operating documentation are implemented. Both neural adapters share one local CPU backbone. Assisted training and validation origins are recorded separately; existing human edits are preserved.
 
 Independent test annotation/evaluation and stronger model-quality evidence remain outstanding. Smartphone transformer fine-tuning and Hindi/Hinglish remain extensions; transferred inference and pseudo-label training do not complete those extensions.
