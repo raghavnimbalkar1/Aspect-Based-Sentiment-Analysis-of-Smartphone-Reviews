@@ -162,3 +162,28 @@ def test_registry_rejects_untrusted_classifier_integrity(tmp_path):
     )
     with pytest.raises(ValueError, match="integrity"):
         ModelRegistry(tmp_path).get("tfidf-000000000000")
+
+
+def test_repeated_training_keeps_one_catalog_entry_and_all_run_references(tmp_path):
+    import hashlib
+    import json
+
+    weights = b"isolated catalog fixture, never loaded"
+    digest = hashlib.sha256(weights).hexdigest()
+    for name in ("run-a", "run-b"):
+        directory = tmp_path / "experiments" / name
+        directory.mkdir(parents=True)
+        (directory / "model.joblib").write_bytes(weights)
+        (directory / "model-info.json").write_text(
+            json.dumps(
+                {
+                    "id": f"tfidf-{digest[:12]}",
+                    "kind": "tfidf",
+                    "taxonomy_version": "smartphone-v1",
+                    "model_sha256": digest,
+                }
+            )
+        )
+    specs = [spec for spec in ModelRegistry(tmp_path).specs() if spec["kind"] == "tfidf"]
+    assert len(specs) == 1
+    assert specs[0]["training_runs"] == ["run-a", "run-b"]

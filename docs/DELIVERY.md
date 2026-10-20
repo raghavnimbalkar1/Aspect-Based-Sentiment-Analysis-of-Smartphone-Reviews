@@ -78,3 +78,9 @@ Two-stage TF-IDF uses the same 199 training sentences, training-only word/charac
 The first new comparison reproduces original metrics exactly and records tuple F1 0.750 for domain adapter v2 and 0.240 for two-stage TF-IDF. These are development agreement scores on the already-inspected AI-assisted reference, not independent human accuracy. The UI and [results](RESULTS.md) identify that limitation and retain all errors. A same-sample CPU repeat measures domain adapter v2 median/p95 60.8/230.8 ms; shared initialization is disclosed.
 
 Verification: 86 backend tests, Ruff, frontend formatting, TypeScript and production build pass. Browser checks verify local domain inference, evidence, both training selections, diagnostic opt-in and new reports. Final evaluation also rejects partial test exports instead of silently reporting on a completed subset. Actual screenshots and aggregate audit records are included. The 69 test rows remain locked; independent human annotation and the final fixed-model evaluation remain outstanding.
+
+## Application release 1.0.0 — 20 October 2026
+
+The documented English application workflows are complete. The release adds dataset/import details and manifest downloads, a separate view for saved final-test results, validated report loading and stronger readiness provenance. QA corrections cover duplicate-import receipts, model-catalog duplication, malformed origins, comparison slots, cancelled requests, navigation scroll and narrow layouts.
+
+Verification: 104 automated tests, 245 isolated assertions across all five installed models, 14 browser scenarios, lint/formatting/build and workspace integrity checks pass. CI adds an isolated application-workflow job. [QUALITY_ASSURANCE.md](QUALITY_ASSURANCE.md) records the scope and remaining limits. The research database has a new local backup; all 69 test rows remain unchanged. Application release completion does not establish independent human test accuracy.

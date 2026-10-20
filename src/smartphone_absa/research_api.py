@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse, JSONResponse
 
 from smartphone_absa.data import file_hash
+from smartphone_absa.reports import load_report
 from smartphone_absa.research import (
     ExperimentBusy,
     ExperimentRequest,
@@ -33,13 +34,19 @@ def research_router(service: ResearchService) -> APIRouter:
 
     def predictions_path(name: str):
         report = report_path(name)
-        metadata = json.loads(report.read_text()).get("prediction_artifact", {})
+        metadata = checked_report(report).get("prediction_artifact") or {}
         path = report.parent / "predictions.jsonl"
         if not path.is_file() or not metadata.get("sha256"):
             raise HTTPException(404, "This report has no per-sentence predictions")
         if file_hash(path) != metadata["sha256"]:
             raise HTTPException(409, "Prediction artifact integrity check failed")
         return path
+
+    def checked_report(path):
+        try:
+            return load_report(path)
+        except (ValueError, OSError):
+            raise HTTPException(409, "Experiment report is incomplete or invalid") from None
 
     @router.post("/annotations/studies", status_code=201)
     def create_study(body: StudyRequest):
@@ -69,7 +76,7 @@ def research_router(service: ResearchService) -> APIRouter:
     def report(name: str):
         # Resolve only known report names; never interpolate a URL value into a file path.
         return JSONResponse(
-            json.loads(report_path(name).read_text()),
+            checked_report(report_path(name)),
             headers={"Content-Disposition": 'attachment; filename="metrics.json"'},
         )
 

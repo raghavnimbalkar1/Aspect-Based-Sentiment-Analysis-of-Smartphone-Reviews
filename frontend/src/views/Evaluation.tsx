@@ -9,11 +9,13 @@ import { useRemote } from '../hooks/useRemote'
 
 function EvaluationView({ onModelsChanged }: { onModelsChanged: () => void }) {
   const [revision, refresh] = useState(0)
+  const [partition, setPartition] = useState<'validation' | 'test'>('validation')
   const [focus, setFocus] = useState<{ experiment: string; model: string } | null>(null)
   const result = useRemote<Evaluation>('/api/evaluation', revision)
   const focusedReport = result.data?.reports.find(
     (report) => report.experiment === focus?.experiment,
   )
+  const reports = result.data?.reports.filter((report) => !!report[partition]) || []
   function updated() {
     refresh((value) => value + 1)
     onModelsChanged()
@@ -37,6 +39,13 @@ function EvaluationView({ onModelsChanged }: { onModelsChanged: () => void }) {
       {result.error && (
         <div className="alert error" role="alert">
           {result.error}
+        </div>
+      )}
+      {!!result.data?.report_errors?.length && (
+        <div className="alert error" role="alert">
+          {result.data.report_errors.length} local report(s) could not be opened:{' '}
+          {result.data.report_errors.map((item) => item.experiment).join(', ')}. Check the saved
+          artifacts. Valid reports remain available.
         </div>
       )}
       <div className="model-grid">
@@ -79,10 +88,30 @@ function EvaluationView({ onModelsChanged }: { onModelsChanged: () => void }) {
             Refresh results
           </button>
         </div>
-        {!result.data?.reports.length ? (
-          <Empty title="No measured experiments yet" icon={<FlaskConical size={26} />}>
-            Complete a study's human validation labels, then compare installed models or train
-            TF-IDF above. No scores are substituted for missing labels.
+        <label className="form-field report-partition">
+          Results partition
+          <select
+            aria-label="Results partition"
+            value={partition}
+            onChange={(event) => {
+              setPartition(event.target.value as 'validation' | 'test')
+              setFocus(null)
+            }}
+          >
+            <option value="validation">Validation and development diagnostics</option>
+            <option value="test">Final test results</option>
+          </select>
+        </label>
+        {!reports.length ? (
+          <Empty
+            title={
+              partition === 'test' ? 'No final test results yet' : 'No measured experiments yet'
+            }
+            icon={<FlaskConical size={26} />}
+          >
+            {partition === 'test'
+              ? 'No final test evaluation is available. Complete every frozen test sentence with human labels, then run the documented final-test command. Selecting this view never runs test inference.'
+              : "Complete a study's validation labels, then compare installed models or train TF-IDF above. No scores are substituted for missing labels."}
           </Empty>
         ) : (
           <div className="comparison-scroll">
@@ -93,13 +122,13 @@ function EvaluationView({ onModelsChanged }: { onModelsChanged: () => void }) {
                   <th>Model</th>
                   <th>Tuple micro-F1</th>
                   <th>Presence F1</th>
-                  <th>Validation sentences</th>
+                  <th>{partition === 'test' ? 'Test' : 'Validation'} sentences</th>
                   <th>Details</th>
                 </tr>
               </thead>
               <tbody>
-                {result.data.reports.flatMap((report) =>
-                  Object.entries(report.validation).map(([model, metrics]) => (
+                {reports.flatMap((report) =>
+                  Object.entries(report[partition]!).map(([model, metrics]) => (
                     <tr
                       key={`${report.experiment}-${model}`}
                       className={
@@ -110,12 +139,20 @@ function EvaluationView({ onModelsChanged }: { onModelsChanged: () => void }) {
                     >
                       <td>
                         {report.experiment}
-                        {report.evaluation_reference?.validation?.independent === false && (
+                        {partition === 'test' && (
+                          <small className="support-note">
+                            {report.evaluation_coverage?.test?.complete
+                              ? 'Complete frozen test partition'
+                              : 'Test coverage unverified'}
+                          </small>
+                        )}
+                        {report.evaluation_reference?.[partition]?.independent === false && (
                           <small className="support-note">AI-assisted diagnostic</small>
                         )}
-                        {report.development?.reference_previously_inspected && (
-                          <small className="support-note">Development comparison</small>
-                        )}
+                        {partition === 'validation' &&
+                          report.development?.reference_previously_inspected && (
+                            <small className="support-note">Development comparison</small>
+                          )}
                       </td>
                       <td>{['tfidf-v1', 'tfidf-v2'].includes(model) ? report.model_id : model}</td>
                       <td>{metrics.tuple_micro.f1.toFixed(3)}</td>
@@ -139,7 +176,12 @@ function EvaluationView({ onModelsChanged }: { onModelsChanged: () => void }) {
         )}
       </section>
       {focusedReport && focus && (
-        <ReportDetails report={focusedReport} model={focus.model} onClose={() => setFocus(null)} />
+        <ReportDetails
+          report={focusedReport}
+          model={focus.model}
+          partition={partition}
+          onClose={() => setFocus(null)}
+        />
       )}
       <div className="method-cards">
         <section className="panel">

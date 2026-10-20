@@ -102,9 +102,14 @@ function ImportDialog({
       }>('/api/datasets', { method: 'POST', body })
       onComplete(
         result.id,
-        result.rejected
-          ? `Imported ${number(result.accepted)} reviews; ${number(result.rejected)} rows were rejected or duplicates. Review the dataset manifest for details.`
-          : '',
+        result.duplicate
+          ? 'This review collection already exists. Opened the saved dataset.' +
+              (result.rejected
+                ? ` This upload excluded ${number(result.rejected)} invalid or duplicate rows.`
+                : '')
+          : result.rejected
+            ? `Imported ${number(result.accepted)} reviews; ${number(result.rejected)} rows were rejected or duplicates. Review the dataset manifest for details.`
+            : '',
       )
     } catch (error) {
       setError((error as Error).message)

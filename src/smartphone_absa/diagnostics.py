@@ -19,6 +19,7 @@ from smartphone_absa.baseline import RuleBaseline
 from smartphone_absa.data import file_hash, read_reviews
 from smartphone_absa.models.checkpoints import TRANSFER_FILES, TRANSFER_ID
 from smartphone_absa.models.registry import ModelRegistry
+from smartphone_absa.reports import independent_test_complete, report_catalog
 from smartphone_absa.taxonomy import TAXONOMY_VERSION
 
 
@@ -135,19 +136,17 @@ def doctor(database: Path, frontend: Path, registry: ModelRegistry, verify_model
                 check(f"model_integrity:{spec['id']}", valid, "Local model file integrity")
             except (ValueError, KeyError, OSError) as exc:
                 check(f"model_integrity:{spec['id']}", False, str(exc))
-    reports = []
-    for path in sorted((registry.artifacts / "experiments").glob("*/metrics.json")):
-        try:
-            report = json.loads(path.read_text())
-            reports.append(
-                {
-                    "experiment": path.parent.name,
-                    "validation": bool(report.get("validation")),
-                    "test": bool(report.get("test_evaluated") and report.get("test")),
-                }
-            )
-        except (ValueError, OSError):
-            check(f"report:{path.parent.name}", False, "Unreadable experiment report")
+    valid_reports, report_errors = report_catalog(registry.artifacts)
+    reports = [
+        {
+            "experiment": report["experiment"],
+            "validation": bool(report["validation"]),
+            "test": independent_test_complete(report),
+        }
+        for report in valid_reports
+    ]
+    for error in report_errors:
+        check(f"report:{error['experiment']}", False, error["error"])
     return {
         "kind": "workspace_readiness",
         "created_at": datetime.now(UTC).isoformat(),

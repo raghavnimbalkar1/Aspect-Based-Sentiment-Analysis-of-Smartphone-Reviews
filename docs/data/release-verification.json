@@ -1,0 +1,1891 @@
+{
+  "release": "1.0.0",
+  "verified_on": "2026-10-20",
+  "backend_tests": 104,
+  "lint": "passed",
+  "formatting": "passed",
+  "production_build": "passed",
+  "integration": {
+    "kind": "release_integration_verification",
+    "created_at": "2026-10-20T10:58:40.406519+00:00",
+    "scope": "Isolated synthetic workflow fixtures. No fixture accuracy is a research result.",
+    "neural_models_exercised": true,
+    "models_exercised": [
+      "rules-v1",
+      "deberta-absa-10c9dff3",
+      "deberta-domain-v2-10c9dff3-b377506c",
+      "tfidf-4e97a73e6f8a",
+      "tfidf-db3871146fbb"
+    ],
+    "environment": {
+      "python": "3.12.13",
+      "system": "Darwin",
+      "release": "27.0.0",
+      "machine": "arm64",
+      "packages": {
+        "smartphone-absa": "1.0.0",
+        "numpy": "2.5.4",
+        "scikit-learn": "1.9.1",
+        "torch": "2.14.1",
+        "transformers": "4.57.6"
+      }
+    },
+    "checks": [
+      {
+        "name": "health",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "dashboard_assets",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "import_preview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "csv_validation",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "invalid_and_duplicate_rows",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "duplicate_import",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "duplicate_receipt_uses_current_upload",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "manifest_download",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:d5144d4e28c3450c725f63bb",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:18de5419d1f6ad6b22c0a126",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:d735591c94dd8aa87790707b",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:add82efaa43c7e2bd28706d6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:a966d28458d9433ffb211fcd",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:11c1f10c0550e58359037a19",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:111e9be5094125dbb86c21e2",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:a38fa9f4041b03a3318aa5f4",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:d5144d4e28c3450c725f63bb",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:18de5419d1f6ad6b22c0a126",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:d735591c94dd8aa87790707b",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:add82efaa43c7e2bd28706d6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:a966d28458d9433ffb211fcd",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:11c1f10c0550e58359037a19",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:111e9be5094125dbb86c21e2",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:a38fa9f4041b03a3318aa5f4",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:d5144d4e28c3450c725f63bb",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:18de5419d1f6ad6b22c0a126",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:d735591c94dd8aa87790707b",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:add82efaa43c7e2bd28706d6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:a966d28458d9433ffb211fcd",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:11c1f10c0550e58359037a19",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:111e9be5094125dbb86c21e2",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:a38fa9f4041b03a3318aa5f4",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:d5144d4e28c3450c725f63bb",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:18de5419d1f6ad6b22c0a126",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:d735591c94dd8aa87790707b",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:add82efaa43c7e2bd28706d6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:a966d28458d9433ffb211fcd",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:11c1f10c0550e58359037a19",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:111e9be5094125dbb86c21e2",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:a38fa9f4041b03a3318aa5f4",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:d5144d4e28c3450c725f63bb",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:18de5419d1f6ad6b22c0a126",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:d735591c94dd8aa87790707b",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:add82efaa43c7e2bd28706d6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:a966d28458d9433ffb211fcd",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:11c1f10c0550e58359037a19",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:111e9be5094125dbb86c21e2",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:a38fa9f4041b03a3318aa5f4",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "phone_comparison",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "unknown_product_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "blank_input_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "unknown_model_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "create_full_study",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "blind_tasks",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "frozen_partitions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "stale_annotation_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_history",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "assisted_test_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "incomplete_test_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:completed",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:registered",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:test_locked",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:completed",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:registered",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:test_locked",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "repeated_training_queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "repeated_training_complete",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "unique_model_catalog",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "synthetic_test_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "synthetic_test_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "synthetic_test_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "final_test_coverage_contract",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "final_test_prediction_view",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "prediction_tamper_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "damaged_report_isolation",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "create_pilot",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "pilot_cannot_evaluate",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "persistence_after_restart",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_persistence_after_restart",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "isolated_workspace_integrity",
+        "passed": true,
+        "detail": null
+      }
+    ],
+    "passed": 245,
+    "failed": 0,
+    "research_workspace_modified": false,
+    "fixture_scores_published": false
+  },
+  "browser": {
+    "kind": "browser_quality_checks",
+    "surface": "Codex in-app browser",
+    "scope": "Isolated synthetic and blank QA workspaces",
+    "checks": [
+      {
+        "name": "Filtered review opens linked sentence evidence",
+        "passed": true
+      },
+      {
+        "name": "Clearing a phone preserves other comparison slots",
+        "passed": true
+      },
+      {
+        "name": "CSV file chooser, automatic mapping and duplicate import receipt",
+        "passed": true
+      },
+      {
+        "name": "Blind annotation, dirty navigation guard, persisted draft and edit history",
+        "passed": true
+      },
+      {
+        "name": "Completing an annotation removes it from the pending list",
+        "passed": true
+      },
+      {
+        "name": "Saved test partition, test-only predictions, pagination and filter reset",
+        "passed": true
+      },
+      {
+        "name": "Repeated UI training completes with unique artifact IDs in the catalog",
+        "passed": true
+      },
+      {
+        "name": "Six mobile screens fit 390 px and reset scroll on navigation",
+        "passed": true
+      },
+      {
+        "name": "Loaded overview fits 768 px tablet layout",
+        "passed": true
+      },
+      {
+        "name": "Neural and rule comparison shows original evidence and disclosed limitations",
+        "passed": true
+      },
+      {
+        "name": "Unsupported Hindi input and blank-input controls",
+        "passed": true
+      },
+      {
+        "name": "Manifest download and chart-to-review drill-down",
+        "passed": true
+      },
+      {
+        "name": "First-run overview opens safely with no datasets",
+        "passed": true
+      },
+      {
+        "name": "Empty final-test view explains human labels and performs no test inference",
+        "passed": true
+      }
+    ],
+    "mobile": [
+      {
+        "view": "Overview",
+        "pageWidth": 390,
+        "scrollY": 0,
+        "viewport": 390
+      },
+      {
+        "view": "Analyse a review",
+        "pageWidth": 390,
+        "scrollY": 0,
+        "viewport": 390
+      },
+      {
+        "view": "Review explorer",
+        "pageWidth": 390,
+        "scrollY": 0,
+        "viewport": 390
+      },
+      {
+        "view": "Compare phones",
+        "pageWidth": 390,
+        "scrollY": 0,
+        "viewport": 390
+      },
+      {
+        "view": "Annotation",
+        "pageWidth": 390,
+        "scrollY": 0,
+        "viewport": 390
+      },
+      {
+        "view": "Model evaluation",
+        "pageWidth": 390,
+        "scrollY": 0,
+        "viewport": 390
+      }
+    ],
+    "tablet": {
+      "pageWidth": 768,
+      "viewport": 768
+    },
+    "console": []
+  },
+  "workspace": {
+    "demo_ready": true,
+    "independent_test_evaluation_ready": false,
+    "test_rows_unchanged": true,
+    "test_before": {
+      "rows": 69,
+      "completed": 0,
+      "sha256": "8e32507cdf6c40e757975ec582f3109843f2ddf10e42c47734b51f2ae5c2adc0"
+    },
+    "test_after": {
+      "rows": 69,
+      "completed": 0,
+      "sha256": "8e32507cdf6c40e757975ec582f3109843f2ddf10e42c47734b51f2ae5c2adc0"
+    }
+  },
+  "limitations": [
+    "Checks cover the documented local workflows, not every possible input or browser.",
+    "Browser checks use the Codex in-app browser at default, 768 px and 390 px widths.",
+    "Fixture scores are excluded from research results.",
+    "69 human test annotations remain pending.",
+    "Very short non-English text may remain language-unknown and receive a provisional analysis warning."
+  ],
+  "core_without_neural_files": {
+    "kind": "release_integration_verification",
+    "created_at": "2026-10-20T11:05:00.708589+00:00",
+    "scope": "Isolated synthetic workflow fixtures. No fixture accuracy is a research result.",
+    "neural_models_exercised": false,
+    "models_exercised": [
+      "rules-v1"
+    ],
+    "environment": {
+      "python": "3.12.13",
+      "system": "Darwin",
+      "release": "27.0.0",
+      "machine": "arm64",
+      "packages": {
+        "smartphone-absa": "1.0.0",
+        "numpy": "2.5.4",
+        "scikit-learn": "1.9.1",
+        "torch": "2.14.1",
+        "transformers": "4.57.6"
+      }
+    },
+    "checks": [
+      {
+        "name": "health",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "dashboard_assets",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "import_preview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "csv_validation",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "invalid_and_duplicate_rows",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "duplicate_import",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "duplicate_receipt_uses_current_upload",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "manifest_download",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:d5144d4e28c3450c725f63bb",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:18de5419d1f6ad6b22c0a126",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:d735591c94dd8aa87790707b",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:add82efaa43c7e2bd28706d6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:a966d28458d9433ffb211fcd",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:11c1f10c0550e58359037a19",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:111e9be5094125dbb86c21e2",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:a38fa9f4041b03a3318aa5f4",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:4f2f08d709b87eabc061a231",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:ec61c70a56acef600a2a4531",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "phone_comparison",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "unknown_product_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "blank_input_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "unknown_model_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "create_full_study",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "blind_tasks",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "frozen_partitions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "stale_annotation_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_history",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "assisted_test_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "incomplete_test_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:completed",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:registered",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:test_locked",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:completed",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:registered",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:test_locked",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "repeated_training_queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "repeated_training_complete",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "unique_model_catalog",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "synthetic_test_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "synthetic_test_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "synthetic_test_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "final_test_coverage_contract",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "final_test_prediction_view",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "prediction_tamper_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "damaged_report_isolation",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "create_pilot",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "pilot_cannot_evaluate",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "persistence_after_restart",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_persistence_after_restart",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "isolated_workspace_integrity",
+        "passed": true,
+        "detail": null
+      }
+    ],
+    "passed": 94,
+    "failed": 0,
+    "research_workspace_modified": false,
+    "fixture_scores_published": false
+  }
+}

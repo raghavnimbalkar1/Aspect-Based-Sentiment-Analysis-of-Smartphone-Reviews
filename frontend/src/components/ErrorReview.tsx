@@ -14,16 +14,31 @@ type Prediction = {
   origin: string
 }
 
-export default function ErrorReview({ experiment, model }: { experiment: string; model: string }) {
+export default function ErrorReview({
+  experiment,
+  model,
+  split = 'validation',
+}: {
+  experiment: string
+  model: string
+  split?: 'validation' | 'test'
+}) {
   const [category, setCategory] = useState('')
   const [kind, setKind] = useState('errors')
   const [offset, setOffset] = useState(0)
   const endpoint = `/api/experiments/reports/${encodeURIComponent(experiment)}/predictions`
-  const params = new URLSearchParams({ model, category, kind, offset: String(offset), limit: '10' })
+  const params = new URLSearchParams({
+    model,
+    split,
+    category,
+    kind,
+    offset: String(offset),
+    limit: '10',
+  })
   const results = useRemote<{ total: number; items: Prediction[] }>(`${endpoint}?${params}`)
   return (
     <div className="error-review">
-      <h3 className="report-section-heading">Review validation errors</h3>
+      <h3 className="report-section-heading">Review {split} errors</h3>
       <p className="report-description">
         Compare each prediction with the saved reference label. Missed aspects, extra aspects and
         sentiment mistakes are shown separately.
@@ -82,7 +97,7 @@ export default function ErrorReview({ experiment, model }: { experiment: string;
       {results.data && (
         <>
           <p className="small-note">
-            {results.data.total} matching category states · validation only
+            {results.data.total} matching category states · {split} only
           </p>
           {!results.data.items.length && <p className="small-note">No matching predictions.</p>}
           {results.data.items.map((row) => (

@@ -28,6 +28,7 @@ import type { Dataset, FilterValues, Job, Overview, Product, ModelSpec } from '.
 import { useRemote } from './hooks/useRemote'
 import { Empty, Legend, Metric } from './components/common'
 import ImportDialog from './components/ImportDialog'
+import DatasetDetails from './components/DatasetDetails'
 import ReviewsView from './components/Reviews'
 import AnalyseView from './views/Analyse'
 import CompareView from './views/Compare'
@@ -58,6 +59,7 @@ function App() {
   const [search, setSearch] = useState('')
   const [showImport, setShowImport] = useState(false)
   const [message, setMessage] = useState('')
+  const [messageKind, setMessageKind] = useState('info')
   const [busy, setBusy] = useState(false)
   const datasets = useRemote<Dataset[]>(`/api/datasets?model=${modelId}`, revision)
   const selected = datasets.data?.find((dataset) => dataset.id === datasetId)
@@ -73,6 +75,10 @@ function App() {
   )
   const jobs = useRemote<Job[]>(base ? `${base}/jobs?model=${modelId}` : null, revision)
   const activeJob = jobs.data?.find((job) => ['queued', 'running'].includes(job.status))
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [view, datasetId])
 
   useEffect(() => {
     if (pendingDatasetId) {
@@ -113,6 +119,7 @@ function App() {
       })
       refresh((value) => value + 1)
     } catch (error) {
+      setMessageKind('error')
       setMessage((error as Error).message)
     } finally {
       setBusy(false)
@@ -268,7 +275,7 @@ function App() {
             </div>
           </div>
           {(datasets.error || message) && (
-            <div role="alert" className="alert error">
+            <div role="alert" className={`alert ${datasets.error ? 'error' : messageKind}`}>
               {message || datasets.error}
               <button aria-label="Dismiss" onClick={() => setMessage('')}>
                 <X size={16} />
@@ -308,6 +315,9 @@ function App() {
                 </span>
               </div>
             </div>
+          )}
+          {base && ['overview', 'reviews'].includes(view) && (
+            <DatasetDetails key={base} base={base} />
           )}
           {activeJob && (
             <div className="job-progress" role="status">
@@ -416,6 +426,7 @@ function App() {
                     <input
                       aria-label="Search review text"
                       placeholder="Search reviews…"
+                      maxLength={200}
                       value={search}
                       onChange={(event) => setSearch(event.target.value)}
                     />
@@ -626,6 +637,7 @@ function App() {
             setPendingDatasetId(id)
             refresh((value) => value + 1)
             setMessage(result)
+            setMessageKind('info')
             setShowImport(false)
           }}
         />
