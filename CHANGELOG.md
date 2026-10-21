@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.0 — 22 October 2026
+
+- Add cooperative stop/resume controls for batch analysis, atomic worker claims and persistent per-review failure details. Shutdown preserves completed work.
+- Stream complete CSV/JSON exports without the former 10,000-review cutoff. Include brands in CSV and handle sequential export chunks moving between worker threads.
+- Distinguish imported phones by brand and model; show brand labels in filters, comparisons and review cards.
+- Improve camera focus attribution, same-sentence omitted predicates and conditional negatives. Retain general phone opinions alongside separate feature sentences.
+- Add live-analysis JSON downloads with original input, model identity, evidence and trace.
+- Tolerate unavailable or full browser storage, protect annotation edits from import actions, and skip malformed saved-model catalogue metadata.
+- Add 23 Python regressions, three storage failure-path tests and eight real-model cases. Verify batch recovery, annotation history, imports, exports and mobile layouts in an isolated workspace.
+
+The neural weights are unchanged. The live adapter's policy hash changes its model ID. Earlier adapters and recorded research results retain their identities. The known sarcasm failure and pending independent test evaluation remain documented.
+
 ## 1.1.1 — 21 October 2026
 
 - Display each source sentence in reading order with individual feature opinions and supporting clauses. Keep review-level aggregation in a separate summary.

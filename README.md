@@ -4,9 +4,9 @@
 
 A local research application that turns smartphone reviews into feature-level opinions, with the original sentences kept alongside each prediction. It combines data preparation, model inference, human annotation and reproducible evaluation in one dashboard.
 
-**Release 1.1.1:** live analysis shows sentences in reading order, with separate labels and supporting clauses for each feature opinion. A compact review summary combines those opinions. The app selects **DeBERTa · smartphone context** when installed. The [model map](docs/MODEL_MAP.md) explains the methods; the [demo preparation guide](docs/DEMO_PREPARATION.md) covers the code. Independent human test accuracy remains pending.
+**Release 1.2.0:** improved opinion context, stoppable and resumable batch analysis, per-review failure details, complete streaming exports and downloadable live results. Live analysis keeps source sentences, separate feature opinions and a combined review summary. The app selects **DeBERTa · smartphone context** when installed. The [model map](docs/MODEL_MAP.md) explains the methods; the [demo preparation guide](docs/DEMO_PREPARATION.md) covers the code. Independent human test accuracy remains pending.
 
-Current checks: **137 automated tests**, **42 existing live-review regressions** and **287 integration assertions** across six installed variants passed. Manual dashboard testing covered 21 additional review inputs; 20 matched the intended aspect labels and one sarcastic review remains unresolved. These are development checks, not an accuracy estimate. See the [quality record](docs/QUALITY_ASSURANCE.md).
+Current checks: **160 Python tests**, **3 browser-storage tests**, **50 real-model regression cases** and **287 integration assertions** across six installed variants passed. A separate 21-case set still passes 20 cases, with one documented sarcasm error. Browser checks cover cancellation/recovery, annotation protection, imports, downloads and all seven workspaces at 390 px. These are development checks, not an accuracy estimate. See the [quality record](docs/QUALITY_ASSURANCE.md).
 
 [![Checks](https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews/actions/workflows/checks.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
@@ -44,7 +44,9 @@ The application tracks ten categories: **battery, charging, camera, display, per
 | **Annotation** | Create a frozen study, filter by partition/completion, label sentences without predictions or ratings, save drafts and export completed labels. |
 | **Model evaluation** | Queue validation experiments, train either TF-IDF method, inspect validation or saved final-test reports, and download metrics/predictions. |
 
-CSV import supports column mapping and reports invalid rows and duplicates. Batch analysis preserves completed results and can resume unfinished records. Results, jobs and exports are separated by model and taxonomy version.
+CSV import supports column mapping and reports invalid rows and duplicates. Supplied brand and model names jointly identify phones, so different brands' identically named models remain separate. Batch analysis has **Stop analysis**, **Resume unfinished reviews** and inspectable failure details. Stopping finishes the current review and preserves completed results. Results, jobs and exports are separated by model and taxonomy version.
+
+**Download analysis JSON** saves a live input with its model ID, sentence decisions, evidence and inference trace. Corpus CSV/JSON exports stream all matching records, including datasets loaded through the CLI with more than 10,000 reviews. CSV includes a separate brand column.
 
 **Dataset details and import checks** exposes row rejection reasons, mapped columns and a downloadable manifest. Final-test inspection displays saved results only and never triggers inference.
 
@@ -156,6 +158,10 @@ The current live-review workflow starts with your own input:
 Separate sentences keep their original order and individual feature labels:
 
 ![Three sentences analyzed separately for camera, battery and display](docs/screenshots/sentence-sequence.png)
+
+General phone opinions can coexist with feature opinions. The camera's positive and negative clauses remain separate:
+
+![Three sentences with a general opinion, opposing camera clauses and positive battery/display opinions](docs/screenshots/live-hardening.png)
 
 <details>
 <summary><strong>Model roles and training explained</strong></summary>

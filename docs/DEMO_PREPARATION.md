@@ -24,6 +24,7 @@ Open **http://localhost:8000**. Confirm **DeBERTa · smartphone context** on **A
 1. Type the instructor's English smartphone review.
 2. Select **Analyse review**. Read the sentence cards and individual feature opinions, then explain the combined review summary.
 3. Open **How this result was produced** to show the actual candidate, context and decision.
+   Use **Download analysis JSON** to keep that input and its exact output for later debugging.
 4. Optionally compare with **Rules + VADER** on the same text. The main model appears first.
 5. Open **Models explained** for the training, checkpoint and data questions.
 6. Show **Overview** and **Review explorer** afterward for corpus analytics.
@@ -62,10 +63,10 @@ If the trace has no candidate, inspect vocabulary and scope. If the candidate is
 
 ### Recognise a synonym
 
-For “recognise snapshots as camera mentions,” add this entry inside `additional_cues` in `models/aspects_live.json`, preserving the other entries:
+For “recognise snapshots as camera mentions,” append this pattern to the existing `camera` array inside `additional_cues` in `models/aspects_live.json`. Keep the existing focus patterns:
 
 ```json
-"camera": ["\\bsnapshots?\\b"]
+"\\bsnapshots?\\b"
 ```
 
 JSON needs double backslashes to encode regex backslashes. This selects a camera candidate without deciding its polarity.

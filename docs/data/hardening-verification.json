@@ -1,0 +1,2727 @@
+{
+  "release": "1.2.0",
+  "verified_dates": [
+    "2026-10-21",
+    "2026-10-22"
+  ],
+  "scope": "Software verification and written development cases, not independent model accuracy.",
+  "python_tests": {
+    "passed": 160,
+    "new_regressions": 23
+  },
+  "browser_storage_tests": {
+    "passed": 3
+  },
+  "static_checks": [
+    "Ruff",
+    "Prettier",
+    "TypeScript",
+    "Vite production build"
+  ],
+  "integration": {
+    "models_exercised": [
+      "rules-v1",
+      "deberta-absa-10c9dff3",
+      "deberta-domain-v2-10c9dff3-b377506c",
+      "deberta-live-v3-10c9dff3-746e492e",
+      "tfidf-4e97a73e6f8a",
+      "tfidf-db3871146fbb"
+    ],
+    "passed": 287,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "health",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "dashboard_assets",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "import_preview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "csv_validation",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "invalid_and_duplicate_rows",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "duplicate_import",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "duplicate_receipt_uses_current_upload",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "manifest_download",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:70c3c285e2249e2648da14d3",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:a58322b1172ae30c53269dae",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:e41bd9fdacfa1510943a68f6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:f9137b9296df416fcf31729d",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:f4a966b2e6efc76a63487486",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:1426db0a15d84a7df9dbf028",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:d30b18123c3a3cf8d90d2b76",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:b19a53e730fd190de0358b99",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:rules-v1:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:70c3c285e2249e2648da14d3",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:a58322b1172ae30c53269dae",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:e41bd9fdacfa1510943a68f6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:f9137b9296df416fcf31729d",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:f4a966b2e6efc76a63487486",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:1426db0a15d84a7df9dbf028",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:d30b18123c3a3cf8d90d2b76",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:b19a53e730fd190de0358b99",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-absa-10c9dff3:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:70c3c285e2249e2648da14d3",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:a58322b1172ae30c53269dae",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:e41bd9fdacfa1510943a68f6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:f9137b9296df416fcf31729d",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:f4a966b2e6efc76a63487486",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:1426db0a15d84a7df9dbf028",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:d30b18123c3a3cf8d90d2b76",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:b19a53e730fd190de0358b99",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-domain-v2-10c9dff3-b377506c:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:70c3c285e2249e2648da14d3",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:a58322b1172ae30c53269dae",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:e41bd9fdacfa1510943a68f6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:f9137b9296df416fcf31729d",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:f4a966b2e6efc76a63487486",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:1426db0a15d84a7df9dbf028",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:d30b18123c3a3cf8d90d2b76",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:b19a53e730fd190de0358b99",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:deberta-live-v3-10c9dff3-746e492e:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:70c3c285e2249e2648da14d3",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:a58322b1172ae30c53269dae",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:e41bd9fdacfa1510943a68f6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:f9137b9296df416fcf31729d",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:f4a966b2e6efc76a63487486",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:1426db0a15d84a7df9dbf028",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:d30b18123c3a3cf8d90d2b76",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:b19a53e730fd190de0358b99",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-4e97a73e6f8a:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:overview",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:aggregate_counts",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:filter_export:{}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:70c3c285e2249e2648da14d3",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:a58322b1172ae30c53269dae",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:e41bd9fdacfa1510943a68f6",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:f9137b9296df416fcf31729d",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:f4a966b2e6efc76a63487486",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:1426db0a15d84a7df9dbf028",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:d30b18123c3a3cf8d90d2b76",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:b19a53e730fd190de0358b99",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:filter_export:{'category': 'camera'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:42d7154e6dbbd3a68843e92a",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:evidence_offset",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:filter_export:{'q': 'Wi-Fi'}",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:stored_identity:70b70212fc35e86d53f5e266",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:idempotent_batch",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "model:tfidf-db3871146fbb:unsupported_language",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "phone_comparison",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "unknown_product_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "blank_input_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "unknown_model_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "create_full_study",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "blind_tasks",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "frozen_partitions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "stale_annotation_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_history",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "assisted_test_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "incomplete_test_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:completed",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:registered",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:flat:test_locked",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:completed",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:registered",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "training:hierarchical:test_locked",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "repeated_training_queue",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "repeated_training_complete",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "unique_model_catalog",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "synthetic_test_completion",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "final_test_coverage_contract",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "final_test_prediction_view",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "prediction_tamper_rejection",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "damaged_report_isolation",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "create_pilot",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "pilot_cannot_evaluate",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "persistence_after_restart",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "annotation_persistence_after_restart",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "isolated_workspace_integrity",
+        "passed": true,
+        "detail": null
+      }
+    ]
+  },
+  "review_suites": {
+    "existing_42": {
+      "kind": "written_live_demo_regressions",
+      "scope": "Synthetic development checks, not independent model accuracy.",
+      "research_data_read_or_modified": false,
+      "cases_sha256": "7b82ba80d0b12e618be7815051d8fc3d395d0dcdd69c97740b5efc84febc82a1",
+      "models": [
+        {
+          "model_id": "deberta-live-v3-10c9dff3-746e492e",
+          "cases": [
+            {
+              "id": "opposing-features",
+              "text": "The camera is excellent, but the battery is terrible.",
+              "expected_aspects": {
+                "camera": "positive",
+                "battery": "negative"
+              },
+              "actual_aspects": {
+                "battery": "negative",
+                "camera": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "shared-praise",
+              "text": "The camera and screen are excellent.",
+              "expected_aspects": {
+                "camera": "positive",
+                "display": "positive"
+              },
+              "actual_aspects": {
+                "camera": "positive",
+                "display": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "shared-criticism",
+              "text": "The camera and screen are not good.",
+              "expected_aspects": {
+                "camera": "negative",
+                "display": "negative"
+              },
+              "actual_aspects": {
+                "camera": "negative",
+                "display": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "separate-and",
+              "text": "The screen is bright and the camera is awful.",
+              "expected_aspects": {
+                "display": "positive",
+                "camera": "negative"
+              },
+              "actual_aspects": {
+                "camera": "negative",
+                "display": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "separate-comma",
+              "text": "The camera is great, the battery is terrible.",
+              "expected_aspects": {
+                "camera": "positive",
+                "battery": "negative"
+              },
+              "actual_aspects": {
+                "battery": "negative",
+                "camera": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "same-feature-mixed",
+              "text": "The camera takes excellent daylight photos, but its night shots are awful.",
+              "expected_aspects": {
+                "camera": "mixed"
+              },
+              "actual_aspects": {
+                "camera": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "multiple-sentences",
+              "text": "The screen is excellent. The screen is awful outdoors.",
+              "expected_aspects": {
+                "display": "mixed"
+              },
+              "actual_aspects": {
+                "display": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "negation",
+              "text": "The camera is not good.",
+              "expected_aspects": {
+                "camera": "negative"
+              },
+              "actual_aspects": {
+                "camera": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "contraction",
+              "text": "The camera isn't good.",
+              "expected_aspects": {
+                "camera": "negative"
+              },
+              "actual_aspects": {
+                "camera": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "negated-criticism",
+              "text": "The camera is not bad.",
+              "expected_aspects": {
+                "camera": "positive"
+              },
+              "actual_aspects": {
+                "camera": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "no-lag",
+              "text": "There is no lag when I use this phone.",
+              "expected_aspects": {
+                "performance": "positive"
+              },
+              "actual_aspects": {
+                "performance": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "implicit-endurance",
+              "text": "It lasts all day without needing a recharge.",
+              "expected_aspects": {
+                "battery": "positive",
+                "charging": "neutral"
+              },
+              "actual_aspects": {
+                "battery": "positive",
+                "charging": "neutral"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "early-death",
+              "text": "The phone dies after two hours of normal use.",
+              "expected_aspects": {
+                "battery": "negative"
+              },
+              "actual_aspects": {
+                "battery": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "charging-speed",
+              "text": "Charging is painfully slow.",
+              "expected_aspects": {
+                "charging": "negative"
+              },
+              "actual_aspects": {
+                "charging": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "charging-praise",
+              "text": "The charger works perfectly and charges the phone quickly.",
+              "expected_aspects": {
+                "charging": "positive"
+              },
+              "actual_aspects": {
+                "charging": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "broken-charger",
+              "text": "The charger stopped working after a week.",
+              "expected_aspects": {
+                "charging": "negative"
+              },
+              "actual_aspects": {
+                "charging": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "factual-camera",
+              "text": "This phone has three cameras.",
+              "expected_aspects": {
+                "camera": "neutral"
+              },
+              "actual_aspects": {
+                "camera": "neutral"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "factual-port",
+              "text": "The phone has a USB-C charging port.",
+              "expected_aspects": {
+                "charging": "neutral"
+              },
+              "actual_aspects": {
+                "charging": "neutral"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "screen-price",
+              "text": "I love the display, although the phone is overpriced.",
+              "expected_aspects": {
+                "display": "positive",
+                "value": "negative"
+              },
+              "actual_aspects": {
+                "display": "positive",
+                "value": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "blurry-photos",
+              "text": "Every photo comes out blurry.",
+              "expected_aspects": {
+                "camera": "negative"
+              },
+              "actual_aspects": {
+                "camera": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "overheating",
+              "text": "The phone overheats whenever I play games.",
+              "expected_aspects": {
+                "performance": "negative"
+              },
+              "actual_aspects": {
+                "performance": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "app-crashes",
+              "text": "Apps keep crashing after the software update.",
+              "expected_aspects": {
+                "software": "negative"
+              },
+              "actual_aspects": {
+                "software": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "speaker-distortion",
+              "text": "The speakers sound distorted even at low volume.",
+              "expected_aspects": {
+                "audio": "negative"
+              },
+              "actual_aspects": {
+                "audio": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "network-drops",
+              "text": "Wi-Fi keeps disconnecting, but Bluetooth works perfectly.",
+              "expected_aspects": {
+                "connectivity": "mixed"
+              },
+              "actual_aspects": {
+                "connectivity": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "retail-only",
+              "text": "Shipping was fast and the seller was excellent.",
+              "expected_aspects": {},
+              "actual_aspects": {},
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "retail-and-phone",
+              "text": "Shipping was slow, but the phone is fast and responsive.",
+              "expected_aspects": {
+                "performance": "positive"
+              },
+              "actual_aspects": {
+                "performance": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "physical-volume",
+              "text": "The volume buttons feel flimsy.",
+              "expected_aspects": {
+                "build": "negative"
+              },
+              "actual_aspects": {
+                "build": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "worth-price",
+              "text": "This phone is worth every penny.",
+              "expected_aspects": {
+                "value": "positive"
+              },
+              "actual_aspects": {
+                "value": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "general-praise",
+              "text": "I absolutely love this phone!",
+              "expected_aspects": {},
+              "actual_aspects": {},
+              "expected_general": "positive",
+              "actual_general": "positive",
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "general-criticism",
+              "text": "This phone is terrible. I regret buying it.",
+              "expected_aspects": {},
+              "actual_aspects": {},
+              "expected_general": "negative",
+              "actual_general": "negative",
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "general-fact",
+              "text": "I bought this phone yesterday.",
+              "expected_aspects": {},
+              "actual_aspects": {},
+              "expected_general": "neutral",
+              "actual_general": "neutral",
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "curly-apostrophe",
+              "text": "The camera isn\u2019t good, but the screen is excellent.",
+              "expected_aspects": {
+                "camera": "negative",
+                "display": "positive"
+              },
+              "actual_aspects": {
+                "camera": "negative",
+                "display": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "ellipsis-contrast",
+              "text": "The camera is good but not the battery.",
+              "expected_aspects": {
+                "camera": "positive",
+                "battery": "negative"
+              },
+              "actual_aspects": {
+                "battery": "negative",
+                "camera": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "implicit-screen",
+              "text": "It is impossible to read the screen in sunlight.",
+              "expected_aspects": {
+                "display": "negative"
+              },
+              "actual_aspects": {
+                "display": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "two-category-nouns",
+              "text": "The battery and camera are good, but the screen is terrible.",
+              "expected_aspects": {
+                "battery": "positive",
+                "camera": "positive",
+                "display": "negative"
+              },
+              "actual_aspects": {
+                "battery": "positive",
+                "camera": "positive",
+                "display": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "short-input",
+              "text": "Camera good",
+              "expected_aspects": {
+                "camera": "positive"
+              },
+              "actual_aspects": {
+                "camera": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "charge-versus-endurance",
+              "text": "The battery charges quickly but drains too fast.",
+              "expected_aspects": {
+                "battery": "negative",
+                "charging": "positive"
+              },
+              "actual_aspects": {
+                "battery": "negative",
+                "charging": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "signal-drop",
+              "text": "WiFi works great but the signal drops indoors.",
+              "expected_aspects": {
+                "connectivity": "mixed"
+              },
+              "actual_aspects": {
+                "connectivity": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "price-qualification",
+              "text": "It is a decent phone for the price.",
+              "expected_aspects": {
+                "value": "positive"
+              },
+              "actual_aspects": {
+                "value": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "app-opening-speed",
+              "text": "The phone is so fast that apps open instantly.",
+              "expected_aspects": {
+                "performance": "positive"
+              },
+              "actual_aspects": {
+                "performance": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "general-pronoun",
+              "text": "Love it!",
+              "expected_aspects": {},
+              "actual_aspects": {},
+              "expected_general": "positive",
+              "actual_general": "positive",
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "neutral-frequency",
+              "text": "The phone has a 120 Hz screen.",
+              "expected_aspects": {
+                "display": "neutral"
+              },
+              "actual_aspects": {
+                "display": "neutral"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            }
+          ],
+          "passed": 42,
+          "failed": 0
+        }
+      ]
+    },
+    "new_8": {
+      "kind": "written_live_demo_regressions",
+      "scope": "Synthetic development checks, not independent model accuracy.",
+      "research_data_read_or_modified": false,
+      "cases_sha256": "a42a0704d5fe16048598791a842e55b7c4e6cd22e3d58b853976ae5baa1519cb",
+      "models": [
+        {
+          "model_id": "deberta-live-v3-10c9dff3-746e492e",
+          "cases": [
+            {
+              "id": "focus-contrast",
+              "text": "The camera is excellent but slow to focus.",
+              "expected_aspects": {
+                "camera": "mixed"
+              },
+              "actual_aspects": {
+                "camera": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "focus-only",
+              "text": "The camera is fast to focus.",
+              "expected_aspects": {
+                "camera": "positive"
+              },
+              "actual_aspects": {
+                "camera": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "phone-vs-focus",
+              "text": "The phone is fast but the camera is slow to focus.",
+              "expected_aspects": {
+                "camera": "negative",
+                "performance": "positive"
+              },
+              "actual_aspects": {
+                "camera": "negative",
+                "performance": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "conditional-negation",
+              "text": "The display is bright but not outdoors.",
+              "expected_aspects": {
+                "display": "mixed"
+              },
+              "actual_aspects": {
+                "display": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "shared-predicate",
+              "text": "The camera is great and so is the display.",
+              "expected_aspects": {
+                "camera": "positive",
+                "display": "positive"
+              },
+              "actual_aspects": {
+                "camera": "positive",
+                "display": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "general-plus-feature",
+              "text": "I hate this phone. The camera is excellent. It arrived late.",
+              "expected_aspects": {
+                "camera": "positive"
+              },
+              "actual_aspects": {
+                "camera": "positive"
+              },
+              "expected_general": "negative",
+              "actual_general": "negative",
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "focus-not-camera",
+              "text": "My main focus is software updates.",
+              "expected_aspects": {
+                "software": "neutral"
+              },
+              "actual_aspects": {
+                "software": "neutral"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "new-phone-subject",
+              "text": "The camera is good but slow phone performance ruins it.",
+              "expected_aspects": {
+                "camera": "positive",
+                "performance": "negative"
+              },
+              "actual_aspects": {
+                "camera": "positive",
+                "performance": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            }
+          ],
+          "passed": 8,
+          "failed": 0
+        }
+      ]
+    },
+    "additional_21": {
+      "kind": "written_live_demo_regressions",
+      "scope": "Synthetic development checks, not independent model accuracy.",
+      "research_data_read_or_modified": false,
+      "cases_sha256": "fb96f889790e7809c3ba0b8ab7f056d22fdcfb1de70ce147262f1d1bbe9c5133",
+      "models": [
+        {
+          "model_id": "deberta-live-v3-10c9dff3-746e492e",
+          "cases": [
+            {
+              "id": "user-heavy-use",
+              "text": "The battery easily lasts two full days of heavy use, and the 120Hz display is super smooth and bright",
+              "expected_aspects": {
+                "battery": "positive",
+                "display": "positive"
+              },
+              "actual_aspects": {
+                "battery": "positive",
+                "display": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "separate-sentences",
+              "text": "The camera takes beautiful photos. The battery dies before lunch. The screen is bright outdoors.",
+              "expected_aspects": {
+                "camera": "positive",
+                "battery": "negative",
+                "display": "positive"
+              },
+              "actual_aspects": {
+                "battery": "negative",
+                "camera": "positive",
+                "display": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "comma-oppositions",
+              "text": "Great camera, awful battery, excellent speakers.",
+              "expected_aspects": {
+                "camera": "positive",
+                "battery": "negative",
+                "audio": "positive"
+              },
+              "actual_aspects": {
+                "battery": "negative",
+                "camera": "positive",
+                "audio": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "shared-subjects",
+              "text": "The camera and screen are excellent, but the battery and speakers are disappointing.",
+              "expected_aspects": {
+                "camera": "positive",
+                "display": "positive",
+                "battery": "negative",
+                "audio": "negative"
+              },
+              "actual_aspects": {
+                "battery": "negative",
+                "camera": "positive",
+                "display": "positive",
+                "audio": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "same-feature",
+              "text": "The camera is fantastic in daylight. The camera is awful at night.",
+              "expected_aspects": {
+                "camera": "mixed"
+              },
+              "actual_aspects": {
+                "camera": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "negation",
+              "text": "The screen is not bright enough outdoors, but the camera is not bad at all.",
+              "expected_aspects": {
+                "display": "negative",
+                "camera": "positive"
+              },
+              "actual_aspects": {
+                "camera": "positive",
+                "display": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "charging-endurance",
+              "text": "Charging takes forever. Once charged, the battery comfortably lasts all day.",
+              "expected_aspects": {
+                "charging": "negative",
+                "battery": "positive"
+              },
+              "actual_aspects": {
+                "battery": "positive",
+                "charging": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "neutral-specs",
+              "text": "The phone has a 5000mAh battery and a 6.7-inch display.",
+              "expected_aspects": {
+                "battery": "neutral",
+                "display": "neutral"
+              },
+              "actual_aspects": {
+                "battery": "neutral",
+                "display": "neutral"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "retail",
+              "text": "Delivery was quick and the packaging looked great. The phone camera is blurry and the speaker crackles.",
+              "expected_aspects": {
+                "camera": "negative",
+                "audio": "negative"
+              },
+              "actual_aspects": {
+                "camera": "negative",
+                "audio": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "cheap-build",
+              "text": "The plastic back feels cheap, but the phone is excellent value for money.",
+              "expected_aspects": {
+                "build": "negative",
+                "value": "positive"
+              },
+              "actual_aspects": {
+                "build": "negative",
+                "value": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "app-speed",
+              "text": "Apps launch quickly, but the software is full of ads. Gaming causes the phone to overheat.",
+              "expected_aspects": {
+                "performance": "mixed",
+                "software": "negative"
+              },
+              "actual_aspects": {
+                "performance": "mixed",
+                "software": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "line-breaks",
+              "text": "Battery life is great\nCamera is poor\nDisplay is excellent",
+              "expected_aspects": {
+                "battery": "positive",
+                "camera": "negative",
+                "display": "positive"
+              },
+              "actual_aspects": {
+                "battery": "positive",
+                "camera": "negative",
+                "display": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "semicolon",
+              "text": "The battery lasts all day; the camera struggles in low light; the speakers are loud and clear.",
+              "expected_aspects": {
+                "battery": "positive",
+                "camera": "negative",
+                "audio": "positive"
+              },
+              "actual_aspects": {
+                "battery": "positive",
+                "camera": "negative",
+                "audio": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "oled-audio",
+              "text": "The OLED screen is vibrant and the stereo speakers sound rich. Unfortunately the battery drains in four hours.",
+              "expected_aspects": {
+                "display": "positive",
+                "audio": "positive",
+                "battery": "negative"
+              },
+              "actual_aspects": {
+                "battery": "negative",
+                "display": "positive",
+                "audio": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "price-weight",
+              "text": "I paid \u20b970,000 for this phone. The camera is excellent, but it feels too heavy to hold comfortably.",
+              "expected_aspects": {
+                "camera": "positive",
+                "build": "negative"
+              },
+              "actual_aspects": {
+                "camera": "positive",
+                "build": "negative"
+              },
+              "expected_general": null,
+              "actual_general": "neutral",
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "hot-charger",
+              "text": "The charger gets very hot and the phone takes three hours to charge.",
+              "expected_aspects": {
+                "charging": "negative"
+              },
+              "actual_aspects": {
+                "charging": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "usage-on-5g",
+              "text": "Battery life is decent, although it drains quickly on 5G.",
+              "expected_aspects": {
+                "battery": "mixed"
+              },
+              "actual_aspects": {
+                "battery": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "predicate-ellipsis",
+              "text": "The display is gorgeous but the battery is not.",
+              "expected_aspects": {
+                "display": "positive",
+                "battery": "negative"
+              },
+              "actual_aspects": {
+                "battery": "negative",
+                "display": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "omitted-camera",
+              "text": "The camera is excellent in daylight but awful at night.",
+              "expected_aspects": {
+                "camera": "mixed"
+              },
+              "actual_aspects": {
+                "camera": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "connection-stability",
+              "text": "Bluetooth keeps disconnecting from my car. Wi-Fi has been completely reliable.",
+              "expected_aspects": {
+                "connectivity": "mixed"
+              },
+              "actual_aspects": {
+                "connectivity": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "sarcasm",
+              "text": "Wonderful battery \u2014 it died halfway through my first call.",
+              "expected_aspects": {
+                "battery": "negative"
+              },
+              "actual_aspects": {
+                "battery": "mixed"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": false
+            }
+          ],
+          "passed": 20,
+          "failed": 1
+        }
+      ]
+    }
+  },
+  "browser_checks": [
+    "Queued analysis stopped before processing; resume starts unfinished records.",
+    "Running v2 job stopped after one saved review; remaining 50 records queued on resume.",
+    "Neural live batch saved 50 records and displayed the intentional oversized-clause failure; retry total was one.",
+    "General phone negative, camera positive and negative clauses, and battery/display positive displayed together.",
+    "Live JSON download parsed; model ID, input, three sentences and evidence offsets verified.",
+    "Dirty annotation disables navigation and both import actions; draft save succeeds.",
+    "Disposable pilot completion and revisions 1/2 appear in edit history.",
+    "Same-name Brand A and Brand B phones both imported; both reviews and product identities retained.",
+    "Brand names distinguish selectors, comparison headers and review cards.",
+    "Downloaded CSV contains both rows and both brands.",
+    "Live text retained after browser reload.",
+    "All seven workspaces at 390px: document scroll width equals viewport width.",
+    "Failure panel inspected at 390px; desktop viewport restored afterward.",
+    "Main application restarted at localhost:8000; final live result verified.",
+    "Checked main and QA browser consoles contain no warnings or errors."
+  ],
+  "workspace": {
+    "backup": "artifacts/backups/workspace-before-v1.2.0-20261022.sqlite3",
+    "demo_ready": true,
+    "research_results_ready": false,
+    "integrity_checks": [
+      {
+        "name": "dashboard_build",
+        "passed": true,
+        "detail": "Built dashboard and referenced entry assets"
+      },
+      {
+        "name": "workspace_exists",
+        "passed": true,
+        "detail": "Existing SQLite workspace; no database is created"
+      },
+      {
+        "name": "database_integrity",
+        "passed": true,
+        "detail": [
+          "ok"
+        ]
+      },
+      {
+        "name": "foreign_keys",
+        "passed": true,
+        "detail": "No broken foreign-key references"
+      },
+      {
+        "name": "migration_checksums",
+        "passed": true,
+        "detail": "Applied schema matches this release"
+      },
+      {
+        "name": "model_integrity:rules-v1",
+        "passed": true,
+        "detail": "Local model file integrity"
+      },
+      {
+        "name": "model_integrity:deberta-absa-10c9dff3",
+        "passed": true,
+        "detail": "Local model file integrity"
+      },
+      {
+        "name": "model_integrity:deberta-domain-v2-10c9dff3-b377506c",
+        "passed": true,
+        "detail": "Local model file integrity"
+      },
+      {
+        "name": "model_integrity:deberta-live-v3-10c9dff3-746e492e",
+        "passed": true,
+        "detail": "Local model file integrity"
+      },
+      {
+        "name": "model_integrity:tfidf-4e97a73e6f8a",
+        "passed": true,
+        "detail": "Local model file integrity"
+      },
+      {
+        "name": "model_integrity:tfidf-db3871146fbb",
+        "passed": true,
+        "detail": "Local model file integrity"
+      }
+    ],
+    "frozen_test_rows": 69,
+    "frozen_test_sha256": "8e32507cdf6c40e757975ec582f3109843f2ddf10e42c47734b51f2ae5c2adc0",
+    "test_rows_changed": false,
+    "test_inference_run": false
+  },
+  "known_limits": [
+    "Sarcasm case still returns mixed instead of intended negative.",
+    "Independent human test evaluation is pending.",
+    "Cancellation waits for the current review and does not cancel research training.",
+    "Oversized clauses require shorter source text; retrying unchanged text cannot fix them."
+  ]
+}
