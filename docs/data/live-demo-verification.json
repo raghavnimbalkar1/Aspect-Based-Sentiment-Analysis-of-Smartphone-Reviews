@@ -1,0 +1,140 @@
+{
+  "release": "1.1.0",
+  "verified_on": "2026-10-21",
+  "automated_tests": 121,
+  "lint_formatting_typescript_build": "passed",
+  "live_model": "deberta-live-v3-10c9dff3-565c677d",
+  "written_demo_checks": {
+    "passed": 42,
+    "failed": 0,
+    "input_sha256": "7b82ba80d0b12e618be7815051d8fc3d395d0dcdd69c97740b5efc84febc82a1",
+    "scope": "Synthetic development checks, not independent model accuracy."
+  },
+  "isolated_integration": {
+    "passed": 288,
+    "failed": 0,
+    "models": [
+      "rules-v1",
+      "deberta-absa-10c9dff3",
+      "deberta-domain-v2-10c9dff3-b377506c",
+      "deberta-live-v3-10c9dff3-565c677d",
+      "tfidf-4e97a73e6f8a",
+      "tfidf-db3871146fbb"
+    ],
+    "scope": "Synthetic workflows, never research accuracy."
+  },
+  "browser": {
+    "checks": [
+      {
+        "scenario": "custom input, negation and charging scope",
+        "passed": true
+      },
+      {
+        "scenario": "draft survives refresh",
+        "passed": true
+      },
+      {
+        "scenario": "model switch and guide navigation preserve the input",
+        "passed": true
+      },
+      {
+        "scenario": "general praise stays separate from aspect labels",
+        "passed": true
+      },
+      {
+        "scenario": "short non-English input is rejected explicitly",
+        "passed": true
+      },
+      {
+        "scenario": "low-score model decision gets an uncertainty notice",
+        "passed": true
+      },
+      {
+        "scenario": "primary-first baseline comparison with independent results",
+        "passed": true
+      },
+      {
+        "scenario": "cancelled request cannot replace the current input result",
+        "passed": true
+      },
+      {
+        "scenario": "seven workspace layouts at 390 px without page overflow",
+        "passed": true
+      },
+      {
+        "scenario": "final primary result and real decision trace",
+        "passed": true
+      },
+      {
+        "scenario": "completed analysis brings the result into view",
+        "passed": true
+      }
+    ],
+    "mobile": [
+      {
+        "view": "Analyse a review",
+        "scroll": 390,
+        "width": 390
+      },
+      {
+        "view": "Models explained",
+        "scroll": 390,
+        "width": 390
+      },
+      {
+        "view": "Overview",
+        "scroll": 390,
+        "width": 390
+      },
+      {
+        "view": "Review explorer",
+        "scroll": 390,
+        "width": 390
+      },
+      {
+        "view": "Compare phones",
+        "scroll": 390,
+        "width": 390
+      },
+      {
+        "view": "Model evaluation",
+        "scroll": 390,
+        "width": 390
+      },
+      {
+        "view": "Annotation",
+        "scroll": 390,
+        "width": 390
+      }
+    ],
+    "finalNarrow": [
+      {
+        "scroll": 390,
+        "view": "Models explained",
+        "width": 390
+      },
+      {
+        "scroll": 390,
+        "view": "Analyse a review",
+        "width": 390
+      }
+    ],
+    "restoredViewport": {
+      "height": 720,
+      "width": 1280
+    },
+    "console": []
+  },
+  "doctor": {
+    "demo_ready": true,
+    "research_results_ready": false
+  },
+  "frozen_test": {
+    "sentences": 69,
+    "unchanged": true,
+    "labelled": 0,
+    "sha256": "8e32507cdf6c40e757975ec582f3109843f2ddf10e42c47734b51f2ae5c2adc0"
+  },
+  "known_prediction_limit": "Subtle negative phrasing such as mediocre can still receive neutral. The checked low-score decision carries an uncertainty notice; that notice does not correct the label.",
+  "independent_accuracy_established": false
+}

@@ -4,6 +4,8 @@ This is a local research application for finding opinions about individual phone
 
 ## Features
 
+The initial view is **Analyse a review**, with the installed version 3 DeBERTa adapter selected. Its selector is separate from the corpus selector. **Models explained** and the [model map](MODEL_MAP.md) distinguish the pretrained classifier, VADER baseline and trained TF-IDF artifacts. See the [rehearsal guide](DEMO_PREPARATION.md) for code-change exercises.
+
 1. **Review intelligence:** counts positive, negative, neutral and mixed opinions across ten aspects: battery, charging, camera, display, performance/thermals, software, build/design, audio, connectivity and value. Clicking an aspect opens the relevant reviews.
 2. **Single-review analysis:** accepts English text, shows detected aspects and supporting sentences, and can compare the selected neural/classical model with Rules + VADER on the same input. Timings are visible; they are not accuracy scores.
 3. **Review explorer:** filters by phone, aspect, sentiment and literal text search. Expanding a review shows its evidence. The overview and exports use the same review selection.
@@ -17,6 +19,7 @@ This is a local research application for finding opinions about individual phone
 
 | Model | What it contributes | Current state |
 | --- | --- | --- |
+| Live smartphone adapter v3 | Context and candidate handling, the shared DeBERTa classifier, real traces and general phone opinions | Recommended for live English reviews; earlier research scores do not apply to it |
 | Rules + VADER | Explicit aspect phrases, clause splitting and sentiment heuristics | Working baseline; all 4,346 source reviews processed |
 | Transferred DeBERTa ABSA | Explicit aspect candidates paired with a pretrained transformer sentiment classifier | Installed and verified locally on CPU; no smartphone benchmark yet |
 | Domain adapter v2 | Broader vocabulary and improved opinion scope over the same neural weights | Shares one loaded backbone with the original; diagnostic development comparison available |
