@@ -6,17 +6,17 @@ Verified on 21–22 October 2026. Workflow testing used an isolated synthetic wo
 
 | Check | Result |
 | --- | --- |
-| Python tests | 160 passed, including 23 new regressions |
+| Python tests | 163 passed, including 26 new regressions |
 | Browser-storage failure-path tests | 3 passed |
 | Ruff, Prettier, TypeScript and production build | Passed |
 | Existing written real-model regressions | 42/42 passed |
-| New focus, ellipsis, negation and general-opinion cases | 8/8 passed |
+| New focus, ellipsis, negation and general-opinion cases | 11/11 passed |
 | Earlier additional review probes | 20/21 passed; the existing sarcasm failure remains |
 | Final isolated integration across six installed variants | 287 assertions passed |
 | Large exports | CSV and JSON each contain all 10,001 fixture reviews; filtering is retained |
 | Mobile layout | All seven workspaces fit 390 px without horizontal page overflow |
 
-The [verification record](data/hardening-verification.json) contains case results and browser coverage. The eight [new review inputs](../examples/hardening_review_cases.json) were written during development; their pass rate is not independent model accuracy.
+The [verification record](data/hardening-verification.json) contains case results and browser coverage. The eleven [new review inputs](../examples/hardening_review_cases.json) were written during development; their pass rate is not independent model accuracy.
 
 ### Findings and corrections
 
@@ -25,7 +25,7 @@ The [verification record](data/hardening-verification.json) contains case result
 - Batch jobs had no stop action or visible per-record failure details. Jobs now claim work atomically, stop cooperatively and retain failure reasons. Cancellation during a progress update preserves the stop reason; terminal jobs cannot be overwritten by stale progress.
 - Malformed saved-classifier metadata could break the model catalogue. Invalid entries are skipped before inference dispatch.
 - Browser storage exceptions could prevent rendering or make a server-confirmed annotation save appear to fail. Preference reads/writes are now optional and failure-tolerant. Import controls join the existing unsaved-label guard.
-- Camera focus speed could become general performance, some omitted predicates lost context, and general phone opinions disappeared when other sentences contained aspects. The live policy now handles the covered cases while preserving verbatim evidence offsets. The checkpoint still decides sentiment.
+- Camera focus speed could become general performance, some omitted predicates lost context, and general phone opinions disappeared when other sentences contained aspects. The live policy now handles the covered cases while preserving verbatim evidence offsets. The final scope guard also preserves phone-speed opinions that share a clause with camera praise, while keeping “phone is slow to focus” under camera. The checkpoint still decides sentiment.
 
 ### Browser verification
 
@@ -35,7 +35,7 @@ Live analysis displayed a negative general opinion, separate positive/negative c
 
 ### Upgrade and limits
 
-Migration `005_job_control.sql` is additive. It stores cancellation requests and per-review failure records. Historical jobs do not gain failure details retroactively. Explicitly branded CSVs receive corrected identities on re-import; existing datasets are not rewritten. The earlier v2 adapter keeps its model ID; live v3 now uses `deberta-live-v3-10c9dff3-746e492e`.
+Migration `005_job_control.sql` is additive. It stores cancellation requests and per-review failure records. Historical jobs do not gain failure details retroactively. Explicitly branded CSVs receive corrected identities on re-import; existing datasets are not rewritten. The earlier v2 adapter keeps its model ID; live v3 now uses `deberta-live-v3-10c9dff3-f342bce5`.
 
 The application remains a local, single-worker research tool. Stop waits for the current review; it does not interrupt a neural forward pass or cancel a training experiment. A too-long clause needs shorter source text before retry can succeed. Sarcasm, cross-sentence references and subtle sentiment remain limitations. The 69 real test tasks are unchanged; independent human test evaluation remains pending.
 

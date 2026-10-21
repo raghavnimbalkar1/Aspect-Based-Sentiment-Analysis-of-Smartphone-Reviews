@@ -1,6 +1,6 @@
 # Source verification
 
-`hardening-verification.json` records release 1.2.0's 160 Python tests, three storage tests, 287 integration assertions and browser recovery/import/export checks. It includes results for the eight new review cases, the 42 earlier regressions and the separate 21-case set with its unresolved sarcasm case. These are development checks using synthetic fixtures, not independent accuracy data.
+`hardening-verification.json` records release 1.2.0's 163 Python tests, three storage tests, 287 integration assertions and browser recovery/import/export checks. It includes results for the eleven new review cases, the 42 earlier regressions and the separate 21-case set with its unresolved sarcasm case. These are development checks using synthetic fixtures, not independent accuracy data.
 
 `source-audit.json` was generated from the original version-2 CSV files, downloaded from [Griko Nibras's Kaggle dataset](https://www.kaggle.com/datasets/grikomsn/amazon-cell-phones-reviews/versions/2). The publisher lists CC0. Raw files stay outside version control.
 

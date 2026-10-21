@@ -47,6 +47,12 @@ PERFORMANCE_CUES = re.compile(
     r"multitask\w*|stutter\w*|freez\w*)\b",
     re.I,
 )
+PHONE_SPEED = re.compile(
+    r"\b(?:phone|device)\s+(?:is|feels?|runs?)\s+"
+    r"(?:(?:very|really|quite|so|too)\s+)*(?:fast|slow)\b(?!\s+to\s+focus)|"
+    r"\b(?:fast|slow)\s+(?:phone|device)\b",
+    re.I,
+)
 BATTERY_CHARGING = re.compile(r"\bbatter(?:y|ies)\s+(?:is\s+)?charg\w*\b", re.I)
 ENDURANCE = re.compile(r"\b(?:last\w*|drain\w*|standby|dies?|dead|endurance|capacity)\b", re.I)
 APP_SPEED = re.compile(
@@ -188,6 +194,7 @@ def live_candidates(text: str) -> list[tuple[str, str, str, str, int, int]]:
                         or IMPLICIT["camera"].search(part)
                     )
                     and not PERFORMANCE_CUES.search(part)
+                    and not PHONE_SPEED.search(part)
                 ):
                     continue
                 if (

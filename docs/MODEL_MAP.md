@@ -22,7 +22,7 @@ The current adapter is version 3, with an ID starting `deberta-live-v3`.
 
 One sentence can contain several opinions. For example, “The battery lasts two days, and the display is bright” remains one source sentence with two feature rows. Two full sentences appear in two cards. Positive and negative camera clauses keep their separate labels even when the review-level camera summary is mixed.
 
-Source-code and vocabulary hashes form part of the live model ID. Release 1.2.0 uses `deberta-live-v3-10c9dff3-746e492e`. It changes candidate/context handling, without retraining or replacing checkpoint weights. Historical verification records retain their recorded IDs.
+Source-code and vocabulary hashes form part of the live model ID. Release 1.2.0 uses `deberta-live-v3-10c9dff3-f342bce5`. It changes candidate/context handling, without retraining or replacing checkpoint weights. Historical verification records retain their recorded IDs.
 
 “I love this phone” can receive a **general phone opinion**. That is separate from the ten aspects and remains visible when another sentence describes a feature. The app does not invent praise for battery or camera. Retail-only text can correctly return no phone aspect.
 

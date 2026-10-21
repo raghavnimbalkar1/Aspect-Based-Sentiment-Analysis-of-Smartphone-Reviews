@@ -6,8 +6,8 @@
   ],
   "scope": "Software verification and written development cases, not independent model accuracy.",
   "python_tests": {
-    "passed": 160,
-    "new_regressions": 23
+    "passed": 163,
+    "new_regressions": 26
   },
   "browser_storage_tests": {
     "passed": 3
@@ -23,7 +23,7 @@
       "rules-v1",
       "deberta-absa-10c9dff3",
       "deberta-domain-v2-10c9dff3-b377506c",
-      "deberta-live-v3-10c9dff3-746e492e",
+      "deberta-live-v3-10c9dff3-f342bce5",
       "tfidf-4e97a73e6f8a",
       "tfidf-db3871146fbb"
     ],
@@ -726,212 +726,212 @@
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:queue",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:queue",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:batch",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:batch",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:overview",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:overview",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:aggregate_counts",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:aggregate_counts",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:filter_export:{}",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:filter_export:{}",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:70c3c285e2249e2648da14d3",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:70c3c285e2249e2648da14d3",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:a58322b1172ae30c53269dae",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:a58322b1172ae30c53269dae",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:70b70212fc35e86d53f5e266",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:70b70212fc35e86d53f5e266",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:e41bd9fdacfa1510943a68f6",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:e41bd9fdacfa1510943a68f6",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:f9137b9296df416fcf31729d",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:f9137b9296df416fcf31729d",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:f4a966b2e6efc76a63487486",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:f4a966b2e6efc76a63487486",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:1426db0a15d84a7df9dbf028",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:1426db0a15d84a7df9dbf028",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:d30b18123c3a3cf8d90d2b76",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:d30b18123c3a3cf8d90d2b76",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:b19a53e730fd190de0358b99",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:b19a53e730fd190de0358b99",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:42d7154e6dbbd3a68843e92a",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:42d7154e6dbbd3a68843e92a",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:filter_export:{'category': 'camera'}",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:filter_export:{'category': 'camera'}",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:42d7154e6dbbd3a68843e92a",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:42d7154e6dbbd3a68843e92a",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:filter_export:{'category': 'battery', 'sentiment': 'negative'}",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:42d7154e6dbbd3a68843e92a",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:42d7154e6dbbd3a68843e92a",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:filter_export:{'q': 'Wi-Fi'}",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:filter_export:{'q': 'Wi-Fi'}",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:stored_identity:70b70212fc35e86d53f5e266",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:stored_identity:70b70212fc35e86d53f5e266",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:evidence_offset",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:evidence_offset",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:idempotent_batch",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:idempotent_batch",
         "passed": true,
         "detail": null
       },
       {
-        "name": "model:deberta-live-v3-10c9dff3-746e492e:unsupported_language",
+        "name": "model:deberta-live-v3-10c9dff3-f342bce5:unsupported_language",
         "passed": true,
         "detail": null
       },
@@ -1475,7 +1475,7 @@
       "cases_sha256": "7b82ba80d0b12e618be7815051d8fc3d395d0dcdd69c97740b5efc84febc82a1",
       "models": [
         {
-          "model_id": "deberta-live-v3-10c9dff3-746e492e",
+          "model_id": "deberta-live-v3-10c9dff3-f342bce5",
           "cases": [
             {
               "id": "opposing-features",
@@ -2117,14 +2117,14 @@
         }
       ]
     },
-    "new_8": {
+    "new_11": {
       "kind": "written_live_demo_regressions",
       "scope": "Synthetic development checks, not independent model accuracy.",
       "research_data_read_or_modified": false,
-      "cases_sha256": "a42a0704d5fe16048598791a842e55b7c4e6cd22e3d58b853976ae5baa1519cb",
+      "cases_sha256": "944fd2da4c9f431384ceeec89e62e775f604b21c6a9134da30da75e9a743a735",
       "models": [
         {
-          "model_id": "deberta-live-v3-10c9dff3-746e492e",
+          "model_id": "deberta-live-v3-10c9dff3-f342bce5",
           "cases": [
             {
               "id": "focus-contrast",
@@ -2251,9 +2251,58 @@
               "supported": true,
               "offsets_valid": true,
               "passed": true
+            },
+            {
+              "id": "phone-speed-with-camera",
+              "text": "The phone is fast with an excellent camera.",
+              "expected_aspects": {
+                "camera": "positive",
+                "performance": "positive"
+              },
+              "actual_aspects": {
+                "camera": "positive",
+                "performance": "positive"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "slow-phone-with-camera",
+              "text": "This is a slow phone with a good camera.",
+              "expected_aspects": {
+                "camera": "positive",
+                "performance": "negative"
+              },
+              "actual_aspects": {
+                "camera": "positive",
+                "performance": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
+            },
+            {
+              "id": "phone-focus-not-speed",
+              "text": "The phone is slow to focus.",
+              "expected_aspects": {
+                "camera": "negative"
+              },
+              "actual_aspects": {
+                "camera": "negative"
+              },
+              "expected_general": null,
+              "actual_general": null,
+              "supported": true,
+              "offsets_valid": true,
+              "passed": true
             }
           ],
-          "passed": 8,
+          "passed": 11,
           "failed": 0
         }
       ]
@@ -2265,7 +2314,7 @@
       "cases_sha256": "fb96f889790e7809c3ba0b8ab7f056d22fdcfb1de70ce147262f1d1bbe9c5133",
       "models": [
         {
-          "model_id": "deberta-live-v3-10c9dff3-746e492e",
+          "model_id": "deberta-live-v3-10c9dff3-f342bce5",
           "cases": [
             {
               "id": "user-heavy-use",
@@ -2648,7 +2697,8 @@
     "All seven workspaces at 390px: document scroll width equals viewport width.",
     "Failure panel inspected at 390px; desktop viewport restored afterward.",
     "Main application restarted at localhost:8000; final live result verified.",
-    "Checked main and QA browser consoles contain no warnings or errors."
+    "Checked main and QA browser consoles contain no warnings or errors.",
+    "Final scope correction on main UI: fast phone with camera retains performance positive; phone slow to focus gives camera negative."
   ],
   "workspace": {
     "backup": "artifacts/backups/workspace-before-v1.2.0-20261022.sqlite3",
@@ -2698,7 +2748,7 @@
         "detail": "Local model file integrity"
       },
       {
-        "name": "model_integrity:deberta-live-v3-10c9dff3-746e492e",
+        "name": "model_integrity:deberta-live-v3-10c9dff3-f342bce5",
         "passed": true,
         "detail": "Local model file integrity"
       },

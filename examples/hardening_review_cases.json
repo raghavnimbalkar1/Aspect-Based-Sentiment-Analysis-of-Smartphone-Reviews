@@ -60,6 +60,29 @@
         "camera": "positive",
         "performance": "negative"
       }
+    },
+    {
+      "id": "phone-speed-with-camera",
+      "text": "The phone is fast with an excellent camera.",
+      "aspects": {
+        "camera": "positive",
+        "performance": "positive"
+      }
+    },
+    {
+      "id": "slow-phone-with-camera",
+      "text": "This is a slow phone with a good camera.",
+      "aspects": {
+        "camera": "positive",
+        "performance": "negative"
+      }
+    },
+    {
+      "id": "phone-focus-not-speed",
+      "text": "The phone is slow to focus.",
+      "aspects": {
+        "camera": "negative"
+      }
     }
   ]
 }
