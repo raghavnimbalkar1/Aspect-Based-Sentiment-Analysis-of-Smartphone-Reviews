@@ -1,0 +1,982 @@
+{
+  "kind": "sentence_opinion_verification",
+  "release": "1.1.1",
+  "verified_at": "2026-10-21T14:07:20.996829+00:00",
+  "scope": "One user input plus twenty written reviews inspected in the dashboard and during debugging. Development checks, not independent accuracy or a random corpus sample.",
+  "automated_tests_passed": 137,
+  "format_lint_typescript_build": "passed",
+  "previous_regressions": {
+    "model_id": "deberta-live-v3-10c9dff3-b35996fa",
+    "passed": 42,
+    "failed": 0,
+    "cases_sha256": "7b82ba80d0b12e618be7815051d8fc3d395d0dcdd69c97740b5efc84febc82a1"
+  },
+  "additional_model_probes": {
+    "kind": "written_live_demo_regressions",
+    "scope": "Synthetic development checks, not independent model accuracy.",
+    "research_data_read_or_modified": false,
+    "cases_sha256": "fb96f889790e7809c3ba0b8ab7f056d22fdcfb1de70ce147262f1d1bbe9c5133",
+    "models": [
+      {
+        "model_id": "deberta-live-v3-10c9dff3-b35996fa",
+        "cases": [
+          {
+            "id": "user-heavy-use",
+            "text": "The battery easily lasts two full days of heavy use, and the 120Hz display is super smooth and bright",
+            "expected_aspects": {
+              "battery": "positive",
+              "display": "positive"
+            },
+            "actual_aspects": {
+              "battery": "positive",
+              "display": "positive"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "separate-sentences",
+            "text": "The camera takes beautiful photos. The battery dies before lunch. The screen is bright outdoors.",
+            "expected_aspects": {
+              "camera": "positive",
+              "battery": "negative",
+              "display": "positive"
+            },
+            "actual_aspects": {
+              "battery": "negative",
+              "camera": "positive",
+              "display": "positive"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "comma-oppositions",
+            "text": "Great camera, awful battery, excellent speakers.",
+            "expected_aspects": {
+              "camera": "positive",
+              "battery": "negative",
+              "audio": "positive"
+            },
+            "actual_aspects": {
+              "battery": "negative",
+              "camera": "positive",
+              "audio": "positive"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "shared-subjects",
+            "text": "The camera and screen are excellent, but the battery and speakers are disappointing.",
+            "expected_aspects": {
+              "camera": "positive",
+              "display": "positive",
+              "battery": "negative",
+              "audio": "negative"
+            },
+            "actual_aspects": {
+              "battery": "negative",
+              "camera": "positive",
+              "display": "positive",
+              "audio": "negative"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "same-feature",
+            "text": "The camera is fantastic in daylight. The camera is awful at night.",
+            "expected_aspects": {
+              "camera": "mixed"
+            },
+            "actual_aspects": {
+              "camera": "mixed"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "negation",
+            "text": "The screen is not bright enough outdoors, but the camera is not bad at all.",
+            "expected_aspects": {
+              "display": "negative",
+              "camera": "positive"
+            },
+            "actual_aspects": {
+              "camera": "positive",
+              "display": "negative"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "charging-endurance",
+            "text": "Charging takes forever. Once charged, the battery comfortably lasts all day.",
+            "expected_aspects": {
+              "charging": "negative",
+              "battery": "positive"
+            },
+            "actual_aspects": {
+              "battery": "positive",
+              "charging": "negative"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "neutral-specs",
+            "text": "The phone has a 5000mAh battery and a 6.7-inch display.",
+            "expected_aspects": {
+              "battery": "neutral",
+              "display": "neutral"
+            },
+            "actual_aspects": {
+              "battery": "neutral",
+              "display": "neutral"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "retail",
+            "text": "Delivery was quick and the packaging looked great. The phone camera is blurry and the speaker crackles.",
+            "expected_aspects": {
+              "camera": "negative",
+              "audio": "negative"
+            },
+            "actual_aspects": {
+              "camera": "negative",
+              "audio": "negative"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "cheap-build",
+            "text": "The plastic back feels cheap, but the phone is excellent value for money.",
+            "expected_aspects": {
+              "build": "negative",
+              "value": "positive"
+            },
+            "actual_aspects": {
+              "build": "negative",
+              "value": "positive"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "app-speed",
+            "text": "Apps launch quickly, but the software is full of ads. Gaming causes the phone to overheat.",
+            "expected_aspects": {
+              "performance": "mixed",
+              "software": "negative"
+            },
+            "actual_aspects": {
+              "performance": "mixed",
+              "software": "negative"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "line-breaks",
+            "text": "Battery life is great\nCamera is poor\nDisplay is excellent",
+            "expected_aspects": {
+              "battery": "positive",
+              "camera": "negative",
+              "display": "positive"
+            },
+            "actual_aspects": {
+              "battery": "positive",
+              "camera": "negative",
+              "display": "positive"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "semicolon",
+            "text": "The battery lasts all day; the camera struggles in low light; the speakers are loud and clear.",
+            "expected_aspects": {
+              "battery": "positive",
+              "camera": "negative",
+              "audio": "positive"
+            },
+            "actual_aspects": {
+              "battery": "positive",
+              "camera": "negative",
+              "audio": "positive"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "oled-audio",
+            "text": "The OLED screen is vibrant and the stereo speakers sound rich. Unfortunately the battery drains in four hours.",
+            "expected_aspects": {
+              "display": "positive",
+              "audio": "positive",
+              "battery": "negative"
+            },
+            "actual_aspects": {
+              "battery": "negative",
+              "display": "positive",
+              "audio": "positive"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "price-weight",
+            "text": "I paid ₹70,000 for this phone. The camera is excellent, but it feels too heavy to hold comfortably.",
+            "expected_aspects": {
+              "camera": "positive",
+              "build": "negative"
+            },
+            "actual_aspects": {
+              "camera": "positive",
+              "build": "negative"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "hot-charger",
+            "text": "The charger gets very hot and the phone takes three hours to charge.",
+            "expected_aspects": {
+              "charging": "negative"
+            },
+            "actual_aspects": {
+              "charging": "negative"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "usage-on-5g",
+            "text": "Battery life is decent, although it drains quickly on 5G.",
+            "expected_aspects": {
+              "battery": "mixed"
+            },
+            "actual_aspects": {
+              "battery": "mixed"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "predicate-ellipsis",
+            "text": "The display is gorgeous but the battery is not.",
+            "expected_aspects": {
+              "display": "positive",
+              "battery": "negative"
+            },
+            "actual_aspects": {
+              "battery": "negative",
+              "display": "positive"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "omitted-camera",
+            "text": "The camera is excellent in daylight but awful at night.",
+            "expected_aspects": {
+              "camera": "mixed"
+            },
+            "actual_aspects": {
+              "camera": "mixed"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "connection-stability",
+            "text": "Bluetooth keeps disconnecting from my car. Wi-Fi has been completely reliable.",
+            "expected_aspects": {
+              "connectivity": "mixed"
+            },
+            "actual_aspects": {
+              "connectivity": "mixed"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": true
+          },
+          {
+            "id": "sarcasm",
+            "text": "Wonderful battery — it died halfway through my first call.",
+            "expected_aspects": {
+              "battery": "negative"
+            },
+            "actual_aspects": {
+              "battery": "mixed"
+            },
+            "expected_general": null,
+            "actual_general": null,
+            "supported": true,
+            "offsets_valid": true,
+            "passed": false
+          }
+        ],
+        "passed": 20,
+        "failed": 1
+      }
+    ]
+  },
+  "browser": {
+    "review_inputs": 21,
+    "expected_summaries": 20,
+    "comparison": [
+      {
+        "sentenceCards": 3,
+        "title": "DeBERTa · smartphone context",
+        "uncertaintyWarnings": 0
+      },
+      {
+        "sentenceCards": 3,
+        "title": "Rules + VADER",
+        "uncertaintyWarnings": 0
+      }
+    ],
+    "narrow_layout": {
+      "cardWidths": [
+        {
+          "contentWidth": 232,
+          "width": 232
+        }
+      ],
+      "opinions": 2,
+      "pageWidth": 390,
+      "viewport": 390
+    },
+    "uncertainty_scoring": "Live-model trace scores only; baseline compound scores are not treated as probabilities.",
+    "legacy_sentence_cards": true,
+    "general_opinion": true,
+    "console": []
+  },
+  "browser_observations": [
+    {
+      "id": "user-heavy-use",
+      "text": "The battery easily lasts two full days of heavy use, and the 120Hz display is super smooth and bright",
+      "expected": {
+        "battery": "positive",
+        "display": "positive"
+      },
+      "actual": {
+        "battery": "positive",
+        "display": "positive"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Battery\nPositive\nThe battery easily lasts two full days of heavy use",
+            "Display\nPositive\nthe 120Hz display is super smooth and bright"
+          ],
+          "text": "The battery easily lasts two full days of heavy use, and the 120Hz display is super smooth and bright"
+        }
+      ]
+    },
+    {
+      "id": "separate-sentences",
+      "text": "The camera takes beautiful photos. The battery dies before lunch. The screen is bright outdoors.",
+      "expected": {
+        "camera": "positive",
+        "battery": "negative",
+        "display": "positive"
+      },
+      "actual": {
+        "battery": "negative",
+        "camera": "positive",
+        "display": "positive"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Camera\nPositive"
+          ],
+          "text": "The camera takes beautiful photos."
+        },
+        {
+          "opinions": [
+            "Battery\nNegative"
+          ],
+          "text": "The battery dies before lunch."
+        },
+        {
+          "opinions": [
+            "Display\nPositive"
+          ],
+          "text": "The screen is bright outdoors."
+        }
+      ]
+    },
+    {
+      "id": "comma-oppositions",
+      "text": "Great camera, awful battery, excellent speakers.",
+      "expected": {
+        "camera": "positive",
+        "battery": "negative",
+        "audio": "positive"
+      },
+      "actual": {
+        "battery": "negative",
+        "camera": "positive",
+        "audio": "positive"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Camera\nPositive\nGreat camera",
+            "Battery\nNegative\nawful battery",
+            "Audio\nPositive\nexcellent speakers."
+          ],
+          "text": "Great camera, awful battery, excellent speakers."
+        }
+      ]
+    },
+    {
+      "id": "shared-subjects",
+      "text": "The camera and screen are excellent, but the battery and speakers are disappointing.",
+      "expected": {
+        "camera": "positive",
+        "display": "positive",
+        "battery": "negative",
+        "audio": "negative"
+      },
+      "actual": {
+        "battery": "negative",
+        "camera": "positive",
+        "display": "positive",
+        "audio": "negative"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Camera\nPositive\nThe camera and screen are excellent",
+            "Display\nPositive\nThe camera and screen are excellent",
+            "Battery\nNegative\nthe battery and speakers are disappointing.",
+            "Audio\nNegative\nthe battery and speakers are disappointing."
+          ],
+          "text": "The camera and screen are excellent, but the battery and speakers are disappointing."
+        }
+      ]
+    },
+    {
+      "id": "same-feature",
+      "text": "The camera is fantastic in daylight. The camera is awful at night.",
+      "expected": {
+        "camera": "mixed"
+      },
+      "actual": {
+        "camera": "mixed"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Camera\nPositive"
+          ],
+          "text": "The camera is fantastic in daylight."
+        },
+        {
+          "opinions": [
+            "Camera\nNegative"
+          ],
+          "text": "The camera is awful at night."
+        }
+      ]
+    },
+    {
+      "id": "negation",
+      "text": "The screen is not bright enough outdoors, but the camera is not bad at all.",
+      "expected": {
+        "display": "negative",
+        "camera": "positive"
+      },
+      "actual": {
+        "camera": "positive",
+        "display": "negative"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Display\nNegative\nThe screen is not bright enough outdoors",
+            "Camera\nPositive\nthe camera is not bad at all."
+          ],
+          "text": "The screen is not bright enough outdoors, but the camera is not bad at all."
+        }
+      ]
+    },
+    {
+      "id": "charging-endurance",
+      "text": "Charging takes forever. Once charged, the battery comfortably lasts all day.",
+      "expected": {
+        "charging": "negative",
+        "battery": "positive"
+      },
+      "actual": {
+        "battery": "positive",
+        "charging": "negative"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Charging\nNegative"
+          ],
+          "text": "Charging takes forever."
+        },
+        {
+          "opinions": [
+            "Battery\nPositive",
+            "Charging\nNeutral"
+          ],
+          "text": "Once charged, the battery comfortably lasts all day."
+        }
+      ]
+    },
+    {
+      "id": "neutral-specs",
+      "text": "The phone has a 5000mAh battery and a 6.7-inch display.",
+      "expected": {
+        "battery": "neutral",
+        "display": "neutral"
+      },
+      "actual": {
+        "battery": "neutral",
+        "display": "neutral"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Battery\nNeutral",
+            "Display\nNeutral"
+          ],
+          "text": "The phone has a 5000mAh battery and a 6.7-inch display."
+        }
+      ]
+    },
+    {
+      "id": "retail",
+      "text": "Delivery was quick and the packaging looked great. The phone camera is blurry and the speaker crackles.",
+      "expected": {
+        "camera": "negative",
+        "audio": "negative"
+      },
+      "actual": {
+        "camera": "negative",
+        "audio": "negative"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [],
+          "text": "Delivery was quick and the packaging looked great."
+        },
+        {
+          "opinions": [
+            "Camera\nNegative",
+            "Audio\nNegative"
+          ],
+          "text": "The phone camera is blurry and the speaker crackles."
+        }
+      ]
+    },
+    {
+      "id": "cheap-build",
+      "text": "The plastic back feels cheap, but the phone is excellent value for money.",
+      "expected": {
+        "build": "negative",
+        "value": "positive"
+      },
+      "actual": {
+        "build": "negative",
+        "value": "positive"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Build & design\nNegative\nThe plastic back feels cheap",
+            "Value\nPositive\nthe phone is excellent value for money."
+          ],
+          "text": "The plastic back feels cheap, but the phone is excellent value for money."
+        }
+      ]
+    },
+    {
+      "id": "app-speed",
+      "text": "Apps launch quickly, but the software is full of ads. Gaming causes the phone to overheat.",
+      "expected": {
+        "performance": "mixed",
+        "software": "negative"
+      },
+      "actual": {
+        "performance": "mixed",
+        "software": "negative"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Performance & thermals\nPositive\nApps launch quickly",
+            "Software\nNegative\nthe software is full of ads."
+          ],
+          "text": "Apps launch quickly, but the software is full of ads."
+        },
+        {
+          "opinions": [
+            "Performance & thermals\nNegative"
+          ],
+          "text": "Gaming causes the phone to overheat."
+        }
+      ]
+    },
+    {
+      "id": "line-breaks",
+      "text": "Battery life is great\nCamera is poor\nDisplay is excellent",
+      "expected": {
+        "battery": "positive",
+        "camera": "negative",
+        "display": "positive"
+      },
+      "actual": {
+        "battery": "positive",
+        "camera": "negative",
+        "display": "positive"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Battery\nPositive"
+          ],
+          "text": "Battery life is great"
+        },
+        {
+          "opinions": [
+            "Camera\nNegative"
+          ],
+          "text": "Camera is poor"
+        },
+        {
+          "opinions": [
+            "Display\nPositive"
+          ],
+          "text": "Display is excellent"
+        }
+      ]
+    },
+    {
+      "id": "semicolon",
+      "text": "The battery lasts all day; the camera struggles in low light; the speakers are loud and clear.",
+      "expected": {
+        "battery": "positive",
+        "camera": "negative",
+        "audio": "positive"
+      },
+      "actual": {
+        "battery": "positive",
+        "camera": "negative",
+        "audio": "positive"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Battery\nPositive\nThe battery lasts all day",
+            "Camera\nNegative\nthe camera struggles in low light",
+            "Audio\nPositive\nthe speakers are loud and clear."
+          ],
+          "text": "The battery lasts all day; the camera struggles in low light; the speakers are loud and clear."
+        }
+      ]
+    },
+    {
+      "id": "oled-audio",
+      "text": "The OLED screen is vibrant and the stereo speakers sound rich. Unfortunately the battery drains in four hours.",
+      "expected": {
+        "display": "positive",
+        "audio": "positive",
+        "battery": "negative"
+      },
+      "actual": {
+        "battery": "negative",
+        "display": "positive",
+        "audio": "positive"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Display\nPositive\nThe OLED screen is vibrant",
+            "Audio\nPositive\nthe stereo speakers sound rich."
+          ],
+          "text": "The OLED screen is vibrant and the stereo speakers sound rich."
+        },
+        {
+          "opinions": [
+            "Battery\nNegative"
+          ],
+          "text": "Unfortunately the battery drains in four hours."
+        }
+      ]
+    },
+    {
+      "id": "price-weight",
+      "text": "I paid ₹70,000 for this phone. The camera is excellent, but it feels too heavy to hold comfortably.",
+      "expected": {
+        "camera": "positive",
+        "build": "negative"
+      },
+      "actual": {
+        "camera": "positive",
+        "build": "negative"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [],
+          "text": "I paid ₹70,000 for this phone."
+        },
+        {
+          "opinions": [
+            "Camera\nPositive\nThe camera is excellent",
+            "Build & design\nNegative\nit feels too heavy to hold comfortably."
+          ],
+          "text": "The camera is excellent, but it feels too heavy to hold comfortably."
+        }
+      ]
+    },
+    {
+      "id": "hot-charger",
+      "text": "The charger gets very hot and the phone takes three hours to charge.",
+      "expected": {
+        "charging": "negative"
+      },
+      "actual": {
+        "charging": "negative"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Charging\nNegative\nThe charger gets very hot",
+            "Charging\nNeutral\nthe phone takes three hours to charge."
+          ],
+          "text": "The charger gets very hot and the phone takes three hours to charge."
+        }
+      ]
+    },
+    {
+      "id": "usage-on-5g",
+      "text": "Battery life is decent, although it drains quickly on 5G.",
+      "expected": {
+        "battery": "mixed"
+      },
+      "actual": {
+        "battery": "mixed"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Battery\nPositive\nBattery life is decent",
+            "Battery\nNegative\nit drains quickly on 5G."
+          ],
+          "text": "Battery life is decent, although it drains quickly on 5G."
+        }
+      ]
+    },
+    {
+      "id": "predicate-ellipsis",
+      "text": "The display is gorgeous but the battery is not.",
+      "expected": {
+        "display": "positive",
+        "battery": "negative"
+      },
+      "actual": {
+        "battery": "negative",
+        "display": "positive"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Display\nPositive\nThe display is gorgeous",
+            "Battery\nNegative\nthe battery is not."
+          ],
+          "text": "The display is gorgeous but the battery is not."
+        }
+      ]
+    },
+    {
+      "id": "omitted-camera",
+      "text": "The camera is excellent in daylight but awful at night.",
+      "expected": {
+        "camera": "mixed"
+      },
+      "actual": {
+        "camera": "mixed"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Camera\nPositive\nThe camera is excellent in daylight",
+            "Camera\nNegative\nawful at night."
+          ],
+          "text": "The camera is excellent in daylight but awful at night."
+        }
+      ]
+    },
+    {
+      "id": "connection-stability",
+      "text": "Bluetooth keeps disconnecting from my car. Wi-Fi has been completely reliable.",
+      "expected": {
+        "connectivity": "mixed"
+      },
+      "actual": {
+        "connectivity": "mixed"
+      },
+      "passed": true,
+      "sentences": [
+        {
+          "opinions": [
+            "Connectivity\nNegative"
+          ],
+          "text": "Bluetooth keeps disconnecting from my car."
+        },
+        {
+          "opinions": [
+            "Connectivity\nPositive"
+          ],
+          "text": "Wi-Fi has been completely reliable."
+        }
+      ]
+    },
+    {
+      "id": "sarcasm",
+      "text": "Wonderful battery — it died halfway through my first call.",
+      "expected": {
+        "battery": "negative"
+      },
+      "actual": {
+        "battery": "mixed"
+      },
+      "passed": false,
+      "sentences": [
+        {
+          "opinions": [
+            "Battery\nPositive\nWonderful battery",
+            "Battery\nNegative\nit died halfway through my first call."
+          ],
+          "text": "Wonderful battery — it died halfway through my first call."
+        }
+      ]
+    }
+  ],
+  "integration": {
+    "passed": 287,
+    "failed": 0,
+    "models": [
+      "rules-v1",
+      "deberta-absa-10c9dff3",
+      "deberta-domain-v2-10c9dff3-b377506c",
+      "deberta-live-v3-10c9dff3-b35996fa",
+      "tfidf-4e97a73e6f8a",
+      "tfidf-db3871146fbb"
+    ],
+    "environment": {
+      "python": "3.12.13",
+      "system": "Darwin",
+      "release": "27.0.0",
+      "machine": "arm64",
+      "packages": {
+        "smartphone-absa": "1.1.1",
+        "numpy": "2.5.4",
+        "scikit-learn": "1.9.1",
+        "torch": "2.14.1",
+        "transformers": "4.57.6"
+      }
+    }
+  },
+  "reserved_test": {
+    "rows": 69,
+    "unchanged": true,
+    "sha256": "8e32507cdf6c40e757975ec582f3109843f2ddf10e42c47734b51f2ae5c2adc0"
+  },
+  "limitations": [
+    "The sarcastic probe returns mixed instead of its intended negative meaning.",
+    "The low-score mediocre-battery example remains neutral and is flagged for review.",
+    "No new independent human accuracy result or transformer fine-tuning."
+  ]
+}

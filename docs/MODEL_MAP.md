@@ -17,8 +17,12 @@ The current adapter is version 3, with an ID starting `deberta-live-v3`.
 1. `text.py` preserves sentence boundaries and original character offsets.
 2. `models/live.py` identifies candidates and local contexts. `models/aspects_live.json` extends the existing versioned smartphone vocabulary.
 3. `models/inference.py` tokenizes each context together with an aspect target and runs DeBERTa.
-4. `models/live.py` records the actual decisions, combines opposing opinions into mixed and returns supporting sentences.
-5. `views/Analyse.tsx` displays the result. **How this result was produced** exposes the matched phrase, classifier context and decision.
+4. `models/live.py` keeps each opinion's verbatim clause and offsets. It resolves a limited omitted feature reference within a sentence, and combines opposing opinions into mixed only in the review summary.
+5. `components/SentenceBreakdown.tsx` displays sentences in reading order and their separate feature opinions. `views/Analyse.tsx` adds the summary and trace. **How this result was produced** exposes the feature cue, classifier context and decision, including supplied references.
+
+One sentence can contain several opinions. For example, “The battery lasts two days, and the display is bright” remains one source sentence with two feature rows. Two full sentences appear in two cards. Positive and negative camera clauses keep their separate labels even when the review-level camera summary is mixed.
+
+Source-code and vocabulary hashes form part of the live model ID. Release 1.1.1 changes that policy hash; it does not retrain or replace the checkpoint weights. Historical verification records retain their recorded IDs.
 
 “I love this phone” can receive a **general phone opinion**. That is separate from the ten aspects. The app does not invent praise for battery or camera. Retail-only text can correctly return no phone aspect.
 

@@ -1,5 +1,32 @@
 # Release quality records
 
+## Release 1.1.1: sentence and opinion breakdown
+
+Verified on 21 October 2026 after a user reported repeated whole-sentence results and incorrect aspect matches.
+
+| Check | Result |
+| --- | --- |
+| Automated tests | 137 passed |
+| Ruff, Prettier, TypeScript and production build | Passed |
+| Existing written real-model regressions | 42 passed |
+| Additional manually entered dashboard reviews | 21 inputs checked; 20 matched intended aspect summaries; one sarcasm failure remains |
+| Isolated integration, all six installed variants | 287 assertions passed |
+| Frozen real test partition | 69 rows unchanged from the pre-release backup |
+
+The [verification record](data/sentence-review-verification.json) contains the actual and expected summaries. The [review inputs](../examples/sentence_review_cases.json) include the user's exact example and twenty written probes. They were inspected during debugging and are development material. They are not a random corpus sample or independent test accuracy.
+
+The user's review about two days of heavy use and a smooth 120 Hz display incorrectly produced a build aspect because of “heavy.” It now produces battery positive and display positive, with two separate supporting clauses. The dashboard displays one source sentence containing those two opinions. Full stops and line breaks produce separate sentence cards; semicolons and other supported clause boundaries can produce several opinion rows within a card.
+
+Other corrected cases cover cheap-feeling plastic incorrectly becoming a price complaint, a battery capacity statement receiving an endurance interpretation, incidental 5G use becoming a connectivity complaint and an omitted camera reference losing its negative clause. Sentiment still comes from the pinned DeBERTa classifier. The new logic changes candidates, context and evidence spans rather than inserting expected sentiment answers.
+
+The unresolved probe is “Wonderful battery — it died halfway through my first call.” The model labels literal praise positive and failure negative, so aggregation returns mixed. The intended sarcastic reading is negative. It remains a known failure. Running the additional probes therefore returns exit status 1:
+
+```sh
+.venv/bin/python scripts/check_live_demo.py --cases examples/sentence_review_cases.json
+```
+
+The original 1.1.0 records below remain dated snapshots. The live policy hash changed for this fix; earlier domain adapters and research references were preserved.
+
 ## Release 1.1.0: live-review demo
 
 Verified on 21 October 2026. The current changes focus on new inputs, model clarity and demonstration preparation.

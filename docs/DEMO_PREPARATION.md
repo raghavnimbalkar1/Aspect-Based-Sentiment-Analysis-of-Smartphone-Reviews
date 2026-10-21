@@ -22,7 +22,7 @@ Open **http://localhost:8000**. Confirm **DeBERTa · smartphone context** on **A
 ## Demo sequence
 
 1. Type the instructor's English smartphone review.
-2. Select **Analyse review** and explain the separate features using their evidence.
+2. Select **Analyse review**. Read the sentence cards and individual feature opinions, then explain the combined review summary.
 3. Open **How this result was produced** to show the actual candidate, context and decision.
 4. Optionally compare with **Rules + VADER** on the same text. The main model appears first.
 5. Open **Models explained** for the training, checkpoint and data questions.

@@ -4,9 +4,9 @@
 
 A local research application that turns smartphone reviews into feature-level opinions, with the original sentences kept alongside each prediction. It combines data preparation, model inference, human annotation and reproducible evaluation in one dashboard.
 
-**Release 1.1.0:** the app opens on live review analysis and selects **DeBERTa · smartphone context** when installed. Type your own review without importing a dataset. The [model map](docs/MODEL_MAP.md) explains the three method families; the [demo preparation guide](docs/DEMO_PREPARATION.md) covers the code path and common change requests. Independent human test accuracy remains pending. See the [release notes](CHANGELOG.md).
+**Release 1.1.1:** live analysis shows sentences in reading order, with separate labels and supporting clauses for each feature opinion. A compact review summary combines those opinions. The app selects **DeBERTa · smartphone context** when installed. The [model map](docs/MODEL_MAP.md) explains the methods; the [demo preparation guide](docs/DEMO_PREPARATION.md) covers the code. Independent human test accuracy remains pending.
 
-Current checks: **121 automated tests**, **42 written live-review regressions** and **288 integration assertions** across six installed variants. The [quality record](docs/QUALITY_ASSURANCE.md) includes browser checks and known prediction limitations.
+Current checks: **137 automated tests**, **42 existing live-review regressions** and **287 integration assertions** across six installed variants passed. Manual dashboard testing covered 21 additional review inputs; 20 matched the intended aspect labels and one sarcastic review remains unresolved. These are development checks, not an accuracy estimate. See the [quality record](docs/QUALITY_ASSURANCE.md).
 
 [![Checks](https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews/actions/workflows/checks.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
@@ -27,8 +27,8 @@ An overall rating cannot tell us which part of a phone someone liked. For exampl
 
 | Aspect | Sentiment | Supporting evidence |
 | --- | --- | --- |
-| Camera | Positive | The original sentence |
-| Battery | Negative | The original sentence |
+| Camera | Positive | The camera is excellent |
+| Battery | Negative | the battery is terrible. |
 
 The application tracks ten categories: **battery, charging, camera, display, performance and thermals, software, build and design, audio, connectivity, and value**. A mentioned aspect can be positive, negative, neutral or mixed. Annotation and supervised training also use an explicit **absent** state.
 
@@ -37,7 +37,7 @@ The application tracks ten categories: **battery, charging, camera, display, per
 | Workspace | What you can do |
 | --- | --- |
 | **Overview** | Inspect aspect counts, sentiment distributions and the reviews behind each chart. |
-| **Analyse a review** | Enter English text, inspect feature opinions and the actual inference trace, or compare with the baseline. General phone opinions stay separate from unnamed aspects. |
+| **Analyse a review** | Read sentence cards with individual feature opinions and exact supporting clauses, inspect the review summary and inference trace, or compare with the baseline. |
 | **Models explained** | Distinguish pretrained DeBERTa, the VADER baseline and locally trained TF-IDF methods, including their data and roles. |
 | **Review explorer** | Search original reviews, filter by phone/aspect/sentiment and inspect supporting sentences. |
 | **Compare phones** | Compare two or three listings, with mention counts, review periods and low-support indicators. |
@@ -105,7 +105,7 @@ For the live demo, use **DeBERTa · smartphone context**, the version 3 adapter.
 
 1. **Import and validate.** Preserve original review text, validate optional metadata, detect language and report rejected or repeated rows.
 2. **Prepare evidence.** Split reviews into sentences while retaining their character offsets.
-3. **Predict aspect sentiment.** Run the chosen analyzer and combine its sentence-level results into one result per review/category.
+3. **Predict aspect sentiment.** The live adapter splits independent opinions within sentences, classifies each context/aspect pair and preserves its exact source span. The review summary combines results per category, keeping the individual opinions available.
 4. **Persist and inspect.** Save results in SQLite; use the same review selection for overview charts, the explorer and exports.
 5. **Create human labels.** Sample complete reviews, group duplicates before partitioning and freeze task identities in a manifest.
 6. **Evaluate reproducibly.** Use frozen human validation labels or explicitly selected AI-assisted diagnostics. Reference origins are recorded; final test evaluation stays separate and human-only.
@@ -151,7 +151,11 @@ The current live-review workflow starts with your own input:
 
 ![Live review input with the recommended DeBERTa model selected](docs/screenshots/live-demo-start.png)
 
-![Actual feature predictions from the live DeBERTa adapter](docs/screenshots/live-demo-results.png)
+![Sentence-level results with separate battery and display opinions](docs/screenshots/sentence-opinions.png)
+
+Separate sentences keep their original order and individual feature labels:
+
+![Three sentences analyzed separately for camera, battery and display](docs/screenshots/sentence-sequence.png)
 
 <details>
 <summary><strong>Model roles and training explained</strong></summary>
