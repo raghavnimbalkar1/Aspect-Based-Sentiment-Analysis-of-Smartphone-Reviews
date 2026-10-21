@@ -65,7 +65,8 @@ ELLIPTICAL_OPINION = re.compile(
     r"^(?:(?:it|they)\s+(?:is|are|was|were)\s+)?"
     r"(?:(?:not|very|really|quite|too|so)\s+)*"
     r"(?:good|great|excellent|amazing|bad|awful|terrible|horrible|poor|"
-    r"bright|dim|blurry|sharp|slow|fast|smooth|weak|strong|disappointing)\b",
+    r"bright|dim|blurry|sharp|slow|fast|smooth|weak|strong|disappointing)\b|"
+    r"^not\s+(?:outdoors|indoors|at\b|in\b|when\b)",
     re.I,
 )
 
@@ -180,7 +181,12 @@ def live_candidates(text: str) -> list[tuple[str, str, str, str, int, int]]:
                     continue
                 if (
                     category == "performance"
-                    and (CHARGING_ONLY.search(part) or re.search(r"\bdrain\w*\b", part, re.I))
+                    and (
+                        CHARGING_ONLY.search(part)
+                        or re.search(r"\bdrain\w*\b", part, re.I)
+                        or PATTERNS["camera"].search(part)
+                        or IMPLICIT["camera"].search(part)
+                    )
                     and not PERFORMANCE_CUES.search(part)
                 ):
                     continue
@@ -214,16 +220,29 @@ def live_candidates(text: str) -> list[tuple[str, str, str, str, int, int]]:
                     "hotspot",
                 }:
                     target = cue.lower()
-                pairs.append((category, part, target, cue, start, end))
+                context = part
+                if previous and re.match(
+                    r"^(?:so|neither|nor)\s+(?:is|are|was|were)\b", part, re.I
+                ):
+                    context = normalise_context(text[previous[0][4] : end])
+                pairs.append((category, context, target, cue, start, end))
         if (
-            len(pairs) == before
+            (
+                len(pairs) == before
+                or (
+                    all(item[0] == "performance" for item in pairs[before:])
+                    and not PERFORMANCE_CUES.search(part)
+                )
+            )
             and previous
             and ELLIPTICAL_OPINION.search(part)
             and not RETAIL.search(part)
+            and not re.search(r"\b(?:phone|smartphone|device|handset)\b", part, re.I)
         ):
             # Resolve only an adjective-led fragment after one unambiguous feature.
             # Raw evidence remains intact; the trace exposes the supplied target.
             if len({item[0] for item in previous}) == 1:
+                del pairs[before:]
                 category, _, target, cue, _, _ = previous[-1]
                 pairs.append(
                     (category, f"{target}: {part}", target, f"{cue} (previous clause)", start, end)
@@ -338,13 +357,26 @@ class LiveABSA(DomainABSA):
                 if category.id in grouped
             ],
         )
-        # 4. General praise receives its own phone-level result, never a fake aspect.
-        if result.supported and not result.aspects and PHONE_REFERENCE.search(text):
+        # 4. Keep overall phone opinions even when other sentences name features.
+        described = {step.sentence_id for step in steps}
+        general_sentences = [
+            sentence
+            for sentence in sentences
+            if sentence.id not in described
+            and PHONE_REFERENCE.search(sentence.text)
+            and not RETAIL.search(sentence.text)
+        ]
+        if general_sentences:
             evidence = []
-            for sentence in result.sentences:
-                state, score = self.backbone.classify(
-                    [("general", normalise_context(sentence.text), "phone")]
-                )[0]
+            general_predictions = self.backbone.classify(
+                [
+                    ("general", normalise_context(sentence.text), "phone")
+                    for sentence in general_sentences
+                ]
+            )
+            for sentence, (state, score) in zip(
+                general_sentences, general_predictions, strict=True
+            ):
                 evidence.append(
                     Evidence(
                         sentence_id=sentence.id,
