@@ -30,8 +30,10 @@ class Store:
         self.migrate()
 
     @contextmanager
-    def connection(self):
-        connection = sqlite3.connect(self.path, timeout=30)
+    def connection(self, *, allow_thread_handoff: bool = False):
+        connection = sqlite3.connect(
+            self.path, timeout=30, check_same_thread=not allow_thread_handoff
+        )
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA foreign_keys=ON")
         try:
@@ -263,6 +265,27 @@ class Store:
                 ],
             }
 
+    def iter_reviews(self, dataset_id: str, filters: Filters, model_id: str = MODEL_ID):
+        """Read all matching reviews through one cursor, with bounded working memory."""
+        where, values = self._where(dataset_id, filters)
+        # StreamingResponse advances a synchronous iterator on worker threads.
+        # Calls remain sequential, but successive chunks may use different threads.
+        with self.connection(allow_thread_handoff=True) as connection:
+            cursor = connection.execute(
+                "SELECT r.payload_json,a.result_json"
+                + self._join()
+                + "WHERE "
+                + where
+                + " ORDER BY r.date DESC,r.id",
+                [model_id, TAXONOMY_VERSION, *values],
+            )
+            while rows := cursor.fetchmany(200):
+                for row in rows:
+                    yield {
+                        **json.loads(row["payload_json"]),
+                        "analysis": json.loads(row["result_json"]) if row["result_json"] else None,
+                    }
+
     def overview(
         self, dataset_id: str, filters: Filters | None = None, model_id: str = MODEL_ID
     ) -> dict:
@@ -397,9 +420,72 @@ class Store:
     ) -> None:
         with self.connection() as connection:
             connection.execute(
-                "UPDATE jobs SET status=?,processed=?,failed=?,error=?,"
-                "updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?",
-                (status, processed, failed, error, job_id),
+                "UPDATE jobs SET status=?,processed=?,failed=?,"
+                "error=CASE WHEN cancel_requested=1 AND ?='running' THEN error ELSE ? END,"
+                "updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=? "
+                "AND status IN ('queued','running')",
+                (status, processed, failed, status, error, job_id),
+            )
+
+    def job(self, dataset_id: str, job_id: str) -> dict | None:
+        with self.connection() as connection:
+            row = connection.execute(
+                "SELECT * FROM jobs WHERE dataset_id=? AND id=?", (dataset_id, job_id)
+            ).fetchone()
+            return dict(row) if row else None
+
+    def claim_job(self, job_id: str) -> bool:
+        with self.connection() as connection:
+            return (
+                connection.execute(
+                    "UPDATE jobs SET status='running' WHERE id=? AND status='queued' "
+                    "AND cancel_requested=0",
+                    (job_id,),
+                ).rowcount
+                == 1
+            )
+
+    def cancel_job(self, dataset_id: str, job_id: str) -> dict | None:
+        with self.connection() as connection:
+            connection.execute(
+                "UPDATE jobs SET cancel_requested=1, "
+                "status=CASE WHEN status='queued' THEN 'interrupted' ELSE status END, "
+                "error='Stopped by user; completed results are preserved.', "
+                "updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') "
+                "WHERE dataset_id=? AND id=? AND status IN ('queued','running')",
+                (dataset_id, job_id),
+            )
+        return self.job(dataset_id, job_id)
+
+    def record_job_failure(self, job_id: str, review_id: str, reason: str) -> None:
+        with self.connection() as connection:
+            connection.execute(
+                "INSERT OR REPLACE INTO job_failures VALUES (?,?,?)",
+                (job_id, review_id, reason[:500]),
+            )
+
+    def job_failures(self, job_id: str, offset: int = 0, limit: int = 50) -> dict:
+        with self.connection() as connection:
+            total = connection.execute(
+                "SELECT COUNT(*) FROM job_failures WHERE job_id=?", (job_id,)
+            ).fetchone()[0]
+            rows = connection.execute(
+                "SELECT f.review_id,f.reason,r.product_name,r.brand,substr(r.text,1,300) AS text "
+                "FROM job_failures f JOIN jobs j ON j.id=f.job_id "
+                "JOIN reviews r ON r.dataset_id=j.dataset_id AND r.id=f.review_id "
+                "WHERE f.job_id=? ORDER BY f.review_id LIMIT ? OFFSET ?",
+                (job_id, limit, offset),
+            ).fetchall()
+            return {"total": total, "offset": offset, "items": [dict(row) for row in rows]}
+
+    def stop_jobs(self) -> None:
+        """Cooperative shutdown: do not drain thousands of queued reviews on exit."""
+        with self.connection() as connection:
+            connection.execute(
+                "UPDATE jobs SET cancel_requested=1, "
+                "status=CASE WHEN status='queued' THEN 'interrupted' ELSE status END, "
+                "error='Application stopped; completed results are preserved.' "
+                "WHERE status IN ('queued','running')"
             )
 
     def interrupt_jobs(self) -> None:

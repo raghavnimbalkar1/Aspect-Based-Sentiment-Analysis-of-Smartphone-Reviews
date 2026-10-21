@@ -1,5 +1,44 @@
 # Release quality records
 
+## Release 1.2.0: recovery, exports and opinion context
+
+Verified on 21–22 October 2026. Workflow testing used an isolated synthetic workspace. A SQLite backup was taken before upgrading the real workspace.
+
+| Check | Result |
+| --- | --- |
+| Python tests | 163 passed, including 26 new regressions |
+| Browser-storage failure-path tests | 3 passed |
+| Ruff, Prettier, TypeScript and production build | Passed |
+| Existing written real-model regressions | 42/42 passed |
+| New focus, ellipsis, negation and general-opinion cases | 11/11 passed |
+| Earlier additional review probes | 20/21 passed; the existing sarcasm failure remains |
+| Final isolated integration across six installed variants | 287 assertions passed |
+| Large exports | CSV and JSON each contain all 10,001 fixture reviews; filtering is retained |
+| Mobile layout | All seven workspaces fit 390 px without horizontal page overflow |
+
+The [verification record](data/hardening-verification.json) contains case results and browser coverage. The eleven [new review inputs](../examples/hardening_review_cases.json) were written during development; their pass rate is not independent model accuracy.
+
+### Findings and corrections
+
+- CSV identity used only the model name. Identical text for two brands' “Pro” models could be treated as a duplicate. Imports now use the supplied brand and model together. Selectors, comparison headers, review cards and CSV exports expose the brand.
+- Exports silently stopped at the dashboard's 10,000-row limit. They now use a streaming cursor without that cutoff. A regression explicitly changes worker threads across the cursor's 200-record fetch boundary.
+- Batch jobs had no stop action or visible per-record failure details. Jobs now claim work atomically, stop cooperatively and retain failure reasons. Cancellation during a progress update preserves the stop reason; terminal jobs cannot be overwritten by stale progress.
+- Malformed saved-classifier metadata could break the model catalogue. Invalid entries are skipped before inference dispatch.
+- Browser storage exceptions could prevent rendering or make a server-confirmed annotation save appear to fail. Preference reads/writes are now optional and failure-tolerant. Import controls join the existing unsaved-label guard.
+- Camera focus speed could become general performance, some omitted predicates lost context, and general phone opinions disappeared when other sentences contained aspects. The live policy now handles the covered cases while preserving verbatim evidence offsets. The final scope guard also preserves phone-speed opinions that share a clause with camera praise, while keeping “phone is slow to focus” under camera. The checkpoint still decides sentiment.
+
+### Browser verification
+
+The real neural batch ran on 51 synthetic records, including one deliberately oversized clause. A queued job was stopped before processing. A running job stopped after saving its current record; resuming processed the remaining records. Fifty valid records were retained, and the oversized record displayed the actual 512-token error. Retrying submitted only the one unfinished record. The latest attempt's count is explicitly distinguished from earlier saved results.
+
+Live analysis displayed a negative general opinion, separate positive/negative camera clauses, and positive battery/display opinions. The downloaded JSON was parsed and its model identity and evidence offsets checked. CSV import retained both same-named branded phones; the downloaded CSV contained both brands. Annotation checks covered blocked navigation/import while dirty, draft save, completion and revision history in the disposable pilot. Refresh retained the live draft. Mobile checks included the new failure panel.
+
+### Upgrade and limits
+
+Migration `005_job_control.sql` is additive. It stores cancellation requests and per-review failure records. Historical jobs do not gain failure details retroactively. Explicitly branded CSVs receive corrected identities on re-import; existing datasets are not rewritten. The earlier v2 adapter keeps its model ID; live v3 now uses `deberta-live-v3-10c9dff3-f342bce5`.
+
+The application remains a local, single-worker research tool. Stop waits for the current review; it does not interrupt a neural forward pass or cancel a training experiment. A too-long clause needs shorter source text before retry can succeed. Sarcasm, cross-sentence references and subtle sentiment remain limitations. The 69 real test tasks are unchanged; independent human test evaluation remains pending.
+
 ## Release 1.1.1: sentence and opinion breakdown
 
 Verified on 21 October 2026 after a user reported repeated whole-sentence results and incorrect aspect matches.

@@ -26,7 +26,15 @@ Preserve a valuable backup before upgrades. Generated databases and backups are 
 
 ## Interrupted jobs
 
-Each completed review analysis is committed independently. On application startup, previously queued/running jobs are marked interrupted. Choose **Run analysis** again to process only records missing results for the current model/taxonomy IDs. The old job remains part of the local history.
+Each completed review analysis is committed independently. **Stop analysis** cancels queued work immediately or lets the current review finish before stopping. **Resume unfinished reviews** processes only records missing results for the current model/taxonomy IDs. The old job remains part of local history. Counts in a retry message describe that attempt, not all earlier results.
+
+On shutdown, queued jobs stop and a running batch finishes its current review. On startup, any previously queued/running jobs are marked interrupted. Run one API process per database. This control applies to dataset analysis, not research training experiments.
+
+**Inspect failed reviews** shows the first 100 recorded failures with source excerpts and reasons. The API supports further pages at `GET /api/datasets/{dataset_id}/jobs/{job_id}/failures?offset=100&limit=100`. Cancellation uses `POST /api/datasets/{dataset_id}/jobs/{job_id}/cancel`. Migration `005_job_control.sql` adds these records and cancellation flags without rewriting existing analyses or annotations. Historical failures have no detailed records.
+
+A failure such as a clause exceeding 512 tokens requires a corrected, shorter review and a new import; retrying identical invalid text will fail again. Other successfully analysed records remain available.
+
+Corpus exports stream the full filtered selection. The browser upload limit remains 10,000 rows, but exports do not impose that limit on larger CLI-loaded datasets. CSV exports add a `brand` column. Branded uploads now use both brand and model for identity; re-imports may therefore create a distinct dataset from versions that used only the model name. Existing datasets are preserved.
 
 ## Model changes
 

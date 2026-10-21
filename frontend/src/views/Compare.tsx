@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CircleHelp, GitCompareArrows } from 'lucide-react'
-import { colors, dateRange, names, number, states } from '../api'
+import { phoneName, colors, dateRange, names, number, states } from '../api'
 import type { Overview, Product } from '../api'
 import { Empty } from '../components/common'
 import { useRemote } from '../hooks/useRemote'
@@ -57,7 +57,7 @@ function CompareView({
                 )
                 .map((product) => (
                   <option value={product.id} key={product.id}>
-                    {product.name}
+                    {phoneName(product.name, product.brand)}
                   </option>
                 ))}
             </select>
@@ -82,7 +82,11 @@ function CompareView({
                 {result.data.map((summary) => (
                   <th key={summary.product_id}>
                     <strong>
-                      {products.find((product) => product.id === summary.product_id)?.name}
+                      {phoneName(
+                        products.find((product) => product.id === summary.product_id)?.name ||
+                          'Phone',
+                        products.find((product) => product.id === summary.product_id)?.brand,
+                      )}
                     </strong>
                     <span>{number(summary.analysed)} analysed reviews</span>
                     <span>{dateRange(summary.date_from, summary.date_to)}</span>

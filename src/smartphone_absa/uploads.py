@@ -55,10 +55,14 @@ def prepare_upload(content: bytes, mapping: dict[str, str]) -> tuple[list, dict]
     for number, row in enumerate(rows, start=2):
         mapped = {key: row.get(column, "") if column else "" for key, column in mapping.items()}
         product_name = mapped.get("product", "").strip() or "Uploaded reviews"
+        brand = mapped.get("brand", "").strip() or "Unknown"
+        # Model names are not globally unique across manufacturers. Preserve the
+        # existing no-brand identity while keeping explicitly branded phones apart.
+        product_key = product_name if brand.casefold() == "unknown" else f"{brand}\0{product_name}"
         product = {
-            "asin": text_hash(product_name)[:16],
+            "asin": text_hash(product_key)[:16],
             "model": product_name,
-            "brand": mapped.get("brand", "").strip() or "Unknown",
+            "brand": brand,
         }
         try:
             review = make_review({**mapped, "body": mapped["text"]}, product, source="csv-upload")

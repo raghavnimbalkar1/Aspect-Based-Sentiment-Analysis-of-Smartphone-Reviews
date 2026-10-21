@@ -1,5 +1,7 @@
 # Source verification
 
+`hardening-verification.json` records release 1.2.0's 163 Python tests, three storage tests, 287 integration assertions and browser recovery/import/export checks. It includes results for the eleven new review cases, the 42 earlier regressions and the separate 21-case set with its unresolved sarcasm case. These are development checks using synthetic fixtures, not independent accuracy data.
+
 `source-audit.json` was generated from the original version-2 CSV files, downloaded from [Griko Nibras's Kaggle dataset](https://www.kaggle.com/datasets/grikomsn/amazon-cell-phones-reviews/versions/2). The publisher lists CC0. Raw files stay outside version control.
 
 The inspected files contain 720 listings and 67,986 review rows, with 12 empty bodies and 1,095 repeated listing/body combinations after case and whitespace normalisation. The dates span 24 November 2003 to 25 December 2019. None of those counts describes a ready-to-train ABSA dataset: aspect labels are absent.

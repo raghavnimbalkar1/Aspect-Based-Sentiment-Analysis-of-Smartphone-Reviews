@@ -37,6 +37,14 @@ from smartphone_absa.models.registry import ModelRegistry
         ("The battery lasts all day under heavy usage.", {"battery"}),
         ("Battery life is decent, although it drains quickly on 5G.", {"battery"}),
         ("Battery drains quickly but the 5G signal is weak.", {"battery", "connectivity"}),
+        ("The camera is excellent but slow to focus.", {"camera"}),
+        ("The camera is fast to focus.", {"camera"}),
+        ("The phone is fast with an excellent camera.", {"camera", "performance"}),
+        ("This is a slow phone with a good camera.", {"camera", "performance"}),
+        ("The phone is slow to focus.", {"camera"}),
+        ("The phone is fast but the camera is slow to focus.", {"camera", "performance"}),
+        ("My main focus is software updates.", {"software"}),
+        ("The camera is good but slow phone performance ruins it.", {"camera", "performance"}),
     ],
 )
 def test_live_candidate_scope(text, categories):
@@ -145,6 +153,26 @@ def test_em_dash_opinions_keep_independent_source_spans():
         "Wonderful battery",
         "it died halfway through my first call.",
     ]
+
+
+def test_elliptical_context_and_conditional_negation_keep_targets_and_evidence():
+    pairs = live_pairs("The display is bright but not outdoors.")
+    assert pairs[1][:3] == ("display", "screen: not outdoors.", "screen")
+    pairs = live_pairs("The camera is great and so is the display.")
+    assert pairs[1][:3] == ("display", "The camera is great and so is the display.", "screen")
+    assert len(live_pairs("The camera is great but awful phone.")) == 1
+
+
+def test_general_phone_opinion_survives_alongside_feature_sentences():
+    def classify(pairs):
+        return [("negative" if "hate" in context else "positive", 0.9) for _, context, _ in pairs]
+
+    text = "I hate this phone. The camera is excellent. It arrived late."
+    result = LiveABSA(SimpleNamespace(classify=classify)).analyse(text, language="en")
+    assert result.general_opinion.sentiment == "negative"
+    assert [item.text for item in result.general_opinion.evidence] == ["I hate this phone."]
+    assert result.aspects[0].category == "camera"
+    assert result.aspects[0].sentiment == "positive"
 
 
 def test_general_opinion_never_invents_an_aspect():

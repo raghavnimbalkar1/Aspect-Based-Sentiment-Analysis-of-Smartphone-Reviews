@@ -1,0 +1,88 @@
+{
+  "scope": "Written development regressions, not independent accuracy data.",
+  "cases": [
+    {
+      "id": "focus-contrast",
+      "text": "The camera is excellent but slow to focus.",
+      "aspects": {
+        "camera": "mixed"
+      }
+    },
+    {
+      "id": "focus-only",
+      "text": "The camera is fast to focus.",
+      "aspects": {
+        "camera": "positive"
+      }
+    },
+    {
+      "id": "phone-vs-focus",
+      "text": "The phone is fast but the camera is slow to focus.",
+      "aspects": {
+        "camera": "negative",
+        "performance": "positive"
+      }
+    },
+    {
+      "id": "conditional-negation",
+      "text": "The display is bright but not outdoors.",
+      "aspects": {
+        "display": "mixed"
+      }
+    },
+    {
+      "id": "shared-predicate",
+      "text": "The camera is great and so is the display.",
+      "aspects": {
+        "camera": "positive",
+        "display": "positive"
+      }
+    },
+    {
+      "id": "general-plus-feature",
+      "text": "I hate this phone. The camera is excellent. It arrived late.",
+      "aspects": {
+        "camera": "positive"
+      },
+      "general_sentiment": "negative"
+    },
+    {
+      "id": "focus-not-camera",
+      "text": "My main focus is software updates.",
+      "aspects": {
+        "software": "neutral"
+      }
+    },
+    {
+      "id": "new-phone-subject",
+      "text": "The camera is good but slow phone performance ruins it.",
+      "aspects": {
+        "camera": "positive",
+        "performance": "negative"
+      }
+    },
+    {
+      "id": "phone-speed-with-camera",
+      "text": "The phone is fast with an excellent camera.",
+      "aspects": {
+        "camera": "positive",
+        "performance": "positive"
+      }
+    },
+    {
+      "id": "slow-phone-with-camera",
+      "text": "This is a slow phone with a good camera.",
+      "aspects": {
+        "camera": "positive",
+        "performance": "negative"
+      }
+    },
+    {
+      "id": "phone-focus-not-speed",
+      "text": "The phone is slow to focus.",
+      "aspects": {
+        "camera": "negative"
+      }
+    }
+  ]
+}

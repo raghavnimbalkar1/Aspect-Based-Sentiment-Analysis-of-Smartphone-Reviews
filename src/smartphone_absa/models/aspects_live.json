@@ -5,6 +5,7 @@
     "value": "value for money"
   },
   "additional_cues": {
+    "camera": ["\\b(?:auto[- ]?focus|(?:slow|quick|fast)\\s+to\\s+focus|focusing)\\b"],
     "battery": [
       "\\b(?:phone|device|it)\\s+(?:dies|died)\\b",
       "\\b(?:dies|dead|died)\\s+(?:after|within|by|before)\\b",

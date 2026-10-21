@@ -14,16 +14,28 @@ def run_job(store: Store, job: dict, model: Analyzer | None = None) -> None:
     if model.id != job["model_id"]:
         raise ValueError("Job and inference model IDs differ")
     processed = failed = 0
-    store.update_job(job["id"], "running", 0, 0)
+    if not store.claim_job(job["id"]):
+        return
     try:
         for review in store.pending_reviews(job["dataset_id"], job["model_id"]):
+            current = store.job(job["dataset_id"], job["id"])
+            if current["cancel_requested"]:
+                store.update_job(job["id"], "interrupted", processed, failed, current["error"])
+                return
             try:
                 result = model.analyse(review.text, review.id, review.language)
                 store.save_analysis(job["dataset_id"], review.id, result)
                 processed += 1
-            except Exception:
+            except Exception as exc:
                 failed += 1
                 log.exception("Review analysis failed for record %s", review.id)
+                store.record_job_failure(
+                    job["id"],
+                    review.id,
+                    str(exc)
+                    if isinstance(exc, ValueError)
+                    else "Unexpected analysis error; see the local server log for details.",
+                )
             if (processed + failed) % 10 == 0:
                 store.update_job(job["id"], "running", processed, failed)
         store.update_job(
@@ -31,7 +43,8 @@ def run_job(store: Store, job: dict, model: Analyzer | None = None) -> None:
             "completed" if not failed else "failed",
             processed,
             failed,
-            f"{failed} records failed; retry processes only unfinished records."
+            f"{failed} {'record' if failed == 1 else 'records'} failed; "
+            "retry processes only unfinished records."
             if failed
             else None,
         )

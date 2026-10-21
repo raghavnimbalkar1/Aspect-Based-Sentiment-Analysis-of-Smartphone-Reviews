@@ -270,6 +270,34 @@
 .live-limitations {
   margin-top: 16px;
 }
+.job-failures {
+  padding: 18px 23px;
+  margin-bottom: 18px;
+  font-size: 12px;
+}
+
+.job-notice {
+  flex-wrap: wrap;
+}
+
+.job-notice > span {
+  flex: 1 1 260px;
+}
+.job-failures article {
+  border-top: 1px solid var(--line);
+  padding: 14px 0;
+  line-height: 1.7;
+}
+.job-failures p {
+  margin: 7px 0 0;
+  overflow-wrap: anywhere;
+}
+.failure-reason {
+  color: #9b4c3e;
+}
+.job-progress {
+  flex-wrap: wrap;
+}
 .live-limitations summary {
   margin-bottom: 12px;
 }

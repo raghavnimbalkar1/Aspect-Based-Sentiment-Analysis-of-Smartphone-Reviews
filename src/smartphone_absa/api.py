@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import csv
-import io
-import json
 import logging
 import os
 import time
@@ -12,12 +9,13 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, Request, UploadFile
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from smartphone_absa import __version__
 from smartphone_absa.annotation_api import annotation_router
 from smartphone_absa.domain import JobRequest, ModelComparisonRequest, SingleAnalysisRequest
+from smartphone_absa.exports import csv_reviews, json_reviews
 from smartphone_absa.jobs import run_job
 from smartphone_absa.models.registry import ModelRegistry, ModelUnavailable
 from smartphone_absa.reports import report_catalog
@@ -56,8 +54,11 @@ def create_app(
     async def lifespan(app: FastAPI):
         store.interrupt_jobs()
         research.interrupt()
-        yield
-        executor.shutdown(wait=True, cancel_futures=False)
+        try:
+            yield
+        finally:
+            store.stop_jobs()
+            executor.shutdown(wait=True, cancel_futures=False)
 
     app = FastAPI(title="Smartphone ABSA", version=__version__, lifespan=lifespan)
     app.state.store = store
@@ -270,6 +271,9 @@ def create_app(
 
             def execute():
                 try:
+                    current = store.job(dataset_id, job["id"])
+                    if current["cancel_requested"] or current["status"] != "queued":
+                        return
                     run_job(store, job, registry.get(body.model))
                 except Exception:
                     log.exception("Could not initialize job model")
@@ -281,8 +285,32 @@ def create_app(
                         "Model could not load. Check the local server log and retry.",
                     )
 
-            executor.submit(execute)
+            try:
+                executor.submit(execute)
+            except RuntimeError:
+                store.update_job(job["id"], "failed", 0, 0, "Application is shutting down.")
+                raise HTTPException(
+                    503, "Application is shutting down; retry after restart"
+                ) from None
         return job
+
+    @app.post("/api/datasets/{dataset_id}/jobs/{job_id}/cancel")
+    def cancel_job(dataset_id: str, job_id: str):
+        result = store.cancel_job(dataset_id, job_id)
+        if result is None:
+            raise HTTPException(404, "Analysis job not found in this dataset")
+        return result
+
+    @app.get("/api/datasets/{dataset_id}/jobs/{job_id}/failures")
+    def job_failures(
+        dataset_id: str,
+        job_id: str,
+        offset: int = Query(0, ge=0),
+        limit: int = Query(50, ge=1, le=100),
+    ):
+        if store.job(dataset_id, job_id) is None:
+            raise HTTPException(404, "Analysis job not found in this dataset")
+        return store.job_failures(job_id, offset, limit)
 
     @app.get("/api/datasets/{dataset_id}/jobs")
     def jobs(dataset_id: str, model: str = "rules-v1"):
@@ -299,59 +327,22 @@ def create_app(
     ):
         require_dataset(dataset_id)
         registry.describe(model)
-        items = store.reviews(dataset_id, filters, page_size=10000, model_id=model)["items"]
+        items = store.iter_reviews(dataset_id, filters, model_id=model)
         if format == "json":
-            return Response(
-                json.dumps(
+            return StreamingResponse(
+                json_reviews(
+                    items,
                     {
                         "model_id": model,
                         "taxonomy_version": TAXONOMY_VERSION,
                         "filters": filters.__dict__,
-                        "reviews": items,
-                    }
+                    },
                 ),
                 media_type="application/json",
                 headers={"Content-Disposition": 'attachment; filename="reviews.json"'},
             )
-        handle = io.StringIO(newline="")
-        writer = csv.writer(handle)
-        writer.writerow(
-            [
-                "review_id",
-                "product",
-                "date",
-                "text",
-                "category",
-                "sentiment",
-                "model_id",
-                "taxonomy_version",
-            ]
-        )
-        for item in items:
-            aspects = item["analysis"]["aspects"] if item["analysis"] else []
-            for aspect in aspects or [{"category": "", "sentiment": ""}]:
-                values = [
-                    item["id"],
-                    item["product_name"],
-                    item["date"],
-                    item["text"],
-                    aspect["category"],
-                    aspect["sentiment"],
-                    model,
-                    TAXONOMY_VERSION,
-                ]
-                # Prevent uploaded text being executed as a spreadsheet formula.
-                writer.writerow(
-                    [
-                        "'" + value
-                        if isinstance(value, str)
-                        and value.lstrip().startswith(("=", "+", "-", "@"))
-                        else value
-                        for value in values
-                    ]
-                )
-        return Response(
-            handle.getvalue(),
+        return StreamingResponse(
+            csv_reviews(items, model),
             media_type="text/csv",
             headers={"Content-Disposition": 'attachment; filename="predictions.csv"'},
         )
