@@ -37,6 +37,7 @@ check:
 	.venv/bin/ruff check src tests scripts
 	.venv/bin/pytest
 	npm --prefix frontend run format:check
+	npm --prefix frontend test
 	npm --prefix frontend run build
 
 dev-api:

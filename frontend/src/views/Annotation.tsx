@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Check, ChevronLeft, ChevronRight, Download, Save, Plus } from 'lucide-react'
+import { readStored, writeStored } from '../storage'
 import { names, request, states } from '../api'
 import type { Sentiment, TaskSet } from '../api'
 import { useRemote } from '../hooks/useRemote'
@@ -248,7 +249,7 @@ function SentenceEditor({
 }) {
   const [labels, setLabels] = useState(task.labels)
   const [annotator, setAnnotator] = useState(
-    task.annotator || localStorage.getItem(`aspect.annotator.${setId}`) || '',
+    task.annotator || readStored(`aspect.annotator.${setId}`) || '',
   )
   const [note, setNote] = useState(task.note)
   const [dirty, setDirty] = useState(false)
@@ -297,7 +298,7 @@ function SentenceEditor({
           origin: task.origin,
         }),
       })
-      localStorage.setItem(`aspect.annotator.${setId}`, annotator)
+      writeStored(`aspect.annotator.${setId}`, annotator)
       setDirty(false)
       setSaved(true)
       setMessage(complete ? 'Sentence marked complete.' : 'Draft saved.')
@@ -468,9 +469,7 @@ function SentenceEditor({
             disabled={busy}
             onClick={() => {
               setLabels(task.labels)
-              setAnnotator(
-                task.annotator || localStorage.getItem(`aspect.annotator.${setId}`) || '',
-              )
+              setAnnotator(task.annotator || readStored(`aspect.annotator.${setId}`) || '')
               setNote(task.note)
               setDirty(false)
               setError('')

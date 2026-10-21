@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronLeft, ChevronRight, Loader2, Search, Smartphone } from 'lucide-react'
-import { names, number, query } from '../api'
+import { phoneName, names, number, query } from '../api'
 import type { FilterValues, Review, ReviewPage } from '../api'
 import { useRemote } from '../hooks/useRemote'
 import { Badge, Empty } from './common'
@@ -105,7 +105,7 @@ function ReviewCard({
         </span>
         <div className="review-content">
           <div className="review-meta">
-            <strong>{review.product_name}</strong>
+            <strong>{phoneName(review.product_name, review.brand)}</strong>
             <span>{review.date || 'Date unavailable'}</span>
             {review.rating !== null && (
               <span className="rating">

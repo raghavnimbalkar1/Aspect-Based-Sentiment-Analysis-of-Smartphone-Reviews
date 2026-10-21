@@ -23,7 +23,18 @@ import {
   Upload,
   X,
 } from 'lucide-react'
-import { colors, dateRange, emptyFilters, names, number, query, request, states } from './api'
+import { readStored, writeStored } from './storage'
+import {
+  phoneName,
+  colors,
+  dateRange,
+  emptyFilters,
+  names,
+  number,
+  query,
+  request,
+  states,
+} from './api'
 import type { Dataset, FilterValues, Job, Overview, Product, ModelSpec } from './api'
 import { useRemote } from './hooks/useRemote'
 import { Empty, Legend, Metric } from './components/common'
@@ -35,6 +46,7 @@ import CompareView from './views/Compare'
 import EvaluationView from './views/Evaluation'
 import AnnotationView from './views/Annotation'
 import ModelsView from './views/Models'
+import JobFeedback from './components/JobFeedback'
 
 const SentimentChart = lazy(() => import('./components/SentimentChart'))
 
@@ -55,9 +67,9 @@ function App() {
   const [revision, refresh] = useState(0)
   const [modelId, setModelId] = useState('rules-v1')
   const [liveModelId, setLiveModelId] = useState('')
-  const [liveText, setLiveText] = useState(() => sessionStorage.getItem('aspect.liveDraft') || '')
+  const [liveText, setLiveText] = useState(() => readStored('aspect.liveDraft', 'session') || '')
   const models = useRemote<ModelSpec[]>('/api/models', revision)
-  const [datasetId, setDatasetId] = useState(() => localStorage.getItem('aspect.dataset') || '')
+  const [datasetId, setDatasetId] = useState(() => readStored('aspect.dataset') || '')
   const [pendingDatasetId, setPendingDatasetId] = useState('')
   const [filters, setFilters] = useState<FilterValues>(emptyFilters)
   const [search, setSearch] = useState('')
@@ -85,7 +97,7 @@ function App() {
   }, [view, datasetId])
 
   useEffect(() => {
-    sessionStorage.setItem('aspect.liveDraft', liveText)
+    writeStored('aspect.liveDraft', liveText, 'session')
   }, [liveText])
 
   useEffect(() => {
@@ -107,7 +119,7 @@ function App() {
     }
   }, [datasets.data, datasetId, pendingDatasetId])
   useEffect(() => {
-    localStorage.setItem('aspect.dataset', datasetId)
+    writeStored('aspect.dataset', datasetId)
     setFilters(emptyFilters)
     setSearch('')
   }, [datasetId])
@@ -211,6 +223,7 @@ function App() {
           aria-label="Import dataset"
           title="Import dataset"
           onClick={() => setShowImport(true)}
+          disabled={annotationDirty}
         >
           <Database size={17} />
           <span>Datasets</span>
@@ -283,7 +296,11 @@ function App() {
               <p>{heading[1]}</p>
             </div>
             <div className="heading-actions">
-              <button className="button secondary" onClick={() => setShowImport(true)}>
+              <button
+                className="button secondary"
+                disabled={annotationDirty}
+                onClick={() => setShowImport(true)}
+              >
                 <Plus size={16} />
                 Import reviews
               </button>
@@ -340,29 +357,21 @@ function App() {
           {base && ['overview', 'reviews'].includes(view) && (
             <DatasetDetails key={base} base={base} />
           )}
-          {activeJob && ['overview', 'reviews', 'compare'].includes(view) && (
-            <div className="job-progress" role="status">
-              <Loader2 className="spin" size={17} />
-              <span>
-                Analysing reviews{' '}
-                <strong>
-                  {number(activeJob.processed + activeJob.failed)} / {number(activeJob.total)}
-                </strong>
-              </span>
-              <progress max={activeJob.total || 1} value={activeJob.processed + activeJob.failed} />
-            </div>
+          {base && ['overview', 'reviews', 'compare'].includes(view) && (
+            <JobFeedback
+              key={`${base}-${modelId}`}
+              base={base}
+              job={activeJob || jobs.data?.[0]}
+              busy={busy}
+              onRetry={startAnalysis}
+              onChanged={() => refresh((value) => value + 1)}
+            />
           )}
-          {jobs.data?.[0]?.status === 'failed' &&
-            ['overview', 'reviews', 'compare'].includes(view) && (
-              <div className="alert error">
-                {jobs.data[0].error}
-                <button onClick={startAnalysis}>Retry unfinished reviews</button>
-              </div>
-            )}
           {selected &&
             ['overview', 'reviews', 'compare'].includes(view) &&
             selected.analysed < selected.accepted &&
-            !activeJob && (
+            !activeJob &&
+            !['failed', 'interrupted'].includes(jobs.data?.[0]?.status || '') && (
               <div className="alert info">
                 <Database size={17} />
                 <span>
@@ -425,7 +434,7 @@ function App() {
                     <option value="">All phone models</option>
                     {products.data?.map((product) => (
                       <option key={product.id} value={product.id}>
-                        {product.name}
+                        {phoneName(product.name, product.brand)}
                       </option>
                     ))}
                   </select>

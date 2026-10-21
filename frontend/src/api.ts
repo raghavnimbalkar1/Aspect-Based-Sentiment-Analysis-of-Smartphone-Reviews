@@ -87,6 +87,7 @@ export type Job = {
   processed: number
   failed: number
   error: string | null
+  cancel_requested: number
 }
 export type ModelSpec = {
   id: string
@@ -236,4 +237,14 @@ export function dateRange(from: string | null, to: string | null): string {
   const format = (value: string) =>
     new Date(`${value}T12:00:00`).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
   return from && to ? `${format(from)} – ${format(to)}` : 'Date coverage unavailable'
+}
+
+export function phoneName(name: string, brand = '') {
+  if (
+    !brand ||
+    brand.toLowerCase() === 'unknown' ||
+    name.toLowerCase().startsWith(brand.toLowerCase() + ' ')
+  )
+    return name
+  return `${name} · ${brand}`
 }

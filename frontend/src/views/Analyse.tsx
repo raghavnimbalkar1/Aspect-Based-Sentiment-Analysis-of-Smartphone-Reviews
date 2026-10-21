@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, CircleHelp, Loader2, MessageSquareText, Sparkles } from 'lucide-react'
+import {
+  ArrowRight,
+  CircleHelp,
+  Download,
+  Loader2,
+  MessageSquareText,
+  Sparkles,
+} from 'lucide-react'
 import { names, number, request } from '../api'
 import type { Analysis, ModelSpec } from '../api'
 import { Badge, Empty } from '../components/common'
@@ -99,6 +106,23 @@ function AnalyseView({ modelId, models, text, onTextChange, onModelChange, onMod
     } finally {
       if (currentRequest === requestNumber.current) setBusy(false)
     }
+  }
+
+  function downloadResult() {
+    const payload = {
+      exported_at: new Date().toISOString(),
+      text: submittedText,
+      scope: 'Live model predictions. Scores are uncalibrated, not accuracy percentages.',
+      results,
+    }
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }),
+    )
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'smartphone-review-analysis.json'
+    link.click()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
 
   return (
@@ -227,6 +251,9 @@ function AnalyseView({ modelId, models, text, onTextChange, onModelChange, onMod
             Read each sentence and its feature opinions below. The review summary combines opinions
             across the full input.
           </p>
+          <button className="button secondary" onClick={downloadResult}>
+            <Download size={15} /> Download analysis JSON
+          </button>
         </div>
       )}
       <div className={'model-results ' + (results.length > 1 ? 'side-by-side' : '')}>
@@ -278,8 +305,8 @@ function AnalyseView({ modelId, models, text, onTextChange, onModelChange, onMod
                         <Badge state={analysis.general_opinion.sentiment} />
                       </div>
                       <p>
-                        The review does not identify a specific feature. This opinion is separate
-                        from aspect predictions.
+                        These sentences describe the phone as a whole. Feature opinions are listed
+                        separately below.
                       </p>
                     </div>
                   )}
