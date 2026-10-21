@@ -111,10 +111,16 @@ class ModelRegistry:
         for metadata in sorted((self.artifacts / "experiments").glob("*/model-info.json")):
             try:
                 info = json.loads(metadata.read_text())
+                if not isinstance(info, dict):
+                    continue
                 if (
-                    info["taxonomy_version"] == TAXONOMY_VERSION
-                    and info["kind"] == "tfidf"
+                    info.get("taxonomy_version") == TAXONOMY_VERSION
+                    and info.get("kind") == "tfidf"
+                    and isinstance(info.get("id"), str)
                     and re.fullmatch(r"tfidf-[a-f0-9]{12}", info["id"])
+                    and isinstance(info.get("model_sha256"), str)
+                    and re.fullmatch(r"[a-f0-9]{64}", info["model_sha256"])
+                    and info["id"] == f"tfidf-{info['model_sha256'][:12]}"
                     and (metadata.parent / "model.joblib").exists()
                 ):
                     if info["id"] in trained:
