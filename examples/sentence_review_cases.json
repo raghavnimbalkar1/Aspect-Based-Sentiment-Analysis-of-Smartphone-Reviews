@@ -1,0 +1,175 @@
+{
+  "scope": "One user review and twenty written development probes. Inspected during debugging; not independent accuracy data. Known failures remain in this file with the intended label.",
+  "cases": [
+    {
+      "id": "user-heavy-use",
+      "text": "The battery easily lasts two full days of heavy use, and the 120Hz display is super smooth and bright",
+      "aspects": {
+        "battery": "positive",
+        "display": "positive"
+      }
+    },
+    {
+      "id": "separate-sentences",
+      "text": "The camera takes beautiful photos. The battery dies before lunch. The screen is bright outdoors.",
+      "aspects": {
+        "camera": "positive",
+        "battery": "negative",
+        "display": "positive"
+      }
+    },
+    {
+      "id": "comma-oppositions",
+      "text": "Great camera, awful battery, excellent speakers.",
+      "aspects": {
+        "camera": "positive",
+        "battery": "negative",
+        "audio": "positive"
+      }
+    },
+    {
+      "id": "shared-subjects",
+      "text": "The camera and screen are excellent, but the battery and speakers are disappointing.",
+      "aspects": {
+        "camera": "positive",
+        "display": "positive",
+        "battery": "negative",
+        "audio": "negative"
+      }
+    },
+    {
+      "id": "same-feature",
+      "text": "The camera is fantastic in daylight. The camera is awful at night.",
+      "aspects": {
+        "camera": "mixed"
+      }
+    },
+    {
+      "id": "negation",
+      "text": "The screen is not bright enough outdoors, but the camera is not bad at all.",
+      "aspects": {
+        "display": "negative",
+        "camera": "positive"
+      }
+    },
+    {
+      "id": "charging-endurance",
+      "text": "Charging takes forever. Once charged, the battery comfortably lasts all day.",
+      "aspects": {
+        "charging": "negative",
+        "battery": "positive"
+      }
+    },
+    {
+      "id": "neutral-specs",
+      "text": "The phone has a 5000mAh battery and a 6.7-inch display.",
+      "aspects": {
+        "battery": "neutral",
+        "display": "neutral"
+      }
+    },
+    {
+      "id": "retail",
+      "text": "Delivery was quick and the packaging looked great. The phone camera is blurry and the speaker crackles.",
+      "aspects": {
+        "camera": "negative",
+        "audio": "negative"
+      }
+    },
+    {
+      "id": "cheap-build",
+      "text": "The plastic back feels cheap, but the phone is excellent value for money.",
+      "aspects": {
+        "build": "negative",
+        "value": "positive"
+      }
+    },
+    {
+      "id": "app-speed",
+      "text": "Apps launch quickly, but the software is full of ads. Gaming causes the phone to overheat.",
+      "aspects": {
+        "performance": "mixed",
+        "software": "negative"
+      }
+    },
+    {
+      "id": "line-breaks",
+      "text": "Battery life is great\nCamera is poor\nDisplay is excellent",
+      "aspects": {
+        "battery": "positive",
+        "camera": "negative",
+        "display": "positive"
+      }
+    },
+    {
+      "id": "semicolon",
+      "text": "The battery lasts all day; the camera struggles in low light; the speakers are loud and clear.",
+      "aspects": {
+        "battery": "positive",
+        "camera": "negative",
+        "audio": "positive"
+      }
+    },
+    {
+      "id": "oled-audio",
+      "text": "The OLED screen is vibrant and the stereo speakers sound rich. Unfortunately the battery drains in four hours.",
+      "aspects": {
+        "display": "positive",
+        "audio": "positive",
+        "battery": "negative"
+      }
+    },
+    {
+      "id": "price-weight",
+      "text": "I paid ₹70,000 for this phone. The camera is excellent, but it feels too heavy to hold comfortably.",
+      "aspects": {
+        "camera": "positive",
+        "build": "negative"
+      }
+    },
+    {
+      "id": "hot-charger",
+      "text": "The charger gets very hot and the phone takes three hours to charge.",
+      "aspects": {
+        "charging": "negative"
+      }
+    },
+    {
+      "id": "usage-on-5g",
+      "text": "Battery life is decent, although it drains quickly on 5G.",
+      "aspects": {
+        "battery": "mixed"
+      }
+    },
+    {
+      "id": "predicate-ellipsis",
+      "text": "The display is gorgeous but the battery is not.",
+      "aspects": {
+        "display": "positive",
+        "battery": "negative"
+      }
+    },
+    {
+      "id": "omitted-camera",
+      "text": "The camera is excellent in daylight but awful at night.",
+      "aspects": {
+        "camera": "mixed"
+      }
+    },
+    {
+      "id": "connection-stability",
+      "text": "Bluetooth keeps disconnecting from my car. Wi-Fi has been completely reliable.",
+      "aspects": {
+        "connectivity": "mixed"
+      }
+    },
+    {
+      "id": "sarcasm",
+      "text": "Wonderful battery — it died halfway through my first call.",
+      "aspects": {
+        "battery": "negative"
+      },
+      "known_limitation": "Sarcastic praise conflicts with a literal failure report; literal aggregation does not resolve intended sarcasm."
+    }
+  ]
+}
