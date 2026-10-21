@@ -34,24 +34,28 @@ import AnalyseView from './views/Analyse'
 import CompareView from './views/Compare'
 import EvaluationView from './views/Evaluation'
 import AnnotationView from './views/Annotation'
+import ModelsView from './views/Models'
 
 const SentimentChart = lazy(() => import('./components/SentimentChart'))
 
-type View = 'overview' | 'analyse' | 'reviews' | 'compare' | 'evaluation' | 'annotation'
+type View = 'overview' | 'analyse' | 'reviews' | 'compare' | 'evaluation' | 'annotation' | 'models'
 const nav = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
   { id: 'analyse', label: 'Analyse a review', icon: MessageSquareText },
   { id: 'reviews', label: 'Review explorer', icon: FileText },
   { id: 'compare', label: 'Compare phones', icon: GitCompareArrows },
+  { id: 'models', label: 'Models explained', icon: CircleHelp },
   { id: 'annotation', label: 'Annotation', icon: ClipboardCheck },
   { id: 'evaluation', label: 'Model evaluation', icon: FlaskConical },
 ] as const
 
 function App() {
-  const [view, setView] = useState<View>('overview')
+  const [view, setView] = useState<View>('analyse')
   const [annotationDirty, setAnnotationDirty] = useState(false)
   const [revision, refresh] = useState(0)
   const [modelId, setModelId] = useState('rules-v1')
+  const [liveModelId, setLiveModelId] = useState('')
+  const [liveText, setLiveText] = useState(() => sessionStorage.getItem('aspect.liveDraft') || '')
   const models = useRemote<ModelSpec[]>('/api/models', revision)
   const [datasetId, setDatasetId] = useState(() => localStorage.getItem('aspect.dataset') || '')
   const [pendingDatasetId, setPendingDatasetId] = useState('')
@@ -79,6 +83,16 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [view, datasetId])
+
+  useEffect(() => {
+    sessionStorage.setItem('aspect.liveDraft', liveText)
+  }, [liveText])
+
+  useEffect(() => {
+    if (liveModelId || !models.data?.length) return
+    const recommended = models.data.find((model) => model.recommended_for_live && model.available)
+    setLiveModelId(recommended?.id || 'rules-v1')
+  }, [models.data, liveModelId])
 
   useEffect(() => {
     if (pendingDatasetId) {
@@ -147,6 +161,10 @@ function App() {
     evaluation: [
       'Model evaluation',
       'Track the models, their evaluation, and the work still ahead.',
+    ],
+    models: [
+      'Models explained',
+      'Which method runs where, which data it uses, and what we implemented.',
     ],
   }[view]
   const summary = overview.data
@@ -227,7 +245,10 @@ function App() {
             WORKSPACE <span>/</span> SMARTPHONE REVIEWS
           </div>
           <div className="topbar-actions">
-            <label className="model-selector" hidden={view === 'annotation'}>
+            <label
+              className="model-selector"
+              hidden={['annotation', 'analyse', 'models', 'evaluation'].includes(view)}
+            >
               <span>MODEL</span>
               <select
                 aria-label="Analysis model"
@@ -282,7 +303,7 @@ function App() {
               </button>
             </div>
           )}
-          {selected && view !== 'annotation' && (
+          {selected && ['overview', 'reviews', 'compare'].includes(view) && (
             <div className="dataset-bar">
               <div className="dataset-control">
                 <Database size={16} />
@@ -319,7 +340,7 @@ function App() {
           {base && ['overview', 'reviews'].includes(view) && (
             <DatasetDetails key={base} base={base} />
           )}
-          {activeJob && (
+          {activeJob && ['overview', 'reviews', 'compare'].includes(view) && (
             <div className="job-progress" role="status">
               <Loader2 className="spin" size={17} />
               <span>
@@ -331,12 +352,13 @@ function App() {
               <progress max={activeJob.total || 1} value={activeJob.processed + activeJob.failed} />
             </div>
           )}
-          {jobs.data?.[0]?.status === 'failed' && (
-            <div className="alert error">
-              {jobs.data[0].error}
-              <button onClick={startAnalysis}>Retry unfinished reviews</button>
-            </div>
-          )}
+          {jobs.data?.[0]?.status === 'failed' &&
+            ['overview', 'reviews', 'compare'].includes(view) && (
+              <div className="alert error">
+                {jobs.data[0].error}
+                <button onClick={startAnalysis}>Retry unfinished reviews</button>
+              </div>
+            )}
           {selected &&
             ['overview', 'reviews', 'compare'].includes(view) &&
             selected.analysed < selected.accepted &&
@@ -346,8 +368,9 @@ function App() {
                 <span>
                   {number(selected.accepted - selected.analysed)} reviews are ready for analysis
                   with the selected model.{' '}
-                  {modelId !== 'rules-v1' &&
-                    'A large neural batch can take several minutes on CPU.'}
+                  {['transferred_absa', 'domain_absa'].includes(
+                    models.data?.find((model) => model.id === modelId)?.kind || '',
+                  ) && 'A large neural batch can take several minutes on CPU.'}
                 </span>
                 <button onClick={startAnalysis} disabled={busy}>
                   {busy ? 'Starting…' : 'Run analysis'}
@@ -356,7 +379,16 @@ function App() {
               </div>
             )}
           {view === 'analyse' ? (
-            <AnalyseView key={modelId} modelId={modelId} models={models.data || []} />
+            <AnalyseView
+              modelId={liveModelId}
+              models={models.data || []}
+              text={liveText}
+              onTextChange={setLiveText}
+              onModelChange={setLiveModelId}
+              onModelGuide={() => setView('models')}
+            />
+          ) : view === 'models' ? (
+            <ModelsView models={models.data || []} onAnalyse={() => setView('analyse')} />
           ) : view === 'annotation' ? (
             <AnnotationView onDirtyChange={setAnnotationDirty} />
           ) : view === 'evaluation' ? (

@@ -15,6 +15,234 @@
   --mixed: #a78a4d;
 }
 
+.live-model-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+.live-model-bar,
+.model-explanation-intro,
+.model-role,
+.previous-models,
+.model-data-panel {
+  padding: 24px;
+}
+@media (min-width: 1001px) and (max-height: 820px) {
+  .sidebar-note {
+    display: none;
+  }
+  .sidebar-bottom {
+    margin-top: auto;
+  }
+}
+.live-model-bar > div {
+  min-width: 0;
+}
+.live-model-bar label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+.live-model-bar select {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 9px 12px;
+  background: #fafbf8;
+  color: var(--ink);
+  max-width: 100%;
+  font-size: 14px;
+}
+.live-model-bar p {
+  margin: 9px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #69756c;
+}
+.live-model-bar > button {
+  flex-shrink: 0;
+}
+.live-input-options {
+  margin: -6px 23px 22px;
+  display: flex;
+  gap: 22px;
+  justify-content: space-between;
+  align-items: start;
+}
+.live-input-options .compare-toggle {
+  margin: 0;
+}
+.sample-reviews summary,
+.analysis-explanation summary,
+.live-limitations summary,
+.previous-models summary {
+  font-size: 12px;
+  color: var(--green);
+  cursor: pointer;
+}
+.sample-reviews > div {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+}
+.sample-reviews .small-note {
+  margin-top: 12px;
+}
+.live-result-heading {
+  margin: 26px 0 16px;
+  scroll-margin-top: 22px;
+}
+.live-result-heading h2 {
+  font-size: 18px;
+  margin-bottom: 7px;
+}
+.live-result-heading p {
+  font-size: 12px;
+  color: #69756c;
+}
+.live-evidence > .sentiment-badge {
+  margin: 10px 0 0;
+}
+.analysis-explanation {
+  border-top: 1px solid var(--line);
+  margin-top: 18px;
+  padding-top: 15px;
+}
+.analysis-explanation dl,
+.model-role dl {
+  font-size: 12px;
+  line-height: 1.75;
+}
+.analysis-explanation dl > div,
+.model-role dl > div {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 18px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.analysis-explanation dd,
+.model-role dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.analysis-explanation dt,
+.model-role dt {
+  color: #69756c;
+}
+.inference-table,
+.model-data-table {
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 1.7;
+  width: 100%;
+}
+.inference-table th,
+.inference-table td,
+.model-data-table th,
+.model-data-table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.inference-table thead,
+.model-data-table thead {
+  background: #f6f8f2;
+}
+.inference-table {
+  min-width: 560px;
+}
+.general-opinion > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.general-opinion h3 {
+  font-size: 15px;
+  margin-bottom: 0;
+}
+.general-opinion > p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #69756c;
+  margin-top: 14px;
+}
+.uncertain-decision {
+  color: #856a36;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 12px 0 4px;
+}
+.live-limitations {
+  margin-top: 16px;
+}
+.live-limitations summary {
+  margin-bottom: 12px;
+}
+.model-explanation-intro {
+  margin-bottom: 18px;
+}
+.model-explanation-intro > p,
+.model-role > p,
+.previous-models p {
+  font-size: 13px;
+  line-height: 1.85;
+  color: #69756c;
+  max-width: 850px;
+}
+.model-explanation-intro h2,
+.model-role h2 {
+  font-size: 20px;
+}
+.model-role-list {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.model-role .eyebrow {
+  margin-bottom: 12px;
+}
+.model-artifact-line code {
+  display: block;
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
+.previous-models {
+  margin-top: 18px;
+}
+.previous-models > div {
+  margin-top: 22px;
+}
+.previous-models > p {
+  margin-top: 18px;
+}
+.previous-models code {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .live-model-bar,
+  .live-input-options {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .analysis-explanation dl > div,
+  .model-role dl > div {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+  .model-data-table {
+    min-width: 600px;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -1035,7 +1263,7 @@ blockquote {
   display: block;
   width: calc(100% - 46px);
   margin: 0 23px;
-  min-height: 240px;
+  min-height: 144px;
   resize: vertical;
   border: 1px solid #e1e8d9;
   border-radius: 6px;
