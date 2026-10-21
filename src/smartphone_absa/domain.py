@@ -47,6 +47,23 @@ class AspectResult(BaseModel):
     evidence: list[Evidence]
 
 
+class GeneralOpinion(BaseModel):
+    """A whole-phone opinion, kept separate from the ten aspect categories."""
+
+    sentiment: Sentiment
+    evidence: list[Evidence]
+
+
+class InferenceStep(BaseModel):
+    sentence_id: str
+    category: str
+    cue: str
+    context: str
+    target: str
+    sentiment: Sentiment
+    score: float
+
+
 class Analysis(BaseModel):
     model_id: str
     taxonomy_version: str
@@ -55,6 +72,8 @@ class Analysis(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     language: str = "unknown"
     supported: bool = True
+    general_opinion: GeneralOpinion | None = None
+    inference_steps: list[InferenceStep] = Field(default_factory=list)
 
 
 class SingleAnalysisRequest(BaseModel):

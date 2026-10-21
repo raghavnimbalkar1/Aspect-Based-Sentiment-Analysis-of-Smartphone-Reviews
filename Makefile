@@ -1,6 +1,6 @@
 export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 
-.PHONY: setup data seed build run check dev-api dev-ui pilot model-setup annotation-open doctor verify-release verify-release-neural
+.PHONY: setup data seed build run check dev-api dev-ui pilot model-setup annotation-open doctor verify-release verify-release-neural demo-check
 
 QA_RUN_DIR ?= artifacts/release-qa/$(shell date +%Y%m%d-%H%M%S)
 
@@ -29,6 +29,9 @@ verify-release:
 
 verify-release-neural:
 	.venv/bin/python scripts/verify_release.py --output $(QA_RUN_DIR) --neural
+
+demo-check:
+	.venv/bin/python scripts/check_live_demo.py
 
 check:
 	.venv/bin/ruff check src tests scripts
