@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0 — 21 October 2026
+
+- Open directly on live-review analysis and select the installed primary DeBERTa adapter.
+- Separate live and corpus model choices. Retain typed input across model changes, navigation and refresh within the browser tab.
+- Add version 3 smartphone context handling for charging/endurance, signal targets, app speed, punctuation and short English phrases.
+- Show the actual candidate/context/decision trace and mark low-score decisions for review. General phone opinions remain separate from the ten aspect categories.
+- Add a Models explained workspace, a concise model map and dashboard/code-change rehearsal guidance.
+- Add repeatable real-model demo checks while retaining earlier adapters and their recorded results.
+
 ## 1.0.0 — 20 October 2026
 
 Initial complete release of the local English smartphone-review analysis application.

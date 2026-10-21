@@ -4,7 +4,9 @@
 
 A local research application that turns smartphone reviews into feature-level opinions, with the original sentences kept alongside each prediction. It combines data preparation, model inference, human annotation and reproducible evaluation in one dashboard.
 
-**Release 1.0.0:** the documented application workflows are complete. Verification includes 104 automated tests, 245 assertions across all five installed models and 14 browser scenarios. Independent human test accuracy remains pending. See the [quality record](docs/QUALITY_ASSURANCE.md) and [release notes](CHANGELOG.md).
+**Release 1.1.0:** the app opens on live review analysis and selects **DeBERTa · smartphone context** when installed. Type your own review without importing a dataset. The [model map](docs/MODEL_MAP.md) explains the three method families; the [demo preparation guide](docs/DEMO_PREPARATION.md) covers the code path and common change requests. Independent human test accuracy remains pending. See the [release notes](CHANGELOG.md).
+
+Current checks: **121 automated tests**, **42 written live-review regressions** and **288 integration assertions** across six installed variants. The [quality record](docs/QUALITY_ASSURANCE.md) includes browser checks and known prediction limitations.
 
 [![Checks](https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/raghavnimbalkar1/Aspect-Based-Sentiment-Analysis-of-Smartphone-Reviews/actions/workflows/checks.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
@@ -35,7 +37,8 @@ The application tracks ten categories: **battery, charging, camera, display, per
 | Workspace | What you can do |
 | --- | --- |
 | **Overview** | Inspect aspect counts, sentiment distributions and the reviews behind each chart. |
-| **Analyse a review** | Analyse English text and compare the selected model against the rule baseline on the same input. |
+| **Analyse a review** | Enter English text, inspect feature opinions and the actual inference trace, or compare with the baseline. General phone opinions stay separate from unnamed aspects. |
+| **Models explained** | Distinguish pretrained DeBERTa, the VADER baseline and locally trained TF-IDF methods, including their data and roles. |
 | **Review explorer** | Search original reviews, filter by phone/aspect/sentiment and inspect supporting sentences. |
 | **Compare phones** | Compare two or three listings, with mention counts, review periods and low-support indicators. |
 | **Annotation** | Create a frozen study, filter by partition/completion, label sentences without predictions or ratings, save drafts and export completed labels. |
@@ -80,7 +83,8 @@ Open **[http://localhost:8000](http://localhost:8000)**. The backend serves both
 | `make check` | Run backend tests/lint, frontend formatting checks and the production build. |
 | `make doctor` | Check the built dashboard, database, migrations and installed model integrity without changing labels. |
 | `make verify-release` | Exercise import, analysis, annotation, training and evaluation in an isolated fixture workspace. |
-| `make verify-release-neural` | Repeat integration checks with both installed neural adapters. |
+| `make verify-release-neural` | Repeat integration checks with the installed neural adapters. |
+| `make demo-check` | Run the written live-review regressions against the installed primary model. |
 
 To start with your own CSV, skip `make data` and `make seed`, then choose **Import reviews**. After the initial setup, `bash scripts/start.sh` also starts the built application.
 
@@ -94,6 +98,8 @@ make run
 ```
 
 Choose **DeBERTa ABSA · transferred** or **DeBERTa ABSA · domain adapter v2** in the model selector. Both share one approximately 706 MiB checkpoint download and one loaded backbone, in addition to the optional Python dependencies. Inference loads local files and uses CPU by default. Initial loading takes longer than subsequent requests. See [model setup and attribution](docs/MODELING.md).
+
+For the live demo, use **DeBERTa · smartphone context**, the version 3 adapter. It shares those same weights and becomes the initial live selection when available. Corpus analytics retain their own model selector. Typed live text survives model changes, navigation and refresh within the current browser tab.
 
 ## How it works
 
@@ -140,6 +146,19 @@ net sentiment = 100 × (positive mentions − negative mentions) / all present-s
 Neutral and mixed mentions remain in the denominator. The comparison screen covers the selected phones across the dataset; overview/explorer exports follow the active review filters.
 
 ## Screenshots
+
+The current live-review workflow starts with your own input:
+
+![Live review input with the recommended DeBERTa model selected](docs/screenshots/live-demo-start.png)
+
+![Actual feature predictions from the live DeBERTa adapter](docs/screenshots/live-demo-results.png)
+
+<details>
+<summary><strong>Model roles and training explained</strong></summary>
+
+![Model guide separating pretrained inference, the baseline and locally trained classifiers](docs/screenshots/models-explained.png)
+
+</details>
 
 Screenshots below are captured from the running local application. Corpus views use the rule baseline. The neural comparison uses an illustrative input outside the evaluation set. Annotation shows the actual reviewed validation study; evaluation identifies its AI-assisted reference and development results.
 
@@ -195,6 +214,7 @@ Final-test results remain unavailable until the independent human study is compl
 
 | Model | Method | Status |
 | --- | --- | --- |
+| **DeBERTa · smartphone context** | Version 3 smartphone scope/candidate handling, the pinned DeBERTa classifier, real decision traces and a separate general-opinion output. | Recommended live-review model. Written demo regressions are software checks, not independent accuracy. |
 | **Rules + VADER** | Explicit feature cues, clause-local sentiment and documented domain heuristics. | Default baseline; all 4,346 corpus reviews processed. |
 | **Transferred DeBERTa ABSA** | Explicit smartphone candidates paired with a pretrained three-state sentiment classifier. Opposing predictions are aggregated as mixed. | Local CPU inference verified; smartphone fine-tuning and independent benchmark results remain pending. |
 | **Domain adapter v2** | Expanded smartphone vocabulary, shared-predicate handling and context guards over the same DeBERTa weights. | Available alongside the original adapter; developed using inspected diagnostic errors. |
@@ -296,6 +316,8 @@ CPU latency was measured on the M2 Air using 16 frozen source reviews and 48 war
 ## Documentation
 
 - [Detailed project reference guide and reading companion](docs/presentation/README.md)
+- [Which model does what](docs/MODEL_MAP.md)
+- [Dashboard rehearsal and code-change preparation](docs/DEMO_PREPARATION.md)
 - [Research plan and sources](RESEARCH_PLAN.md)
 - [Application walkthrough and architecture](docs/APP_GUIDE.md)
 - [Annotation protocol](docs/ANNOTATION.md)

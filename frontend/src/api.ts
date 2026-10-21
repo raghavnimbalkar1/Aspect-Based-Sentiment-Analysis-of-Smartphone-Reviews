@@ -28,6 +28,16 @@ export type Analysis = {
   warnings: string[]
   language: string
   supported: boolean
+  general_opinion?: { sentiment: Sentiment; evidence: Evidence[] } | null
+  inference_steps?: {
+    sentence_id: string
+    category: string
+    cue: string
+    context: string
+    target: string
+    sentiment: Sentiment
+    score: number
+  }[]
 }
 export type AspectStats = {
   category: string
@@ -83,6 +93,17 @@ export type ModelSpec = {
   device?: string
   setup?: string
   development_tuned?: boolean
+  family?: string
+  role?: string
+  recommended_for_live?: boolean
+  aspect_method?: string
+  sentiment_method?: string
+  training_source?: string
+  checkpoint?: string
+  revision?: string
+  shared_backbone?: string
+  adapter_version?: number
+  training_profile?: string
 }
 export type TaskSet = {
   id: string

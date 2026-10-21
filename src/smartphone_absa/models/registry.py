@@ -11,6 +11,7 @@ from smartphone_absa.data import file_hash
 from smartphone_absa.models.checkpoints import CHECKPOINT, REVISION, TRANSFER_FILES, TRANSFER_ID
 from smartphone_absa.models.domain_adapter import ADAPTER_SHA256, CONFIG_SHA256, DOMAIN_ID
 from smartphone_absa.models.inference import Analyzer
+from smartphone_absa.models.live import LIVE_ID, POLICY_SHA256
 from smartphone_absa.taxonomy import TAXONOMY_VERSION
 
 
@@ -44,6 +45,11 @@ class ModelRegistry:
                 "available": True,
                 "description": "Explicit aspect cues and clause-local sentiment rules.",
                 "device": "cpu",
+                "family": "Rules and lexicon",
+                "role": "Comparison baseline",
+                "aspect_method": "Feature expressions and clause rules",
+                "sentiment_method": "VADER lexicon with domain heuristics",
+                "training_source": "No statistical model training in this project.",
             },
             {
                 "id": TRANSFER_ID,
@@ -59,6 +65,11 @@ class ModelRegistry:
                 "adapter_version": 1,
                 "license": "MIT",
                 "setup": "make model-setup",
+                "family": "DeBERTa",
+                "role": "Original transfer experiment",
+                "aspect_method": "Original explicit feature patterns",
+                "sentiment_method": "Pretrained DeBERTa sentence/aspect classifier",
+                "training_source": "Published checkpoint weights. No smartphone fine-tuning.",
             },
         ]
         result.append(
@@ -73,6 +84,26 @@ class ModelRegistry:
                 "adapter_sha256": ADAPTER_SHA256,
                 "configuration_sha256": CONFIG_SHA256,
                 "shared_backbone": TRANSFER_ID,
+                "development_tuned": True,
+                "role": "Earlier domain experiment",
+                "aspect_method": "Expanded smartphone vocabulary and clause context",
+            }
+        )
+        result.append(
+            {
+                **result[1],
+                "id": LIVE_ID,
+                "name": "DeBERTa · smartphone context",
+                "kind": "domain_absa",
+                "description": (
+                    "Live English reviews with smartphone context and traceable decisions."
+                ),
+                "adapter_version": 3,
+                "adapter_sha256": POLICY_SHA256,
+                "shared_backbone": TRANSFER_ID,
+                "role": "Recommended for live reviews",
+                "recommended_for_live": True,
+                "aspect_method": "Smartphone expressions, local context and explicit scope guards",
                 "development_tuned": True,
             }
         )
@@ -97,6 +128,18 @@ class ModelRegistry:
                         f"{metadata.parent.name}",
                         "device": "cpu",
                         "training_runs": [metadata.parent.name],
+                        "family": "TF-IDF and logistic regression",
+                        "role": "Locally trained research comparison",
+                        "aspect_method": (
+                            "Binary presence classifier for each aspect"
+                            if info.get("training_profile") == "hierarchical"
+                            else "Five-state classifier for each aspect"
+                        ),
+                        "sentiment_method": "Logistic regression over TF-IDF text features",
+                        "training_source": (
+                            "The training run's sentence labels. Inspect its report for origins; "
+                            "the recorded project runs use mostly DeBERTa pseudo labels."
+                        ),
                     }
                     trained[info["id"]] = spec
                     result.append(spec)
@@ -121,9 +164,14 @@ class ModelRegistry:
                 )
             path = Path(spec["path"])
             if spec["kind"] == "domain_absa":
-                from smartphone_absa.models.domain_adapter import DomainABSA
+                if spec.get("adapter_version") == 3:
+                    from smartphone_absa.models.live import LiveABSA
 
-                analyzer = DomainABSA(self.get(TRANSFER_ID))
+                    analyzer = LiveABSA(self.get(TRANSFER_ID))
+                else:
+                    from smartphone_absa.models.domain_adapter import DomainABSA
+
+                    analyzer = DomainABSA(self.get(TRANSFER_ID))
             elif spec["kind"] == "transferred_absa":
                 from smartphone_absa.models.inference import TransferredABSA
 

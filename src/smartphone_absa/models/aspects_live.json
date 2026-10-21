@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "purpose": "Additional smartphone candidates for live input. Patterns select aspects, never sentiment labels.",
+  "target_overrides": {
+    "value": "value for money"
+  },
+  "additional_cues": {
+    "battery": [
+      "\\b(?:phone|device|it)\\s+(?:dies|died)\\b",
+      "\\b(?:dies|dead|died)\\s+(?:after|within|by|before)\\b",
+      "\\b(?:lasts?|lasting)\\s+(?:for\\s+)?(?:two|three|four|[2-9])\\s+days?\\b"
+    ],
+    "charging": ["\\b(?:chargers?|charged|recharging|recharged)\\b"],
+    "software": ["\\b(?:apps?|software)\\b.{0,35}\\bcrash\\w*\\b"],
+    "performance": [
+      "\\b(?:phone|device)\\b.{0,25}\\bhang(?:s|ing)?\\b",
+      "\\bapps?\\s+(?:open|launch|load)\\w*\\b.{0,20}\\b(?:instantly|quickly|slowly|fast|slow)\\b"
+    ]
+  }
+}

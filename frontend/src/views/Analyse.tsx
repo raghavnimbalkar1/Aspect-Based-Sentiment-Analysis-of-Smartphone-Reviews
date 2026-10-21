@@ -1,170 +1,369 @@
-import { useState } from 'react'
-import { ArrowUpRight, CircleHelp, Loader2, MessageSquareText, Sparkles } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowRight, CircleHelp, Loader2, MessageSquareText, Sparkles } from 'lucide-react'
 import { names, number, request } from '../api'
 import type { Analysis, ModelSpec } from '../api'
 import { Badge, Empty } from '../components/common'
 
 type Result = { analysis: Analysis; elapsed_ms: number }
+type Props = {
+  modelId: string
+  models: ModelSpec[]
+  text: string
+  onTextChange: (value: string) => void
+  onModelChange: (value: string) => void
+  onModelGuide: () => void
+}
+const examples = [
+  ['Opposing opinions', 'The camera is excellent, but the battery is terrible.'],
+  ['Negation', "The camera isn't good, but the screen is excellent."],
+  ['General opinion', 'I absolutely love this phone!'],
+] as const
 
-function AnalyseView({ modelId, models }: { modelId: string; models: ModelSpec[] }) {
-  const [text, setText] = useState('')
+function AnalyseView({ modelId, models, text, onTextChange, onModelChange, onModelGuide }: Props) {
   const [results, setResults] = useState<Result[]>([])
+  const [submittedText, setSubmittedText] = useState('')
   const [compare, setCompare] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const activeRequest = useRef<AbortController | null>(null)
+  const requestNumber = useRef(0)
+  const resultHeading = useRef<HTMLDivElement | null>(null)
   const model = models.find((item) => item.id === modelId)
+  const primaryModels = models.filter(
+    (item) => item.recommended_for_live || item.kind === 'rule_baseline',
+  )
+  const experimentalModels = models.filter((item) => !primaryModels.includes(item))
+
+  useEffect(() => {
+    activeRequest.current?.abort()
+    requestNumber.current += 1
+    setResults([])
+    setSubmittedText('')
+    setError('')
+    setBusy(false)
+    return () => {
+      activeRequest.current?.abort()
+      requestNumber.current += 1
+    }
+  }, [modelId])
+
+  useEffect(() => {
+    if (results.length) resultHeading.current?.scrollIntoView({ block: 'start' })
+  }, [results])
+
+  function edit(value: string) {
+    onTextChange(value)
+    setResults([])
+    setSubmittedText('')
+    setError('')
+  }
+
   async function submit() {
+    const controller = new AbortController()
+    activeRequest.current?.abort()
+    activeRequest.current = controller
+    const currentRequest = ++requestNumber.current
+    const input = text
     setBusy(true)
     setError('')
     setResults([])
+    setSubmittedText('')
     try {
+      let next: Result[]
       if (compare && modelId !== 'rules-v1') {
-        const result = await request<{ results: Result[] }>('/api/analyse/compare', {
+        const response = await request<{ results: Result[] }>('/api/analyse/compare', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, models: ['rules-v1', modelId] }),
+          body: JSON.stringify({ text: input, models: [modelId, 'rules-v1'] }),
+          signal: controller.signal,
         })
-        setResults(result.results)
+        next = response.results
       } else {
         const started = performance.now()
         const analysis = await request<Analysis>('/api/analyse', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, model: modelId }),
+          body: JSON.stringify({ text: input, model: modelId }),
+          signal: controller.signal,
         })
-        setResults([{ analysis, elapsed_ms: performance.now() - started }])
+        next = [{ analysis, elapsed_ms: performance.now() - started }]
       }
+      if (controller.signal.aborted || currentRequest !== requestNumber.current) return
+      setResults(next)
+      setSubmittedText(input)
     } catch (error) {
-      setError((error as Error).message)
+      if (!controller.signal.aborted && currentRequest === requestNumber.current) {
+        setError((error as Error).message)
+      }
     } finally {
-      setBusy(false)
+      if (currentRequest === requestNumber.current) setBusy(false)
     }
   }
+
   return (
     <>
+      <section className="panel live-model-bar">
+        <div>
+          <label htmlFor="live-model">Live-review model</label>
+          <select
+            id="live-model"
+            aria-label="Live-review model"
+            value={modelId}
+            onChange={(event) => onModelChange(event.target.value)}
+          >
+            <optgroup label="Live review and baseline">
+              {primaryModels.map((item) => (
+                <option key={item.id} value={item.id} disabled={!item.available}>
+                  {item.name}
+                  {!item.available ? ' · setup required' : ''}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Research comparisons and earlier versions">
+              {experimentalModels.map((item) => (
+                <option key={item.id} value={item.id} disabled={!item.available}>
+                  {item.name}
+                  {!item.available ? ' · setup required' : ''}
+                </option>
+              ))}
+            </optgroup>
+          </select>
+          <p>
+            {!model
+              ? 'Loading locally installed models…'
+              : model.recommended_for_live
+                ? 'Smartphone context finds features. DeBERTa predicts the opinion about each one.'
+                : model?.kind === 'rule_baseline'
+                  ? 'Rules + VADER is the comparison baseline. It does not use DeBERTa.'
+                  : 'Research model. Review its training data and limitations before using its output.'}
+          </p>
+        </div>
+        <button className="text-button" onClick={onModelGuide}>
+          Which model does what? <ArrowRight size={15} />
+        </button>
+      </section>
+      {!models.some((item) => item.recommended_for_live && item.available) && models.length > 0 && (
+        <div className="alert info">
+          The recommended neural model needs local setup. Run <code>make model-setup</code> and
+          restart the application. The selected baseline remains identified below.
+        </div>
+      )}
       <section className="panel input-panel">
         <div className="panel-title">
           <div>
-            <h2>The review</h2>
-            <p>Keep the original wording, including contrasting opinions.</p>
+            <h2>Enter any smartphone review</h2>
+            <p>Your own text runs through the selected model. No dataset import is needed.</p>
           </div>
           <span className="subtle-chip">ENGLISH</span>
         </div>
         <textarea
           aria-label="Review text"
-          placeholder="The camera takes sharp photos, but the battery barely lasts until lunch…"
+          placeholder="Type or paste a review. For example: The camera is excellent, but the battery is terrible."
           value={text}
           disabled={busy}
-          onChange={(event) => {
-            setText(event.target.value)
-            setResults([])
-          }}
+          onChange={(event) => edit(event.target.value)}
           maxLength={30000}
         />
         <div className="input-footer">
-          <span>
-            {number(text.length)} / 30,000 characters · {model?.name || modelId}
-          </span>
-          <button className="button primary" disabled={!text.trim() || busy} onClick={submit}>
+          <span>{number(text.length)} / 30,000 characters · local inference</span>
+          <button
+            className="button primary"
+            disabled={!text.trim() || busy || !model?.available}
+            onClick={submit}
+          >
             {busy ? <Loader2 className="spin" size={16} /> : <Sparkles size={16} />}
             {busy ? 'Analysing…' : 'Analyse review'}
           </button>
         </div>
-        {modelId !== 'rules-v1' && (
-          <label className="compare-toggle">
-            <input
-              type="checkbox"
-              checked={compare}
-              disabled={busy}
-              onChange={(event) => {
-                setCompare(event.target.checked)
-                setResults([])
-              }}
-            />
-            Compare with Rules + VADER on the same review
-          </label>
+        <div className="live-input-options">
+          {modelId !== 'rules-v1' && (
+            <label className="compare-toggle">
+              <input
+                type="checkbox"
+                checked={compare}
+                disabled={busy}
+                onChange={(event) => {
+                  setCompare(event.target.checked)
+                  setResults([])
+                  setSubmittedText('')
+                }}
+              />
+              Also compare with the Rules + VADER baseline
+            </label>
+          )}
+          <details className="sample-reviews">
+            <summary>Sample inputs</summary>
+            <div>
+              {examples.map(([label, value]) => (
+                <button
+                  className="text-button"
+                  key={label}
+                  disabled={busy}
+                  onClick={() => edit(value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <p className="small-note">Written examples, outside the research evaluation.</p>
+          </details>
+        </div>
+        {busy && (
+          <p className="small-note" role="status">
+            Running {model?.name}. The first neural request also loads the checkpoint.
+          </p>
         )}
-        <button
-          className="text-button example-link"
-          disabled={busy}
-          onClick={() => {
-            setText(
-              'The camera takes sharp photos, but the battery barely lasts until lunch. The screen is bright and the phone gets hot while gaming.',
-            )
-            setResults([])
-          }}
-        >
-          Try a demonstration example
-          <ArrowUpRight size={14} />
-        </button>
-        <p className="small-note">
-          Illustrative example, outside the evaluation set. The neural model may take a few seconds
-          on first use.
-        </p>
         {error && (
           <div className="inline-error" role="alert">
             {error}
           </div>
         )}
       </section>
-      <div className={`model-results ${results.length > 1 ? 'side-by-side' : ''}`}>
+      {!!results.length && (
+        <div className="live-result-heading" aria-live="polite" ref={resultHeading}>
+          <h2>Analysis results</h2>
+          <p>
+            Each feature keeps its own opinion. Opposing opinions about one feature produce mixed.
+          </p>
+        </div>
+      )}
+      <div className={'model-results ' + (results.length > 1 ? 'side-by-side' : '')}>
         {!results.length ? (
           <section className="panel">
-            <Empty title="The details will appear here" icon={<MessageSquareText size={26} />}>
-              Add a review and select Analyse review.
+            <Empty title="Ready for your review" icon={<MessageSquareText size={26} />}>
+              Enter English text above and select Analyse review.
             </Empty>
           </section>
         ) : (
-          results.map(({ analysis, elapsed_ms }) => (
-            <section key={analysis.model_id} className="panel results-panel">
-              <div className="panel-title">
-                <div>
-                  <h2>
-                    {models.find((item) => item.id === analysis.model_id)?.name ||
-                      analysis.model_id}
-                  </h2>
-                  <p>
-                    {Math.round(elapsed_ms)} ms ·{' '}
-                    {results.length > 1 ? 'inference time' : 'request time, including first load'}
-                  </p>
-                </div>
-              </div>
-              <div className="analysis-result">
-                {analysis.aspects.map((aspect) => (
-                  <div className="single-aspect" key={aspect.category}>
-                    <div>
-                      <h3>{names[aspect.category]}</h3>
-                      <Badge state={aspect.sentiment} />
-                    </div>
-                    {aspect.evidence.map((evidence, index) => (
-                      <blockquote key={index}>{evidence.text}</blockquote>
-                    ))}
+          results.map(({ analysis, elapsed_ms }) => {
+            const usedModel = models.find((item) => item.id === analysis.model_id)
+            return (
+              <section key={analysis.model_id} className="panel results-panel">
+                <div className="panel-title">
+                  <div>
+                    <h2>{usedModel?.name || analysis.model_id}</h2>
+                    <p>
+                      {analysis.aspects.length} feature{analysis.aspects.length === 1 ? '' : 's'}
+                      {' · '}
+                      {Math.round(elapsed_ms)} ms
+                      {' · '}
+                      {results.length > 1 ? 'inference time' : 'request time, including first load'}
+                    </p>
                   </div>
-                ))}
-                {!analysis.aspects.length && (
-                  <Empty
-                    title={
-                      analysis.supported
-                        ? 'No explicit aspect detected'
-                        : 'This language is not supported'
-                    }
-                  >
-                    {analysis.supported
-                      ? 'General praise or implicit references may not produce a result.'
-                      : 'Use an English review for this version.'}
-                  </Empty>
-                )}
-              </div>
-              <div className="result-warnings">
-                {analysis.warnings.map((warning) => (
-                  <p key={warning}>
-                    <CircleHelp size={13} />
-                    {warning}
+                </div>
+                <div className="analysis-result">
+                  {analysis.aspects.map((aspect) => (
+                    <div className="single-aspect" key={aspect.category}>
+                      <div>
+                        <h3>{names[aspect.category]}</h3>
+                        <Badge state={aspect.sentiment} />
+                      </div>
+                      {analysis.inference_steps?.some(
+                        (step) => step.category === aspect.category && step.score < 0.6,
+                      ) && (
+                        <p className="uncertain-decision">
+                          Uncertain model decision. Review the supporting text and context.
+                        </p>
+                      )}
+                      {aspect.evidence.map((evidence, index) => (
+                        <div className="live-evidence" key={index}>
+                          {aspect.sentiment === 'mixed' && evidence.sentiment !== 'mixed' && (
+                            <Badge state={evidence.sentiment} />
+                          )}
+                          <blockquote>{evidence.text}</blockquote>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                  {analysis.general_opinion && (
+                    <div className="general-opinion">
+                      <div>
+                        <h3>General phone opinion</h3>
+                        <Badge state={analysis.general_opinion.sentiment} />
+                      </div>
+                      <p>
+                        The review does not identify a specific feature. This opinion is separate
+                        from aspect predictions.
+                      </p>
+                      {analysis.general_opinion.evidence.map((item, index) => (
+                        <blockquote key={index}>{item.text}</blockquote>
+                      ))}
+                    </div>
+                  )}
+                  {!analysis.aspects.length && !analysis.general_opinion && (
+                    <Empty
+                      title={
+                        analysis.supported
+                          ? 'No phone feature identified'
+                          : 'This language is not supported'
+                      }
+                    >
+                      {analysis.supported
+                        ? 'The text may be general, unrelated to phone features or too implicit for this model. No aspect label is invented.'
+                        : 'Use an English review for this version.'}
+                    </Empty>
+                  )}
+                </div>
+                <details className="analysis-explanation">
+                  <summary>How this result was produced</summary>
+                  <dl>
+                    <div>
+                      <dt>Model</dt>
+                      <dd>{analysis.model_id}</dd>
+                    </div>
+                    <div>
+                      <dt>Feature detection</dt>
+                      <dd>{usedModel?.aspect_method || usedModel?.description}</dd>
+                    </div>
+                    <div>
+                      <dt>Sentiment</dt>
+                      <dd>{usedModel?.sentiment_method || usedModel?.family}</dd>
+                    </div>
+                  </dl>
+                  {!!analysis.inference_steps?.length && (
+                    <div className="comparison-scroll">
+                      <table className="inference-table">
+                        <thead>
+                          <tr>
+                            <th>Feature</th>
+                            <th>Matched phrase</th>
+                            <th>Model context</th>
+                            <th>Prediction</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {analysis.inference_steps.map((step, index) => (
+                            <tr key={index}>
+                              <th>{names[step.category]}</th>
+                              <td>{step.cue}</td>
+                              <td>{step.context}</td>
+                              <td>
+                                <Badge state={step.sentiment} />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                  <p className="small-note">
+                    Evidence quotes keep the original sentence. The classifier can use a smaller
+                    context.
                   </p>
-                ))}
-              </div>
-            </section>
-          ))
+                  <p className="small-note">Input analysed: {submittedText}</p>
+                </details>
+                <details className="result-warnings live-limitations">
+                  <summary>Model limitations</summary>
+                  {analysis.warnings.map((warning) => (
+                    <p key={warning}>
+                      <CircleHelp size={13} />
+                      {warning}
+                    </p>
+                  ))}
+                </details>
+              </section>
+            )
+          })
         )}
       </div>
     </>
