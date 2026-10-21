@@ -15,7 +15,14 @@ from pathlib import Path
 
 from smartphone_absa.domain import Analysis, AspectResult, Evidence, GeneralOpinion, InferenceStep
 from smartphone_absa.models.checkpoints import REVISION
-from smartphone_absa.models.domain_adapter import ADAPTER_SHA256, DomainABSA
+from smartphone_absa.models.domain_adapter import (
+    ADAPTER_SHA256,
+    PATTERNS,
+    PREDICATE,
+    RETAIL,
+    DomainABSA,
+    valid_cue,
+)
 from smartphone_absa.models.inference import TransferredABSA
 from smartphone_absa.taxonomy import CATEGORIES, TAXONOMY_VERSION, aggregate_sentiments
 from smartphone_absa.text import detect_language, split_sentences
@@ -54,6 +61,13 @@ PHONE_REFERENCE = re.compile(r"\b(?:phone|smartphone|device|iphone|handset|it)\b
 ENGLISH_PHRASE = re.compile(
     r"\b(?:the|this|my|its|is|are|was|very|not|good|bad|great|excellent|terrible|life)\b", re.I
 )
+ELLIPTICAL_OPINION = re.compile(
+    r"^(?:(?:it|they)\s+(?:is|are|was|were)\s+)?"
+    r"(?:(?:not|very|really|quite|too|so)\s+)*"
+    r"(?:good|great|excellent|amazing|bad|awful|terrible|horrible|poor|"
+    r"bright|dim|blurry|sharp|slow|fast|smooth|weak|strong|disappointing)\b",
+    re.I,
+)
 
 
 def normalise_context(text: str) -> str:
@@ -61,24 +75,105 @@ def normalise_context(text: str) -> str:
     return text.translate(str.maketrans({"’": "'", "‘": "'", "‑": "-", "–": "-"}))
 
 
-def live_pairs(text: str) -> list[tuple[str, str, str, str]]:
-    """Category, local context, sentiment target and actual matched cue."""
+def opinion_spans(text: str) -> list[tuple[int, int]]:
+    """Split independent opinions, preserving shared subjects and exact source offsets."""
+
+    def has_subject(part: str) -> bool:
+        return bool(RETAIL.search(part) or any(p.search(part) for p in PATTERNS.values()))
+
+    def trim(start: int, end: int) -> tuple[int, int]:
+        while start < end and (text[start].isspace() or text[start] in ",;"):
+            start += 1
+        while end > start and (text[end - 1].isspace() or text[end - 1] in ",;"):
+            end -= 1
+        return start, end
+
+    # Contrast and semicolons separate opinions even when an aspect is implicit.
+    boundaries = list(
+        re.finditer(r"\b(?:but|however|although|yet|whereas)\b|[;\n—]|\s+–\s+", text, re.I)
+    )
+    spans = []
+    start = 0
+    for boundary in [*boundaries, None]:
+        end = boundary.start() if boundary else len(text)
+        current = start
+        for join in re.finditer(r",\s*(?:and\s+)?|\band\b", text[start:end], re.I):
+            left_end, right_start = start + join.start(), start + join.end()
+            left = text[current:left_end]
+            # Stop at the next join when checking the right opinion.
+            right = re.split(r",|\band\b", text[right_start:end], maxsplit=1, flags=re.I)[0]
+            if (
+                has_subject(left)
+                and has_subject(right)
+                and (
+                    PREDICATE.search(left)
+                    and (join.group().startswith(",") or PREDICATE.search(right))
+                )
+            ):
+                a, b = trim(current, left_end)
+                if a < b:
+                    spans.append((a, b))
+                current = right_start
+        a, b = trim(current, end)
+        if a < b:
+            spans.append((a, b))
+        start = boundary.end() if boundary else end
+    return spans
+
+
+def live_candidates(text: str) -> list[tuple[str, str, str, str, int, int]]:
+    """Category, classifier context, target, cue and verbatim context span."""
     from smartphone_absa.models.domain_adapter import (
         CONFIG as ORIGINAL_CONFIG,
     )
-    from smartphone_absa.models.domain_adapter import (
-        PATTERNS,
-        clauses,
-        valid_cue,
-    )
 
     pairs = []
-    for clause in clauses(normalise_context(text)):
-        # A comma between two full feature opinions also creates separate contexts.
-        parts = re.split(r",\s*(?=(?:the|my|its|this)\b)", clause, flags=re.I)
-        for part in parts:
+    previous = []
+    for start, end in opinion_spans(text):
+        part = normalise_context(text[start:end])
+        before = len(pairs)
+        if part:
             for category, pattern in PATTERNS.items():
                 matches = [m for m in pattern.finditer(part) if valid_cue(category, m, part)]
+                if category == "build":
+                    # Workload and game graphics describe use, not the phone's weight.
+                    matches = [
+                        m
+                        for m in matches
+                        if not (
+                            m.group().lower() == "heavy"
+                            and re.match(
+                                r"\s+(?:use|usage|workload|gaming|games?|multitasking)\b",
+                                part[m.end() :],
+                                re.I,
+                            )
+                        )
+                    ]
+                if category == "value" and PATTERNS["build"].search(part):
+                    # Cheap-looking material is a build opinion; cheap pricing is value.
+                    matches = [
+                        m
+                        for m in matches
+                        if not (
+                            m.group().lower() == "cheap"
+                            and re.search(
+                                r"\b(?:feels?|looks?|plastic|materials?|back|frame)\b", part, re.I
+                            )
+                            and not re.search(
+                                r"\b(?:price|cost|money|value|affordable)\b", part, re.I
+                            )
+                        )
+                    ]
+                if category == "connectivity" and ENDURANCE.search(part):
+                    # Network use can be the condition of a battery complaint.
+                    # "drains on 5G" does not evaluate the connection itself.
+                    matches = [
+                        m
+                        for m in matches
+                        if not re.search(
+                            r"\b(?:on|using|over|with)\s+(?:the\s+)?$", part[: m.start()], re.I
+                        )
+                    ]
                 additional = IMPLICIT.get(category)
                 extra = additional.search(part) if additional else None
                 if not matches and not extra:
@@ -105,6 +200,9 @@ def live_pairs(text: str) -> list[tuple[str, str, str, str]]:
                 target = CONFIG.get("target_overrides", {}).get(
                     category, ORIGINAL_CONFIG["categories"][category]["target"]
                 )
+                if category == "battery" and cue.lower() in {"battery", "batteries"}:
+                    # Do not turn a capacity specification into an endurance claim.
+                    target = cue.lower()
                 if category == "connectivity" and cue.lower() in {
                     "signal",
                     "reception",
@@ -116,8 +214,27 @@ def live_pairs(text: str) -> list[tuple[str, str, str, str]]:
                     "hotspot",
                 }:
                     target = cue.lower()
-                pairs.append((category, part.strip(), target, cue))
+                pairs.append((category, part, target, cue, start, end))
+        if (
+            len(pairs) == before
+            and previous
+            and ELLIPTICAL_OPINION.search(part)
+            and not RETAIL.search(part)
+        ):
+            # Resolve only an adjective-led fragment after one unambiguous feature.
+            # Raw evidence remains intact; the trace exposes the supplied target.
+            if len({item[0] for item in previous}) == 1:
+                category, _, target, cue, _, _ = previous[-1]
+                pairs.append(
+                    (category, f"{target}: {part}", target, f"{cue} (previous clause)", start, end)
+                )
+        previous = pairs[before:]
     return pairs
+
+
+def live_pairs(text: str) -> list[tuple[str, str, str, str]]:
+    """Public candidate inspection without span metadata."""
+    return [item[:4] for item in live_candidates(text)]
 
 
 class LiveABSA(DomainABSA):
@@ -163,19 +280,28 @@ class LiveABSA(DomainABSA):
         # 1. Preserve the original sentences and their evidence offsets.
         sentences = split_sentences(text, review_id)
         contexts = [
-            (sentence, category, context, target, cue)
+            (sentence, category, context, target, cue, start, end)
             for sentence in sentences
-            for category, context, target, cue in live_pairs(sentence.text)
+            for category, context, target, cue, start, end in live_candidates(sentence.text)
         ]
         # 2. The vocabulary selects candidates. DeBERTa decides their polarity.
-        pairs = [(category, context, target) for _, category, context, target, _ in contexts]
+        pairs = [(category, context, target) for _, category, context, target, _, _, _ in contexts]
         predictions = self.backbone.classify(pairs)
         steps = []
-        local = defaultdict(list)
-        for (sentence, category, context, target, cue), (state, score) in zip(
+        grouped = defaultdict(list)
+        for (sentence, category, context, target, cue, start, end), (state, score) in zip(
             contexts, predictions, strict=True
         ):
-            local[(sentence.id, category)].append((state, score))
+            grouped[category].append(
+                Evidence(
+                    sentence_id=sentence.id,
+                    text=sentence.text[start:end],
+                    start=sentence.start + start,
+                    end=sentence.start + end,
+                    sentiment=state,
+                    score=score,
+                )
+            )
             steps.append(
                 InferenceStep(
                     sentence_id=sentence.id,
@@ -185,24 +311,11 @@ class LiveABSA(DomainABSA):
                     target=target,
                     sentiment=state,
                     score=score,
+                    start=sentence.start + start,
+                    end=sentence.start + end,
                 )
             )
-        # 3. Opposing contexts make a mixed aspect. Evidence stays verbatim.
-        grouped = defaultdict(list)
-        for sentence in sentences:
-            for category in CATEGORIES:
-                values = local.get((sentence.id, category.id), [])
-                if values:
-                    grouped[category.id].append(
-                        Evidence(
-                            sentence_id=sentence.id,
-                            text=sentence.text,
-                            start=sentence.start,
-                            end=sentence.end,
-                            sentiment=aggregate_sentiments([s for s, _ in values]),
-                            score=sum(p for _, p in values) / len(values),
-                        )
-                    )
+        # 3. Aggregate for the review while keeping each local decision separate.
         warnings = self.limitations()
         if detected == "unknown":
             warnings.append(

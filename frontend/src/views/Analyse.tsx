@@ -3,6 +3,7 @@ import { ArrowRight, CircleHelp, Loader2, MessageSquareText, Sparkles } from 'lu
 import { names, number, request } from '../api'
 import type { Analysis, ModelSpec } from '../api'
 import { Badge, Empty } from '../components/common'
+import { SentenceBreakdown } from '../components/SentenceBreakdown'
 
 type Result = { analysis: Analysis; elapsed_ms: number }
 type Props = {
@@ -223,7 +224,8 @@ function AnalyseView({ modelId, models, text, onTextChange, onModelChange, onMod
         <div className="live-result-heading" aria-live="polite" ref={resultHeading}>
           <h2>Analysis results</h2>
           <p>
-            Each feature keeps its own opinion. Opposing opinions about one feature produce mixed.
+            Read each sentence and its feature opinions below. The review summary combines opinions
+            across the full input.
           </p>
         </div>
       )}
@@ -245,6 +247,9 @@ function AnalyseView({ modelId, models, text, onTextChange, onModelChange, onMod
                     <p>
                       {analysis.aspects.length} feature{analysis.aspects.length === 1 ? '' : 's'}
                       {' · '}
+                      {analysis.sentences.length} sentence
+                      {analysis.sentences.length === 1 ? '' : 's'}
+                      {' · '}
                       {Math.round(elapsed_ms)} ms
                       {' · '}
                       {results.length > 1 ? 'inference time' : 'request time, including first load'}
@@ -252,29 +257,20 @@ function AnalyseView({ modelId, models, text, onTextChange, onModelChange, onMod
                   </div>
                 </div>
                 <div className="analysis-result">
-                  {analysis.aspects.map((aspect) => (
-                    <div className="single-aspect" key={aspect.category}>
-                      <div>
-                        <h3>{names[aspect.category]}</h3>
-                        <Badge state={aspect.sentiment} />
+                  {!!analysis.aspects.length && (
+                    <div className="review-summary">
+                      <h3>Review summary</h3>
+                      <div className="aspect-summary-list">
+                        {analysis.aspects.map((aspect) => (
+                          <div className="aspect-summary-item" key={aspect.category}>
+                            <span>{names[aspect.category]}</span>
+                            <Badge state={aspect.sentiment} />
+                          </div>
+                        ))}
                       </div>
-                      {analysis.inference_steps?.some(
-                        (step) => step.category === aspect.category && step.score < 0.6,
-                      ) && (
-                        <p className="uncertain-decision">
-                          Uncertain model decision. Review the supporting text and context.
-                        </p>
-                      )}
-                      {aspect.evidence.map((evidence, index) => (
-                        <div className="live-evidence" key={index}>
-                          {aspect.sentiment === 'mixed' && evidence.sentiment !== 'mixed' && (
-                            <Badge state={evidence.sentiment} />
-                          )}
-                          <blockquote>{evidence.text}</blockquote>
-                        </div>
-                      ))}
+                      <p>Mixed means this feature has opposing opinions in the review.</p>
                     </div>
-                  ))}
+                  )}
                   {analysis.general_opinion && (
                     <div className="general-opinion">
                       <div>
@@ -285,11 +281,9 @@ function AnalyseView({ modelId, models, text, onTextChange, onModelChange, onMod
                         The review does not identify a specific feature. This opinion is separate
                         from aspect predictions.
                       </p>
-                      {analysis.general_opinion.evidence.map((item, index) => (
-                        <blockquote key={index}>{item.text}</blockquote>
-                      ))}
                     </div>
                   )}
+                  {analysis.supported && <SentenceBreakdown analysis={analysis} />}
                   {!analysis.aspects.length && !analysis.general_opinion && (
                     <Empty
                       title={
@@ -326,7 +320,7 @@ function AnalyseView({ modelId, models, text, onTextChange, onModelChange, onMod
                         <thead>
                           <tr>
                             <th>Feature</th>
-                            <th>Matched phrase</th>
+                            <th>Feature cue</th>
                             <th>Model context</th>
                             <th>Prediction</th>
                           </tr>
@@ -347,8 +341,10 @@ function AnalyseView({ modelId, models, text, onTextChange, onModelChange, onMod
                     </div>
                   )}
                   <p className="small-note">
-                    Evidence quotes keep the original sentence. The classifier can use a smaller
-                    context.
+                    Sentence cards preserve the original input. Opinion quotes show the exact local
+                    evidence; the trace records the context passed to the classifier. An omitted
+                    feature may be supplied from the previous clause when its reference is
+                    unambiguous.
                   </p>
                   <p className="small-note">Input analysed: {submittedText}</p>
                 </details>

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1 — 21 October 2026
+
+- Display each source sentence in reading order with individual feature opinions and supporting clauses. Keep review-level aggregation in a separate summary.
+- Preserve separate positive and negative clause evidence for the same aspect, including conservative same-sentence omitted references.
+- Correct heavy-use versus weight confusion, cheap-material versus price confusion and incidental network use in battery complaints.
+- Use an explicit battery mention as the transformer target without inventing an endurance claim from a capacity specification.
+- Add 16 automated regressions and record 21 manual dashboard probes, including the remaining sarcasm failure.
+
 ## 1.1.0 — 21 October 2026
 
 - Open directly on live-review analysis and select the installed primary DeBERTa adapter.

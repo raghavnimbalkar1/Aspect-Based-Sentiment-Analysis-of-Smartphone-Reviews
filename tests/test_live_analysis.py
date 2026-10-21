@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from smartphone_absa.api import create_app
 from smartphone_absa.models.checkpoints import TRANSFER_ID
 from smartphone_absa.models.domain_adapter import DOMAIN_ID
-from smartphone_absa.models.live import LIVE_ID, LiveABSA, live_pairs
+from smartphone_absa.models.live import LIVE_ID, LiveABSA, live_pairs, opinion_spans
 from smartphone_absa.models.registry import ModelRegistry
 
 
@@ -27,6 +27,16 @@ from smartphone_absa.models.registry import ModelRegistry
         ("The phone is responsive while charging.", {"performance", "charging"}),
         ("The battery charges quickly but drains too fast.", {"battery", "charging"}),
         ("The apps open instantly.", {"performance"}),
+        (
+            "The battery easily lasts two full days of heavy use, "
+            "and the 120Hz display is super smooth and bright",
+            {"battery", "display"},
+        ),
+        ("The plastic back feels cheap.", {"build"}),
+        ("This phone is heavy and expensive.", {"build", "value"}),
+        ("The battery lasts all day under heavy usage.", {"battery"}),
+        ("Battery life is decent, although it drains quickly on 5G.", {"battery"}),
+        ("Battery drains quickly but the 5G signal is weak.", {"battery", "connectivity"}),
     ],
 )
 def test_live_candidate_scope(text, categories):
@@ -55,7 +65,86 @@ def test_live_trace_matches_actual_decisions_and_original_offsets():
     for aspect in result.aspects:
         for evidence in aspect.evidence:
             assert text[evidence.start : evidence.end] == evidence.text
+    for step in result.inference_steps:
+        assert text[step.start : step.end].replace("’", "'") == step.context
     assert result.general_opinion is None
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        (
+            "Great camera, awful battery, excellent speakers.",
+            ["Great camera", "awful battery", "excellent speakers."],
+        ),
+        ("The camera, screen and battery are good.", ["The camera, screen and battery are good."]),
+        ("The camera and screen are good.", ["The camera and screen are good."]),
+        (
+            "The battery is great; the camera is poor.",
+            ["The battery is great", "the camera is poor."],
+        ),
+        ("Camera is great, but battery is poor.", ["Camera is great", "battery is poor."]),
+        (
+            "The battery lasts all day and the screen is bright and smooth.",
+            ["The battery lasts all day", "the screen is bright and smooth."],
+        ),
+    ],
+)
+def test_independent_opinion_spans_preserve_shared_nouns(text, expected):
+    assert [text[start:end] for start, end in opinion_spans(text)] == expected
+
+
+def test_opposing_clauses_keep_their_own_evidence_and_original_offsets():
+    def classify(pairs):
+        return [("negative" if "awful" in text else "positive", 0.9) for _, text, _ in pairs]
+
+    text = "  The camera is excellent in daylight, but the camera is awful at night.  "
+    model = LiveABSA(SimpleNamespace(classify=classify))
+    result = model.analyse(text, language="en")
+    assert len(result.sentences) == 1
+    assert result.aspects[0].sentiment == "mixed"
+    evidence = result.aspects[0].evidence
+    assert [item.sentiment for item in evidence] == ["positive", "negative"]
+    assert [item.text for item in evidence] == [
+        "The camera is excellent in daylight",
+        "the camera is awful at night.",
+    ]
+    assert all(text[e.start : e.end] == e.text for e in evidence)
+    assert all(e.sentence_id == result.sentences[0].id for e in evidence)
+
+
+def test_battery_target_does_not_invent_an_endurance_claim():
+    pairs = live_pairs("The phone has a 5000mAh battery.")
+    assert pairs == [("battery", "The phone has a 5000mAh battery.", "battery", "battery")]
+
+
+def test_omitted_single_feature_is_resolved_without_rewriting_evidence():
+    seen = []
+
+    def classify(pairs):
+        seen.extend(pairs)
+        return [("negative" if "awful" in text else "positive", 0.9) for _, text, _ in pairs]
+
+    text = "The camera is excellent in daylight but awful at night."
+    result = LiveABSA(SimpleNamespace(classify=classify)).analyse(text, language="en")
+    assert result.aspects[0].sentiment == "mixed"
+    assert result.aspects[0].evidence[1].text == "awful at night."
+    assert seen[1] == ("camera", "camera: awful at night.", "camera")
+    assert result.inference_steps[1].cue == "camera (previous clause)"
+    assert (
+        text[result.inference_steps[1].start : result.inference_steps[1].end] == "awful at night."
+    )
+    # Do not guess which of two named features an omitted opinion concerns.
+    assert len(live_pairs("The camera and display are good but awful outdoors.")) == 2
+    assert len(live_pairs("The camera is good but awful shipping.")) == 1
+
+
+def test_em_dash_opinions_keep_independent_source_spans():
+    text = "Wonderful battery — it died halfway through my first call."
+    assert [text[a:b] for a, b in opinion_spans(text)] == [
+        "Wonderful battery",
+        "it died halfway through my first call.",
+    ]
 
 
 def test_general_opinion_never_invents_an_aspect():

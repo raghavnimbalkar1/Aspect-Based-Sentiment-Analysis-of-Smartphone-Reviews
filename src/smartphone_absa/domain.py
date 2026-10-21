@@ -62,6 +62,8 @@ class InferenceStep(BaseModel):
     target: str
     sentiment: Sentiment
     score: float
+    start: int | None = None
+    end: int | None = None
 
 
 class Analysis(BaseModel):

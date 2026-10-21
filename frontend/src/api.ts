@@ -15,6 +15,7 @@ export type Product = {
   reviews: number
 }
 export type Evidence = {
+  sentence_id: string
   text: string
   start: number
   end: number
@@ -24,6 +25,7 @@ export type Evidence = {
 export type Aspect = { category: string; sentiment: Sentiment; evidence: Evidence[] }
 export type Analysis = {
   model_id: string
+  sentences: { id: string; text: string; start: number; end: number }[]
   aspects: Aspect[]
   warnings: string[]
   language: string
@@ -37,6 +39,8 @@ export type Analysis = {
     target: string
     sentiment: Sentiment
     score: number
+    start?: number | null
+    end?: number | null
   }[]
 }
 export type AspectStats = {
